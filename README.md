@@ -4,6 +4,7 @@ Integrated tool for calculating 1-D surface brightness profile of massive galaxi
 Author: Jiaxuan Li (UCSC, PKU)
 
 ![](https://astrojacobli.github.io/slug/ucsc_slug.jpg)
+![DES cosmology](https://astrojacobli.github.io/astro-ph/des_cosmology_guide.png)
 
 ## Requirements:
 - numpy
