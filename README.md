@@ -13,5 +13,5 @@ Author: Jiaxuan Li (UCSC, PKU)
 - photutils
 - palettable
 - tqdm
-- git@github.com:esheldon/cosmology.git
+- [cosmology](https://github.com/esheldon/cosmology)
 - [astroquery](https://astroquery.readthedocs.io/en/latest/)
