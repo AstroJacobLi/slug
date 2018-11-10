@@ -378,7 +378,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
     print 'std ellipticity:', stdev_e
     print 'mean pa:', mean_pa
     print 'std pa:', stdev_pa
-
+    print '\n'
     # RUN Ellipse for the second time, fixing shape and center
     stage = 3
 
@@ -412,3 +412,323 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
                                  updateIntens=False, saveCsv=True,
                                  suffix='', location='./Data/')
     return ell_2, ell_3
+
+def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50, physical_scale=None, text=None, ax=None, contrast=None, circle=None):
+    """Visualize the isophotes."""
+    if ax is None:
+        fig = plt.figure(figsize=(12, 12))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+        gs = gridspec.GridSpec(2, 2)
+        gs.update(wspace=0.0, hspace=0.00)
+
+        # Whole central galaxy: Step 2
+        ax1 = fig.add_subplot(gs[0])
+    else:
+        ax1 = ax
+        
+    ax1.yaxis.set_major_formatter(NullFormatter())
+    ax1.xaxis.set_major_formatter(NullFormatter())
+
+    cen = img.shape[0]/2
+
+    if contrast is not None:
+        ax1 = display_single(img, pixel_scale=pixel_scale, ax=ax1, scale_bar=scale_bar, scale_bar_length=scale_bar_length,
+                    physical_scale=physical_scale, contrast=contrast, add_text=text)
+    else:
+        ax1 = display_single(img, pixel_scale=pixel_scale, ax=ax1, scale_bar=scale_bar, scale_bar_length=scale_bar_length,
+                    physical_scale=physical_scale, contrast=0.25, add_text=text)
+    
+    for k, iso in enumerate(ell):
+        if k % 2 == 0:
+            e = Ellipse(xy=(iso['x0'], iso['y0']),
+                        height=iso['sma'] * 2.0,
+                        width=iso['sma'] * 2.0 * (1.0 - iso['ell']),
+                        angle=iso['pa'])
+            e.set_facecolor('none')
+            e.set_edgecolor('r')
+            e.set_alpha(0.5)
+            e.set_linewidth(1.5)
+            ax1.add_artist(e)
+    ax1.set_aspect('equal')
+
+    if circle is not None:
+        if physical_scale is not None:
+            r = circle/(physical_scale)/(pixel_scale)
+            label = r'$r=' + str(round(circle)) + '\mathrm{\,kpc}$'
+        else:
+            r = circle/pixel_scale
+            label = r'$r=' + str(round(circle)) + '\mathrm{\,arcsec}$'
+
+        e = Ellipse(xy=(cen, cen), height=2*r, width=2*r)
+        e.set_facecolor('none')
+        e.set_edgecolor('w')
+        e.set_label(label)
+        ax1.add_patch(e)
+        leg = ax1.legend(fontsize=20, frameon=False)
+        leg.get_frame().set_facecolor('none')
+        for text in leg.get_texts():
+            text.set_color('w')
+
+    if ax is not None:
+        return ax
+
+def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_max=4.0, physical_unit=False, angular_unit=True, show_dots=False, vertical_line=True, vertical_pos=100, linecolor='firebrick', label=None):
+    """Display the 1-D profiles."""
+    if ax is None:
+        fig = plt.figure(figsize=(10, 10))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.48])
+        ax2 = fig.add_axes([0.08, 0.55, 0.85, 0.20])
+        ax3 = fig.add_axes([0.08, 0.75, 0.85, 0.20])
+        ax1.tick_params(direction='in')
+        ax2.tick_params(direction='in')
+        ax3.tick_params(direction='in')
+    else:
+        ax1 = ax[0]
+        ax2 = ax[1]
+        ax3 = ax[2]
+        ax1.tick_params(direction='in')
+        ax2.tick_params(direction='in')
+        ax3.tick_params(direction='in')
+    import slug
+    phys_size = slug.phys_size(redshift)
+    # Calculate mean ellipticity and pa, which are used for fixed fitting
+    interval = np.intersect1d(np.where(ell_free['sma'].data*pixel_scale*phys_size > 20),
+               np.where(ell_free['sma'].data*pixel_scale*phys_size < 50))
+    mean_e = ell_free['ell'][interval].mean()
+    stdev_e = ell_free['ell'][interval].std()
+    mean_pa = ell_free['pa_norm'][interval].mean()
+    stdev_pa = ell_free['pa_norm'][interval].std()
+
+    # 1-D profile
+    if physical_unit is True:
+        x = ell_fix['sma']*pixel_scale*phys_size
+        y = -2.5*np.log10(ell_fix['intens'].data/(pixel_scale*phys_size)**2)+zeropoint
+        y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale*phys_size)**2)+zeropoint
+        y_lower = -2.5*np.log10((ell_fix['intens']-ell_fix['int_err'])/(pixel_scale*phys_size)**2)+zeropoint
+        upper_yerr = y_lower-y
+        lower_yerr = y-y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/kpc^2}]$'
+        
+    if angular_unit is True:
+        x = ell_fix['sma']*pixel_scale
+        y = -2.5*np.log10(ell_fix['intens']/(pixel_scale)**2)+zeropoint
+        y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        y_lower = -2.5*np.log10((ell_fix['intens']-ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        upper_yerr = y_lower-y
+        lower_yerr = y-y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+        
+    if angular_unit is True and physical_unit is True:
+        raise SyntaxError('angular_unit & physical_unit should be different')
+    if angular_unit is False and physical_unit is False:
+        raise SyntaxError('angular_unit & physical_unit should be different')
+    
+    # ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
+    
+    if show_dots is True:
+        ax1.errorbar((x ** 0.25), 
+                 y,
+                 yerr=asymmetric_error,
+                 color='k', alpha=0.2, fmt='o', 
+                 capsize=4, capthick=1, elinewidth=1)
+    ax1.plot(x**0.25, y, color=linecolor, linewidth=4, label=r'$\mathrm{'+label+'}$')
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3)
+    ax1.axvline(x=vertical_pos**0.25, ymin=ax1.get_ylim()[0], ymax=ax1.get_ylim()[1], 
+                    color='gray', linestyle='--', linewidth=3)
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(25)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(25)
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=30)
+    ax1.set_ylabel(ylabel, fontsize=30)
+    ax1.invert_yaxis()
+    if label is not None:
+        ax1.legend(fontsize=20, frameon=False)
+    
+    # Ellipticity profile
+    # ax2.grid(linestyle='--', alpha=0.4, linewidth=2)
+    if physical_unit is True:
+        x = ell_free['sma']*pixel_scale*phys_size
+    if angular_unit is True:
+        x = ell_free['sma']*pixel_scale
+    if show_dots is True:
+        ax2.errorbar((x ** 0.25), 
+                     ell_free['ell'],
+                     yerr=ell_free['ell_err'],
+                     color='k', alpha=0.4, fmt='o', capsize=4, capthick=2, elinewidth=2)
+    ax2.fill_between(x**0.25, ell_free['ell']+ell_free['ell_err'], ell_free['ell']-ell_free['ell_err'], 
+                     color=linecolor, alpha=0.3)
+    ax2.plot(x**0.25, ell_free['ell'], color=linecolor, linewidth=4)
+    ax2.xaxis.set_major_formatter(NullFormatter())
+    for tick in ax2.yaxis.get_major_ticks():
+        tick.label.set_fontsize(25)
+    ax2.set_xlim(x_min, x_max)
+    ax2.set_ylim(0,0.7)
+    ax2.set_ylabel(r'$e$', fontsize=35)
+    ytick_pos = [0, 0.2, 0.4, 0.6]
+    ax2.set_yticks(ytick_pos)
+    ax2.set_yticklabels([r'$'+str(round(i,2))+'$' for i in ytick_pos])
+    # ax2.axhline(y = ell_free['ell'][~np.isnan(ell_free['ell'].data)].mean(),
+    #           color=linecolor, alpha=1, linestyle = '-.', linewidth = 2)
+    ax2.axhline(y = mean_e,
+               color=linecolor, alpha=1, linestyle = '-.', linewidth = 2)
+
+    # Position Angle profile
+    #ax3.grid(linestyle='--', alpha=0.4, linewidth=2)
+    from kungpao import utils
+    pa_err = np.array([utils.normalize_angle(pa, lower=-90, 
+                                             upper=90, b=True) for pa in ell_free['pa_err']])
+    if show_dots is True:
+        ax3.errorbar((x ** 0.25), 
+                     ell_free['pa_norm'], yerr=pa_err,
+                     color='k', alpha=0.4, fmt='o', capsize=4, capthick=2, elinewidth=2)
+    ax3.fill_between(x**0.25, ell_free['pa_norm']+pa_err, ell_free['pa_norm']-pa_err, 
+                     color=linecolor, alpha=0.3)
+    ax3.plot(x**0.25, ell_free['pa_norm'], color=linecolor, linewidth=4)
+    ax3.xaxis.set_major_formatter(NullFormatter())
+    
+    for tick in ax3.yaxis.get_major_ticks():
+        tick.label.set_fontsize(25)
+    
+    ax3.set_xlim(x_min, x_max)
+    ax3.set_ylabel(r'$\mathrm{PA\ [deg]}$', fontsize=25)
+    
+    #ax3.axhline(y = ell_free['pa_norm'][~np.isnan(ell_free['pa_norm'].data)].mean(),
+    #           color=linecolor, alpha=1, linestyle = '-.', linewidth = 2)
+    ax3.axhline(y = mean_pa,
+               color=linecolor, alpha=1, linestyle = '-.', linewidth = 2)
+    
+    ax4 = ax3.twiny() 
+    ax4.tick_params(direction='in')
+    lin_label = [1, 2, 5, 10, 50, 100, 150]
+    lin_pos = [i**0.25 for i in lin_label]
+    ax4.set_xticks(lin_pos)
+    ax4.set_xlim(ax3.get_xlim())
+    ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=30)
+    ax4.xaxis.set_label_coords(1, 1.05)
+    
+    ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=25)
+    for tick in ax4.xaxis.get_major_ticks():
+        tick.label.set_fontsize(25)
+        
+        
+    if vertical_line is True:
+        ax1.axvline(x=vertical_pos**0.25, ymin=0, ymax=1, 
+                    color='gray', linestyle='--', linewidth=3)
+        ax2.axvline(x=vertical_pos**0.25, ymin=0, ymax=1, 
+                    color='gray', linestyle='--', linewidth=3)
+        ax3.axvline(x=vertical_pos**0.25, ymin=0, ymax=1, 
+                    color='gray', linestyle='--', linewidth=3)
+        
+    if ax is None:
+        return fig
+    return ax1, ax2, ax3
+
+
+
+# You can plot 1-D SBP using this
+def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_max=4.0, physical_unit=False, angular_unit=True, show_dots=False, vertical_line=True, vertical_pos=100, linecolor='firebrick', linestyle='-', label='SBP'):
+    """Display the 1-D profiles."""
+    if ax is None:
+        fig = plt.figure(figsize=(10, 10))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+    
+    # Calculate cosmological distance
+    from astropy import cosmology
+    cosmos = cosmology.FlatLambdaCDM(H0=70, Om0=0.27)
+    ang_dis = cosmos.angular_diameter_distance(redshift)
+    phys_size = ang_dis.value/206265*1000 # kpc/arcsec
+
+    # 1-D profile
+    if physical_unit is True:
+        x = ell_fix['sma']*pixel_scale*phys_size
+        y = -2.5*np.log10(ell_fix['intens'].data/(pixel_scale)**2)+zeropoint
+        y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        y_lower = -2.5*np.log10((ell_fix['intens']-ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        upper_yerr = y_lower-y
+        lower_yerr = y-y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+        
+    if angular_unit is True:
+        x = ell_fix['sma']*pixel_scale
+        y = -2.5*np.log10(ell_fix['intens']/(pixel_scale)**2)+zeropoint
+        y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        y_lower = -2.5*np.log10((ell_fix['intens']-ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        upper_yerr = y_lower-y
+        lower_yerr = y-y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+        
+    if angular_unit is True and physical_unit is True:
+        raise SyntaxError('angular_unit & physical_unit should be different')
+    if angular_unit is False and physical_unit is False:
+        raise SyntaxError('angular_unit & physical_unit should be different')
+    
+    # ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
+    
+    if show_dots is True:
+        ax1.errorbar((x ** 0.25), 
+                 y,
+                 yerr=asymmetric_error,
+                 color='k', alpha=0.2, fmt='o', 
+                 capsize=4, capthick=1, elinewidth=1)
+    ax1.plot(x**0.25, y, color=linecolor, linewidth=4, linestyle=linestyle,
+             label=r'$\mathrm{'+label+'}$')
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3)
+    ax1.axvline(x=vertical_pos**0.25, ymin=ax1.get_ylim()[0], ymax=ax1.get_ylim()[1], 
+                    color='gray', linestyle='--', linewidth=3)
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(25)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(25)
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=30)
+    ax1.set_ylabel(ylabel, fontsize=30)
+    ax1.invert_yaxis()
+    if label is not None:
+        ax1.legend(fontsize=25, frameon=False)
+    
+    if physical_unit is True:
+        ax4 = ax1.twiny() 
+        ax4.tick_params(direction='in')
+        lin_label = [1, 2, 5, 10, 50, 100, 150]
+        lin_pos = [i**0.25 for i in lin_label]
+        ax4.set_xticks(lin_pos)
+        ax4.set_xlim(ax1.get_xlim())
+        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=30)
+        ax4.xaxis.set_label_coords(1, 1.05)
+
+        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=25)
+        for tick in ax4.xaxis.get_major_ticks():
+            tick.label.set_fontsize(25)
+        
+        
+    if vertical_line is True:
+        ax1.axvline(x=vertical_pos**0.25, ymin=0, ymax=1, 
+                    color='gray', linestyle='--', linewidth=3)
+        
+    if ax is None:
+        return fig
+    return ax1
