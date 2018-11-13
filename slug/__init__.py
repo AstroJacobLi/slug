@@ -36,7 +36,7 @@ Dragonfly_zeropoint_g = 27.37635915911822
 Dragonfly_zeropoint_r = 27.10646046539894
 
 # Calculate physical size of a given redshift
-def phys_size(redshift):
+def phys_size(redshift, is_print=True):
     '''Calculate the corresponding physical size per arcsec of a given redshift.
     Requirement:
     -----------
@@ -54,7 +54,8 @@ def phys_size(redshift):
     cosmos = cosmology.Cosmo(H0=70, omega_m=0.3, flat=True, omega_l=0.7, omega_k=None)
     ang_distance = cosmos.Da(0.0, redshift)
     physical_size = ang_distance/206265*1000 # kpc/arcsec
-    print 'At this redshift, 1 arcsec =', physical_size, 'kpc'
+    if is_print:
+    	print 'At redshift', redshift, ', 1 arcsec =', physical_size, 'kpc'
     return physical_size
 
 # Rebin a image / mask
@@ -193,7 +194,7 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
     return objects, segmap
 
 # Make binary mask
-def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, gaia=True, factor_b=1.3):
+def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, gaia=True, factor_b=1.2, show_fig=True):
     '''Make binary mask for a given segmentation map. 
     We convolve the segmentation map using a Gaussian kernal to expand the size of mask.
 
@@ -222,8 +223,8 @@ def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, gaia=True, fac
 
     # Combine this mask with Gaia star mask
     gaia_mask = imtools.gaia_star_mask(img, w, gaia_bright=16, factor_f=10000, factor_b=factor_b)[1].astype('bool')
-
-    display_single((seg_mask + gaia_mask).astype(int), cmap=SEG_CMAP)
+    if show_fig:
+    	display_single((seg_mask + gaia_mask).astype(int), cmap=SEG_CMAP)
 
     binary_mask = seg_mask + gaia_mask
     return binary_mask
@@ -293,7 +294,7 @@ def evaluate_sky(img, show_fig=True, show_hist=True):
     return bkg_global
 
 
-def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None):
+def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, outPre=None):
     # Centeral coordinate 
     img_data = fits.open(img_path)[0].data
     cen = img_data.shape[0]/2
@@ -306,7 +307,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
     sma_ini = 10.0
 
     # Minimum and maximum radiuse of Ellipse fitting
-    sma_min, sma_max = 0.0, 2000.0
+    sma_min, sma_max = 0.0, 900.0
 
     # Stepsize of Ellipse fitting. By default we are not using linear step size
     step = step
@@ -356,7 +357,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
                                  xttools=TBL, 
                                  uppClip=upp_clip, lowClip=low_clip, 
                                  nClip=n_clip, 
-                                 maxTry=3,
+                                 maxTry=5,
                                  fracBad=0.8,
                                  maxIt=300,
                                  harmonics="none",
@@ -364,7 +365,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
                                  saveOut=True, plMask=True,
                                  verbose=True, savePng=False, 
                                  updateIntens=False, saveCsv=True,
-                                 suffix='', location='./Data/')
+                                 suffix='', location='./Data/', outPre=outPre+'-ellip-2')
 
     # Calculate the mean ellipticity and position angle in 20 kpc ~ 50 kpc
     interval = np.intersect1d(np.where(ell_2['sma'].data*pixel_scale*phys_size > 20),
@@ -374,6 +375,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
     mean_pa = ell_2['pa_norm'][interval].mean()
     stdev_pa = ell_2['pa_norm'][interval].std()
 
+    print '\n'
     print 'mean ellipticity:', mean_e
     print 'std ellipticity:', stdev_e
     print 'mean pa:', mean_pa
@@ -410,7 +412,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
                                  saveOut=True, plMask=True,
                                  verbose=True, savePng=False, 
                                  updateIntens=False, saveCsv=True,
-                                 suffix='', location='./Data/')
+                                 suffix='', location='./Data/', outPre=outPre+'-ellip-3')
     return ell_2, ell_3
 
 def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50, physical_scale=None, text=None, ax=None, contrast=None, circle=None):
@@ -474,7 +476,7 @@ def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50,
     if ax is not None:
         return ax
 
-def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_max=4.0, physical_unit=False, angular_unit=True, show_dots=False, vertical_line=True, vertical_pos=100, linecolor='firebrick', label=None):
+def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_max=4.0, physical_unit=False, show_dots=False, vertical_line=True, vertical_pos=100, linecolor='firebrick', label=None):
     """Display the 1-D profiles."""
     if ax is None:
         fig = plt.figure(figsize=(10, 10))
@@ -495,8 +497,9 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
         ax1.tick_params(direction='in')
         ax2.tick_params(direction='in')
         ax3.tick_params(direction='in')
+
     import slug
-    phys_size = slug.phys_size(redshift)
+    phys_size = slug.phys_size(redshift, is_print=False)
     # Calculate mean ellipticity and pa, which are used for fixed fitting
     interval = np.intersect1d(np.where(ell_free['sma'].data*pixel_scale*phys_size > 20),
                np.where(ell_free['sma'].data*pixel_scale*phys_size < 50))
@@ -508,16 +511,15 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
     # 1-D profile
     if physical_unit is True:
         x = ell_fix['sma']*pixel_scale*phys_size
-        y = -2.5*np.log10(ell_fix['intens'].data/(pixel_scale*phys_size)**2)+zeropoint
-        y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale*phys_size)**2)+zeropoint
-        y_lower = -2.5*np.log10((ell_fix['intens']-ell_fix['int_err'])/(pixel_scale*phys_size)**2)+zeropoint
+        y = -2.5*np.log10(ell_fix['intens'].data/(pixel_scale)**2)+zeropoint
+        y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        y_lower = -2.5*np.log10((ell_fix['intens']-ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
         upper_yerr = y_lower-y
         lower_yerr = y-y_upper
         asymmetric_error = [lower_yerr, upper_yerr]
         xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
-        ylabel = r'$\mu\,[\mathrm{mag/kpc^2}]$'
-        
-    if angular_unit is True:
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+    else:
         x = ell_fix['sma']*pixel_scale
         y = -2.5*np.log10(ell_fix['intens']/(pixel_scale)**2)+zeropoint
         y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
@@ -527,11 +529,6 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
         asymmetric_error = [lower_yerr, upper_yerr]
         xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
-        
-    if angular_unit is True and physical_unit is True:
-        raise SyntaxError('angular_unit & physical_unit should be different')
-    if angular_unit is False and physical_unit is False:
-        raise SyntaxError('angular_unit & physical_unit should be different')
     
     # ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
     
@@ -560,7 +557,7 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
     # ax2.grid(linestyle='--', alpha=0.4, linewidth=2)
     if physical_unit is True:
         x = ell_free['sma']*pixel_scale*phys_size
-    if angular_unit is True:
+    else:
         x = ell_free['sma']*pixel_scale
     if show_dots is True:
         ax2.errorbar((x ** 0.25), 
@@ -576,7 +573,7 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
     ax2.set_xlim(x_min, x_max)
     ax2.set_ylim(0,0.7)
     ax2.set_ylabel(r'$e$', fontsize=35)
-    ytick_pos = [0, 0.2, 0.4, 0.6]
+    ytick_pos = [0.2, 0.4, 0.6]
     ax2.set_yticks(ytick_pos)
     ax2.set_yticklabels([r'$'+str(round(i,2))+'$' for i in ytick_pos])
     # ax2.axhline(y = ell_free['ell'][~np.isnan(ell_free['ell'].data)].mean(),
@@ -609,18 +606,18 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
     ax3.axhline(y = mean_pa,
                color=linecolor, alpha=1, linestyle = '-.', linewidth = 2)
     
-    ax4 = ax3.twiny() 
-    ax4.tick_params(direction='in')
-    lin_label = [1, 2, 5, 10, 50, 100, 150]
-    lin_pos = [i**0.25 for i in lin_label]
-    ax4.set_xticks(lin_pos)
-    ax4.set_xlim(ax3.get_xlim())
-    ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=30)
-    ax4.xaxis.set_label_coords(1, 1.05)
-    
-    ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=25)
-    for tick in ax4.xaxis.get_major_ticks():
-        tick.label.set_fontsize(25)
+    if physical_unit is True:
+	    ax4 = ax3.twiny() 
+	    ax4.tick_params(direction='in')
+	    lin_label = [1, 2, 5, 10, 50, 100, 150, 300]
+	    lin_pos = [i**0.25 for i in lin_label]
+	    ax4.set_xticks(lin_pos)
+	    ax4.set_xlim(ax3.get_xlim())
+	    ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=30)
+	    ax4.xaxis.set_label_coords(1, 1.05)
+	    ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=25)
+	    for tick in ax4.xaxis.get_major_ticks():
+	        tick.label.set_fontsize(25)
         
         
     if vertical_line is True:
@@ -638,7 +635,7 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
 
 
 # You can plot 1-D SBP using this
-def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_max=4.0, physical_unit=False, angular_unit=True, show_dots=False, vertical_line=True, vertical_pos=100, linecolor='firebrick', linestyle='-', label='SBP'):
+def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, vertical_line=False, vertical_pos=100, linecolor='firebrick', linestyle='-', label='SBP'):
     """Display the 1-D profiles."""
     if ax is None:
         fig = plt.figure(figsize=(10, 10))
@@ -651,12 +648,10 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_
     else:
         ax1 = ax
         ax1.tick_params(direction='in')
-    
-    # Calculate cosmological distance
-    from astropy import cosmology
-    cosmos = cosmology.FlatLambdaCDM(H0=70, Om0=0.27)
-    ang_dis = cosmos.angular_diameter_distance(redshift)
-    phys_size = ang_dis.value/206265*1000 # kpc/arcsec
+
+    # Calculate physical size at this redshift
+    import slug
+    phys_size = slug.phys_size(redshift,is_print=False)
 
     # 1-D profile
     if physical_unit is True:
@@ -669,8 +664,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_
         asymmetric_error = [lower_yerr, upper_yerr]
         xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
-        
-    if angular_unit is True:
+    else:
         x = ell_fix['sma']*pixel_scale
         y = -2.5*np.log10(ell_fix['intens']/(pixel_scale)**2)+zeropoint
         y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
@@ -680,11 +674,6 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_
         asymmetric_error = [lower_yerr, upper_yerr]
         xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
-        
-    if angular_unit is True and physical_unit is True:
-        raise SyntaxError('angular_unit & physical_unit should be different')
-    if angular_unit is False and physical_unit is False:
-        raise SyntaxError('angular_unit & physical_unit should be different')
     
     # ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
     
@@ -694,9 +683,12 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_
                  yerr=asymmetric_error,
                  color='k', alpha=0.2, fmt='o', 
                  capsize=4, capthick=1, elinewidth=1)
-    ax1.plot(x**0.25, y, color=linecolor, linewidth=4, linestyle=linestyle,
-             label=r'$\mathrm{'+label+'}$')
-    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3)
+    if label is not None:
+    	ax1.plot(x**0.25, y, color=linecolor, linewidth=4, linestyle=linestyle,
+             label=r'$\mathrm{'+label+'}$', alpha=alpha)
+    else:
+    	ax1.plot(x**0.25, y, color=linecolor, linewidth=4, linestyle=linestyle, alpha=alpha)
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha)
     ax1.axvline(x=vertical_pos**0.25, ymin=ax1.get_ylim()[0], ymax=ax1.get_ylim()[1], 
                     color='gray', linestyle='--', linewidth=3)
     for tick in ax1.xaxis.get_major_ticks():
@@ -713,7 +705,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_
     if physical_unit is True:
         ax4 = ax1.twiny() 
         ax4.tick_params(direction='in')
-        lin_label = [1, 2, 5, 10, 50, 100, 150]
+        lin_label = [1, 2, 5, 10, 50, 100, 150, 300]
         lin_pos = [i**0.25 for i in lin_label]
         ax4.set_xticks(lin_pos)
         ax4.set_xlim(ax1.get_xlim())
