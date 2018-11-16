@@ -242,14 +242,14 @@ def evaluate_sky(img, show_fig=True, show_hist=True):
     -------
     bkg_global: `sep` object.
     '''
-    b = 30  # Box size
+    b = 50  # Box size
     f = 5   # Filter width
     bkg = sep.Background(img, bw=b, bh=b, fw=f, fh=f)
 
-    obj_lthre, seg_lthre = sep.extract(img, 2.0,
+    obj_lthre, seg_lthre = sep.extract(img, 1.5,
                                        err=bkg.globalrms, 
                                        minarea=20, 
-                                       deblend_nthresh=20, deblend_cont=0.1,
+                                       deblend_nthresh=20, deblend_cont=0.001,
                                        clean=True, clean_param=1.0,
                                        segmentation_map=True)
 
