@@ -36,7 +36,7 @@ Dragonfly_zeropoint_g = 27.37635915911822
 Dragonfly_zeropoint_r = 27.10646046539894
 
 # Calculate physical size of a given redshift
-def phys_size(redshift, is_print=True):
+def phys_size(redshift, is_print=True, H0=70, Omegam=0.3, Omegal=0.7):
     '''Calculate the corresponding physical size per arcsec of a given redshift.
     Requirement:
     -----------
@@ -51,11 +51,11 @@ def phys_size(redshift, is_print=True):
     physical_size: float, in 'kpc/arcsec'
     '''
     import cosmology
-    cosmos = cosmology.Cosmo(H0=70, omega_m=0.3, flat=True, omega_l=0.7, omega_k=None)
+    cosmos = cosmology.Cosmo(H0=H0, omega_m=Omegam, flat=True, omega_l=Omegal, omega_k=None)
     ang_distance = cosmos.Da(0.0, redshift)
     physical_size = ang_distance/206265*1000 # kpc/arcsec
     if is_print:
-    	print 'At redshift', redshift, ', 1 arcsec =', physical_size, 'kpc'
+    	print ('At redshift', redshift, ', 1 arcsec =', physical_size, 'kpc')
     return physical_size
 
 # Rebin a image / mask
@@ -106,8 +106,8 @@ def rebin(array, dimensions=None, scale=None):
             raise RuntimeError('')
     else:
         raise RuntimeError('Incorrect parameters to rebin.\n\trebin(array, dimensions=(x,y))\n\trebin(array, scale=a')
-    print dimensions
-    print "Rebinning to Dimensions: %s, %s" % tuple(dimensions)
+    print (dimensions)
+    print ("Rebinning to Dimensions: %s, %s" % tuple(dimensions))
     import itertools
     dY, dX = map(divmod, map(float, array.shape), dimensions)
 
@@ -375,12 +375,12 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
     mean_pa = ell_2['pa_norm'][interval].mean()
     stdev_pa = ell_2['pa_norm'][interval].std()
 
-    print '\n'
-    print 'mean ellipticity:', mean_e
-    print 'std ellipticity:', stdev_e
-    print 'mean pa:', mean_pa
-    print 'std pa:', stdev_pa
-    print '\n'
+    print ('\n')
+    print ('mean ellipticity:', mean_e)
+    print ('std ellipticity:', stdev_e)
+    print ('mean pa:', mean_pa)
+    print ('std pa:', stdev_pa)
+    print ('\n')
     # RUN Ellipse for the second time, fixing shape and center
     stage = 3
 
@@ -635,7 +635,7 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
 
 
 # You can plot 1-D SBP using this
-def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, vertical_line=False, vertical_pos=100, linecolor='firebrick', linestyle='-', label='SBP'):
+def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0, x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, vertical_line=False, vertical_pos=100, linecolor='firebrick', linestyle='-', label='SBP'):
     """Display the 1-D profiles."""
     if ax is None:
         fig = plt.figure(figsize=(10, 10))
@@ -656,9 +656,9 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_
     # 1-D profile
     if physical_unit is True:
         x = ell_fix['sma']*pixel_scale*phys_size
-        y = -2.5*np.log10(ell_fix['intens'].data/(pixel_scale)**2)+zeropoint
-        y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
-        y_lower = -2.5*np.log10((ell_fix['intens']-ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        y = -2.5*np.log10((ell_fix['intens'].data + offset)/(pixel_scale)**2)+zeropoint
+        y_upper = -2.5*np.log10((ell_fix['intens'] + offset + ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        y_lower = -2.5*np.log10((ell_fix['intens'] + offset - ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
         upper_yerr = y_lower-y
         lower_yerr = y-y_upper
         asymmetric_error = [lower_yerr, upper_yerr]
@@ -666,9 +666,9 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
     else:
         x = ell_fix['sma']*pixel_scale
-        y = -2.5*np.log10(ell_fix['intens']/(pixel_scale)**2)+zeropoint
-        y_upper = -2.5*np.log10((ell_fix['intens']+ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
-        y_lower = -2.5*np.log10((ell_fix['intens']-ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        y = -2.5*np.log10((ell_fix['intens'] + offset)/(pixel_scale)**2)+zeropoint
+        y_upper = -2.5*np.log10((ell_fix['intens'] + offset + ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
+        y_lower = -2.5*np.log10((ell_fix['intens'] + offset - ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
         upper_yerr = y_lower-y
         lower_yerr = y-y_upper
         asymmetric_error = [lower_yerr, upper_yerr]
