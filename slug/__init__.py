@@ -36,8 +36,53 @@ SDSS_zeropoint = 22.5
 Dragonfly_zeropoint_g = 27.37635915911822 
 Dragonfly_zeropoint_r = 27.10646046539894
 
+# Generate DECaLS image url
+def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
+    '''Generate image url of given position.
+    
+    Parameters:
+    -----------
+    ra: float, RA (degrees)
+    dec: float, DEC (degrees)
+    size: float, image size (pixel)
+    bands: string, such as 'r' or 'gri'
+    
+    Returns:
+    -----------
+    url: list of str, url of S18A image.  
+    '''
+
+    if pixel_unit:
+        return ['http://legacysurvey.org/viewer/fits-cutout?ra='
+            + str(ra)
+            + '&dec='
+            + str(dec)
+            + '&pixscale='
+            + str(DECaLS_pixel_scale)
+            + '&layer='
+            + layer
+            + '&size='
+            + str(size)
+            + '&bands='
+            + bands]
+    else:        
+        return ['http://legacysurvey.org/viewer/fits-cutout?ra='
+            + str(ra)
+            + '&dec='
+            + str(dec)
+            + '&pixscale='
+            + str(DECaLS_pixel_scale)
+            + '&layer='
+            + layer
+            + '&size='
+            + str(size/DECaLS_pixel_scale)
+            + '&bands='
+            + bands]
+
 # Login NAOJ server
 def login_naoj_server(config_path):
+    ''' Runs well under python 2. In python 3, there's a widget 
+    to enter username and password directly in Jupyter Notebook.'''
     import urllib
     import urllib2
     # Import HSC username and password
@@ -62,7 +107,7 @@ def login_naoj_server(config_path):
     # Now all calls to urllib2.urlopen use our opener.
     urllib2.install_opener(opener)
 
-# Download HSC images
+# Generate HSC image url
 def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False):
     '''Generate image url of given position.
     
