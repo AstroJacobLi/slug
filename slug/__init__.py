@@ -8,6 +8,7 @@ from astropy.io import fits
 from astropy import wcs
 from astropy.convolution import Gaussian2DKernel
 from astropy.convolution import convolve
+from astropy.table import Table
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -34,6 +35,114 @@ DECaLS_zeropoint = 22.5
 SDSS_zeropoint = 22.5
 Dragonfly_zeropoint_g = 27.37635915911822 
 Dragonfly_zeropoint_r = 27.10646046539894
+
+# Login NAOJ server
+def login_naoj_server(config_path):
+    import urllib
+    import urllib2
+    # Import HSC username and password
+    config = Table.read(config_path, format='ascii.no_header')['col1']
+    username = config[0]
+    password = config[1]
+    # Create a password manager
+    password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+
+    # Add the username and password.
+    top_level_url = 'https://hscdata.mtk.nao.ac.jp/das_quarry/dr2.1/'
+    password_mgr.add_password(None, top_level_url, username, password)
+    handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+
+    # create "opener" (OpenerDirector instance)
+    opener = urllib2.build_opener(handler)
+
+    # use the opener to fetch a URL
+    opener.open(top_level_url)
+
+    # Install the opener.
+    # Now all calls to urllib2.urlopen use our opener.
+    urllib2.install_opener(opener)
+
+# Download HSC images
+def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False):
+    '''Generate image url of given position.
+    
+    Parameters:
+    -----------
+    ra: float, RA (degrees)
+    dec: float, DEC (degrees)
+    w: float, width (arcsec)
+    h: float, height (arcsec)
+    band: string, such as 'r'
+    
+    Returns:
+    -----------
+    url: list of str, url of S18A image.  
+    '''
+    if pixel_unit:
+        return ['https://hscdata.mtk.nao.ac.jp/das_quarry/dr2.1/cgi-bin/cutout?ra='
+            + str(ra) 
+            + '&dec='
+            + str(dec)
+            + '&sw='
+            + str(w*HSC_pixel_scale)
+            + 'asec&sh='
+            + str(h*HSC_pixel_scale)
+            + 'asec&type=coadd&image=on&variance=on&filter=HSC-'
+            + str(band.upper())
+            + '&tract=&rerun=s18a_wide']
+    else:        
+        return ['https://hscdata.mtk.nao.ac.jp/das_quarry/dr2.1/cgi-bin/cutout?ra='
+           + str(ra) 
+           + '&dec='
+           + str(dec)
+           + '&sw='
+           + str(w)
+           + 'asec&sh='
+           + str(h)
+           + 'asec&type=coadd&image=on&variance=on&filter=HSC-'
+           + str(band.upper())
+           + '&tract=&rerun=s18a_wide']
+
+def gen_url_hsc_s16a(ra, dec, w, h, band, pixel_unit=False):
+    '''Generate image url of given position.
+    
+    Parameters:
+    -----------
+    ra: float, RA (degrees)
+    dec: float, DEC (degrees)
+    w: float, width (arcsec)
+    h: float, height (arcsec)
+    band: string, such as 'r'
+
+    Returns:
+    -----------
+    url: str, url of S16A image.  
+    '''
+    if pixel_unit:
+        return ['https://hscdata.mtk.nao.ac.jp/das_quarry/dr1/cgi-bin/quarryImage?ra='
+            + str(ra) 
+            + '&dec='
+            + str(dec)
+            + '&sw='
+            + str(w*HSC_pixel_scale)
+            + 'asec&sh='
+            + str(h*HSC_pixel_scale)
+            + 'asec&type=coadd&image=on&variance=on&filter=HSC-'
+            + str(band.upper())
+            + '&tract=&rerun=s16a_wide2']
+    else:
+        return ['https://hscdata.mtk.nao.ac.jp/das_quarry/dr1/cgi-bin/quarryImage?ra='
+           + str(ra) 
+           + '&dec='
+           + str(dec)
+           + '&sw='
+           + str(w)
+           + 'asec&sh='
+           + str(h)
+           + 'asec&type=coadd&image=on&variance=on&filter=HSC-'
+           + str(band.upper())
+           + '&tract=&rerun=s16a_wide2']
+
 
 # Calculate physical size of a given redshift
 def phys_size(redshift, is_print=True, H0=70, Omegam=0.3, Omegal=0.7):
@@ -656,7 +765,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0, x
     # 1-D profile
     if physical_unit is True:
         x = ell_fix['sma']*pixel_scale*phys_size
-        y = -2.5*np.log10((ell_fix['intens'].data + offset)/(pixel_scale)**2)+zeropoint
+        y = -2.5*np.log10((ell_fix['intens'] + offset)/(pixel_scale)**2)+zeropoint
         y_upper = -2.5*np.log10((ell_fix['intens'] + offset + ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
         y_lower = -2.5*np.log10((ell_fix['intens'] + offset - ell_fix['int_err'])/(pixel_scale)**2)+zeropoint
         upper_yerr = y_lower-y
@@ -724,3 +833,14 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0, x
     if ax is None:
         return fig
     return ax1
+
+# Print attributes of a HDF5 file
+def h5_print_attrs(f):
+    def print_attrs(name, obj):
+        print(name)
+        for key, val in obj.attrs.iteritems():
+            print("    %s: %s" % (key, val))
+
+    f.visititems(print_attrs)
+
+
