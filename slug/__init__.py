@@ -1,6 +1,7 @@
 # Import packages
 import os
 import copy
+import slug
 
 import numpy as np
 
@@ -309,6 +310,7 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
     objects: numpy array, containing the positions and shapes of extracted objects.
     segmap: 2-D numpy array, segmentation map
     '''
+
     # Subtract a mean sky value to achieve better object detection
     b = 30  # Box size
     f = 5   # Filter width
@@ -375,16 +377,21 @@ def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, gaia=True, fac
     seg_conv = convolve(seg_conv.astype('float'), Gaussian2DKernel(radius))
     seg_mask = seg_conv >= threshold
 
-    # Combine this mask with Gaia star mask
-    gaia_mask = imtools.gaia_star_mask(img, w, gaia_bright=16, factor_f=10000, factor_b=factor_b)[1].astype('bool')
-    if show_fig:
-    	display_single((seg_mask + gaia_mask).astype(int), cmap=SEG_CMAP)
+    if gaia is False:
+        if show_fig:
+            display_single(seg_mask.astype(int), cmap=SEG_CMAP)
+        return seg_mask
+    else:
+        # Combine this mask with Gaia star mask
+        gaia_mask = imtools.gaia_star_mask(img, w, gaia_bright=16, factor_f=10000, factor_b=factor_b)[1].astype('bool')
+        if show_fig:
+        	display_single((seg_mask + gaia_mask).astype(int), cmap=SEG_CMAP)
 
-    binary_mask = seg_mask + gaia_mask
-    return binary_mask
+        binary_mask = seg_mask + gaia_mask
+        return binary_mask
 
 # Evaluate the mean sky value
-def evaluate_sky(img, show_fig=True, show_hist=True):
+def evaluate_sky(img, sigma=1.5, radius=15, threshold=0.005, show_fig=True, show_hist=True):
     '''Evaluate the mean sky value.
     Parameters:
     ----------
@@ -398,9 +405,10 @@ def evaluate_sky(img, show_fig=True, show_hist=True):
     '''
     b = 50  # Box size
     f = 5   # Filter width
-    bkg = sep.Background(img, bw=b, bh=b, fw=f, fh=f)
 
-    obj_lthre, seg_lthre = sep.extract(img, 1.5,
+    bkg = sep.Background(img, maskthresh=0, bw=b, bh=b, fw=f, fh=f)
+
+    obj_lthre, seg_lthre = sep.extract(img, sigma,
                                        err=bkg.globalrms, 
                                        minarea=20, 
                                        deblend_nthresh=20, deblend_cont=0.001,
@@ -411,8 +419,8 @@ def evaluate_sky(img, show_fig=True, show_hist=True):
     seg_sky[seg_lthre > 0] = 1
 
     # Convolve the image with a Gaussian kernel with the width of 15 pixel
-    bkg_mask = convolve(seg_sky.astype('float'), Gaussian2DKernel(15.0))
-    bkg_mask = bkg_mask >= 0.005
+    bkg_mask = convolve(seg_sky.astype('float'), Gaussian2DKernel(radius))
+    bkg_mask = bkg_mask >= threshold
 
     if show_fig:
         display_single((~bkg_mask)*(img - bkg.globalback),
@@ -442,13 +450,67 @@ def evaluate_sky(img, show_fig=True, show_hist=True):
 
     bkg_global = sep.Background(img, 
                                 mask=bkg_mask, maskthresh=0,
-                                bw=100, bh=100, 
-                                fw=20, fh=20)
+                                bw=b, bh=b, 
+                                fw=f, fh=f)
     print("# Mean Sky / RMS Sky = %10.5f / %10.5f" % (bkg_global.globalback, bkg_global.globalrms))
     return bkg_global
 
+# Evaluate the mean sky value for Dragonfly
+def evaluate_sky_dragonfly(img, b=15, f=3, sigma=1.5, radius=1.0, threshold=0.05, show_fig=True, show_hist=True):
+    '''Evaluate the mean sky value.
+    Parameters:
+    ----------
+    img: 2-D numpy array, the input image
+    show_fig: bool. If True, it will show you the masked sky image.
+    show_hist: bool. If True, it will show you the histogram of the sky value.
+    
+    Returns:
+    -------
+    bkg_global: `sep` object.
+    '''
+    b = b  # Box size
+    f = f   # Filter width
 
-def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, outPre=None):
+
+    bkg = sep.Background(img, maskthresh=0, bw=b, bh=b, fw=f, fh=f)
+
+    obj_lthre, seg_lthre = slug.extract_obj(img, b=b, f=f, sigma=sigma, pixel_scale=slug.Dragonfly_pixel_scale,
+                                            deblend_nthresh=128, deblend_cont=0.0001, show_fig=show_fig)
+
+    # make mask
+    seg_mask = slug.make_binary_mask(img, None, seg_lthre, radius=2.0, show_fig=show_fig, threshold=0.005, gaia=False)
+
+    if show_hist:
+        from scipy import stats
+        samp = img[~bkg_mask]
+        x = np.linspace(-0.5, 0.5, 100)
+        gkde = stats.gaussian_kde(dataset=samp)
+        fig, ax = plt.subplots(figsize=(8,6))
+
+        ax.plot(x, gkde.evaluate(x), linestyle='dashed', c='black', lw=2,
+                label='KDE')
+        ax.hist(samp, bins=x, normed=1)
+        ax.legend(loc='best', frameon=False, fontsize=20)
+
+
+        ax.set_title('Histogram of pixels', fontsize=20)
+        ax.set_xlabel('Pixel Value', fontsize=20)
+        ax.set_ylabel('Normed Number', fontsize=20)
+        ax.tick_params(labelsize=20)
+        ax.set_ylim(0,20)
+        offset = x[np.argmax(gkde.evaluate(x))]
+        ax.text(-0.045, 10, r'$\mathrm{offset}='+str(round(offset, 6))+'$', fontsize=20)
+        plt.vlines(np.median(samp), 0, 20, linestyle='--')
+        print('mean', np.mean(samp))
+
+    bkg_global = sep.Background(img, 
+                                mask=seg_mask, maskthresh=0,
+                                bw=20, bh=20, 
+                                fw=5, fh=5)
+    print("# Mean Sky / RMS Sky = %10.5f / %10.5f" % (bkg_global.globalback, bkg_global.globalrms))
+    return bkg_global
+
+def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, sma_ini=10.0, sma_max=900.0, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, outPre=None):
     # Centeral coordinate 
     img_data = fits.open(img_path)[0].data
     cen = img_data.shape[0]/2
@@ -458,10 +520,10 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
     ba_ini, pa_ini = 0.5, 90.0
 
     # Initial radius of Ellipse fitting
-    sma_ini = 10.0
+    sma_ini = sma_ini
 
     # Minimum and maximum radiuse of Ellipse fitting
-    sma_min, sma_max = 0.0, 900.0
+    sma_min, sma_max = 0.0, sma_max
 
     # Stepsize of Ellipse fitting. By default we are not using linear step size
     step = step
@@ -545,7 +607,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
         ba_ini = 1 - mean_e
     pa_ini = mean_pa
 
-    step = 0.1
+    step = 0.2
 
     ell_3, bin_3 = galSBP.galSBP(img_path, 
                                  mask=msk_path,
@@ -562,6 +624,9 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, n_
                                  uppClip=upp_clip, lowClip=low_clip, 
                                  nClip=n_clip, 
                                  maxTry=5,
+                                 fracBad=0.8,
+                                 maxIt=300,
+                                 harmonics="none",
                                  intMode=integrade_mode, 
                                  saveOut=True, plMask=True,
                                  verbose=True, savePng=False, 
