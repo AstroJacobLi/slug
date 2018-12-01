@@ -37,6 +37,145 @@ SDSS_zeropoint = 22.5
 Dragonfly_zeropoint_g = 27.37635915911822 
 Dragonfly_zeropoint_r = 27.10646046539894
 
+
+HSC_binray_mask_dict = {0: 'BAD',
+                        1:  'SAT (saturated)',
+                        2:  'INTRP (interpolated)',
+                        3:  'CR (cosmic ray)',
+                        4:  'EDGE (edge of the CCD)',
+                        5:  'DETECTED',
+                        6:  'DETECTED_NEGATIVE',
+                        7:  'SUSPECT (suspicious pixel)',
+                        8:  'NO_DATA',
+                        9:  'BRIGHT_OBJECT (bright star mask, not available in S18A yet)',
+                        10: 'CROSSTALK', 
+                        11: 'NOT_DEBLENDED (For objects that are too big to run deblender)',
+                        12: 'UNMASKEDNAN',
+                        13: 'REJECTED',
+                        14: 'CLIPPED',
+                        15: 'SENSOR_EDGE',
+                        16: 'INEXACT_PSF'}
+
+SkyObj_aperture_dic = { '20': 5.0,
+                        '30': 9.0,
+                        '40': 12.0,
+                        '57': 17.0,
+                        '84': 25.0,
+                        '118': 35.0 }
+
+# Calculate mean/median value of nearby sky objects
+def skyobj_value(path, cen_ra, cen_dec, matching_radius, aperture, print_number=False, 
+                            sigma_upper=3., sigma_lower=3., showmedian=False):
+    '''Calculate the mean/median value of nearby SKY OBJECTS around a given RA and DEC.
+    Importing sky objects catalog can be really slow.
+
+    Parameters:
+    -----------
+    path: string, the path of catalog.
+    cen_ra, cen_dec: float, RA and DEC of the given object.
+    matching_radius: float, in arcmin. We match sky objects around the given object within this radius.
+    aperture: string, must be in the `SkyObj_aperture_dic`.
+    print_number: boolean. If true, it will print the number of nearby sky objects.
+    sigma_upper, sigma_lower: float, threshold for sigma_clipping of nearby sky objects.
+    showmedian: boolean. If true, the median of sky objects values will be returned instead of the average.
+
+    Returns:
+    -----------
+    mean/median value of nearby sky objects.
+    '''
+    from astropy.coordinates import match_coordinates_sky
+    from astropy import units as u
+    from astropy.coordinates import SkyCoord
+    from astropy.stats import sigma_clip
+
+    sky_cat = Table.read(path, format='fits') # This step costs a lot of time (since the catalog is really large)
+    ra, dec = cen_ra, cen_dec
+    bkg_pos = SkyCoord(ra=ra * u.degree, dec=dec * u.degree, frame='icrs')
+    catalog = SkyCoord(ra=sky_cat['i_ra'] * u.degree, dec=sky_cat['i_dec'] * u.degree)
+    obj_inx = np.where(catalog.separation(bkg_pos) < matching_radius * u.arcmin)[0]
+    if print_number:
+        print('Sky objects number around' + str(matching_radius) + 'arcmin: ', len(obj_inx))
+
+
+    x = sky_cat[obj_inx]['r_apertureflux_' + aperture +'_flux'] * 1.7378e30 / (np.pi * SkyObj_aperture_dic[aperture]**2)
+    x = sigma_clip(x, sigma_lower=sigma_lower, sigma_upper=sigma_upper)
+    if showmedian:
+        return np.median(x)
+    else:
+        return np.mean(x)
+
+# Make HSC detection and bright star mask
+def make_HSC_detect_mask(bin_msk, objects, segmap, r=10.0, radius=1.5, threshold=0.01):
+    '''Make HSC detection and bright star mask, 
+    based on HSC binary mask flags.
+    
+    Parameters:
+    -----------
+    bin_msk: 2-D np.array, can be loaded from HSC image cutouts
+    objects: table, returned from sep.extract_obj
+    segmap: 2-D np.array, returned from sep.extract_obj
+    r: float, blow-up parameter
+    radius: float, convolution radius
+    threshold: float, threshold of making mask after convolution
+
+    Returns:
+    -----------
+    HSC_detect_mask: 2-D boolean np.array
+    
+    Related Function:
+    -----------------
+    convert_HSC_binary_mask(bin_msk)
+    '''
+    TDmask = slug.convert_HSC_binary_mask(bin_msk)
+    cen_mask = np.zeros(bin_msk.shape, dtype=np.bool)
+    cen_obj = objects[segmap[int(bin_msk.shape[0] / 2.), int(bin_msk.shape[1] / 2.)] - 1]
+    sep.mask_ellipse(cen_mask, cen_obj['x'], cen_obj['y'], cen_obj['a'], cen_obj['b'],
+                    cen_obj['theta'], r=r)
+    from astropy.convolution import convolve, Gaussian2DKernel
+    HSC_mask = (TDmask[:, :, 5] + TDmask[:, :, 9]).astype(bool)*(~cen_mask)
+    # Convolve the image with a Gaussian kernel with the width of 1.5 pixel
+    cvl = convolve(HSC_mask.astype('float'), Gaussian2DKernel(radius))
+    HSC_detect_mask = cvl >= threshold
+    return HSC_detect_mask
+
+# Convert HSC binary mask to a 3-D array, with binary digits located in the third axis
+def convert_HSC_binary_mask(bin_msk):
+    '''Convert HSC binary mask to a 3-D array, 
+    with binary digits located in the third axis.
+    
+    Parameters:
+    -----------
+    bin_msk: 2-D np.array, can be loaded from HSC image cutouts
+    
+    Returns:
+    -----------
+    TD: 3-D np.array, with binary digits located in the third axis.
+    
+    Related Function:
+    -----------------
+    print_HSC_binary_mask(TDmsk, path);
+    slug.HSC_binray_mask_dict
+    '''
+    split_num = bin_msk.shape[1]
+    a = np.array(bin_msk, dtype=np.uint16)
+    b = np.array(np.hsplit(np.unpackbits(a.view(np.uint8), axis=1), split_num))
+    TDim = np.flip(np.transpose(np.concatenate(np.flip(np.array(np.dsplit(b, 2)), axis=0), axis=2), axes=(1, 0, 2)), axis=2)
+    return TDim
+
+
+# print HSC mask for each flag:
+def print_HSC_binary_mask(TDmsk, path):
+    '''Print HSC mask for each flag.
+    
+    Parameters:
+    -----------
+    TDmsk: np.array, three dimensional (width, height, 16) mask array
+    path: string, path of saving figures
+    '''
+    for i in range(16):
+        _ = display_single(TDmsk[:,:,i].astype(float), cmap=SEG_CMAP, scale='linear')
+        plt.savefig(path + 'HSC-bin-mask-' + HSC_binray_mask_dict[i] + '.png')
+
 # Generate DECaLS image url
 def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
     '''Generate image url of given position.
@@ -133,7 +272,7 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False):
             + str(w*HSC_pixel_scale)
             + 'asec&sh='
             + str(h*HSC_pixel_scale)
-            + 'asec&type=coadd&image=on&variance=on&filter=HSC-'
+            + 'asec&type=coadd&image=on&mask=on&variance=on&filter=HSC-'
             + str(band.upper())
             + '&tract=&rerun=s18a_wide']
     else:        
@@ -145,7 +284,7 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False):
            + str(w)
            + 'asec&sh='
            + str(h)
-           + 'asec&type=coadd&image=on&variance=on&filter=HSC-'
+           + 'asec&type=coadd&image=on&mask=on&variance=on&filter=HSC-'
            + str(band.upper())
            + '&tract=&rerun=s18a_wide']
 
@@ -173,7 +312,7 @@ def gen_url_hsc_s16a(ra, dec, w, h, band, pixel_unit=False):
             + str(w*HSC_pixel_scale)
             + 'asec&sh='
             + str(h*HSC_pixel_scale)
-            + 'asec&type=coadd&image=on&variance=on&filter=HSC-'
+            + 'asec&type=coadd&image=on&mask=on&variance=on&filter=HSC-'
             + str(band.upper())
             + '&tract=&rerun=s16a_wide2']
     else:
@@ -185,10 +324,58 @@ def gen_url_hsc_s16a(ra, dec, w, h, band, pixel_unit=False):
            + str(w)
            + 'asec&sh='
            + str(h)
-           + 'asec&type=coadd&image=on&variance=on&filter=HSC-'
+           + 'asec&type=coadd&image=on&mask=on&variance=on&filter=HSC-'
            + str(band.upper())
            + '&tract=&rerun=s16a_wide2']
 
+# Generate mock images
+def h5_gen_mock_image(h5_path, pixel_scale, i_gal_flux, i_gal_rh, i_gal_q, i_sersic_index, i_gal_beta, i_psf_rh, groupname=None):
+    import h5py
+    import galsim
+    f = h5py.File(h5_path, 'r+')
+    field = f['background']['image'][:]
+    w = wcs.WCS(f['background']['image_header'].value)
+    cen = field.shape[0] / 2  # Central position of the image
+    print 'Size (in pixel):', [field.shape[0], field.shape[1]]
+    print 'Angular size (in arcsec):', [
+        field.shape[0] * pixel_scale, field.shape[1] * pixel_scale
+    ]
+    print 'The center of this image:', [field.shape[0] / 2, field.shape[1] / 2]
+    # Define sersic galaxy
+    gal = galsim.Sersic(i_sersic_index, half_light_radius=i_gal_rh, flux=i_gal_flux)
+    # Shear the galaxy by some value.
+    # q, beta      Axis ratio and position angle: q = b/a, 0 < q < 1
+    gal_shape = galsim.Shear(q=i_gal_q, beta=i_gal_beta * galsim.degrees)
+    gal = gal.shear(gal_shape)
+    # Define the PSF profile
+    #psf = galsim.Moffat(beta=psf_beta, flux=1., half_light_radius=psf_rh)
+    psf = galsim.Gaussian(sigma=i_psf_rh, flux=1.)
+    # Convolve galaxy with PSF
+    final = galsim.Convolve([gal, psf])
+    # Draw the image with a particular pixel scale.
+    image = final.drawImage(scale=pixel_scale, nx=field.shape[1], ny=field.shape[0])
+    
+    if groupname is None:
+        groupname = 'n' + str(i_sersic_index)
+
+    g1 = f['ModelImage'].create_group(groupname)
+    g1.create_dataset('modelimage', data=image.array)
+
+    # Generate mock image
+    mock_img = image.array + field
+
+    g2 = f['MockImage'].create_group(groupname)
+    g2.create_dataset('mockimage', data=mock_img)
+
+    # Plot fake galaxy and the composite mock image
+    fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(12, 6))
+    display_single(image.array, ax=ax1, scale_bar_length=10)
+    display_single(mock_img, scale_bar_length=10, ax=ax2)
+    plt.show(block=False)
+    plt.subplots_adjust(wspace=0.)
+    
+    
+    f.close()
 
 # Calculate physical size of a given redshift
 def phys_size(redshift, is_print=True, H0=70, Omegam=0.3, Omegal=0.7):
@@ -294,7 +481,8 @@ def rebin(array, dimensions=None, scale=None):
     return result
 
 # Extract objects for a given image
-def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minarea=5, deblend_nthresh=32, deblend_cont=0.005, clean_param=1.0):
+def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minarea=5, 
+    deblend_nthresh=32, deblend_cont=0.005, clean_param=1.0):
     '''Extract objects for a given image, using `sep`.
 
     Parameters:
@@ -510,11 +698,11 @@ def evaluate_sky_dragonfly(img, b=15, f=3, sigma=1.5, radius=1.0, threshold=0.05
     print("# Mean Sky / RMS Sky = %10.5f / %10.5f" % (bkg_global.globalback, bkg_global.globalrms))
     return bkg_global
 
-def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, sma_ini=10.0, sma_max=900.0, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, outPre=None):
+def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, 
+    sma_ini=10.0, sma_max=900.0, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, outPre=None):
     # Centeral coordinate 
     img_data = fits.open(img_path)[0].data
-    cen = img_data.shape[0]/2
-    x_cen, y_cen = cen, cen
+    x_cen, y_cen = img_data.shape[0]/2, img_data.shape[1]/2
 
     # Initial guess of axis ratio and position angle 
     ba_ini, pa_ini = 0.5, 90.0
@@ -634,7 +822,8 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, sm
                                  suffix='', location='./Data/', outPre=outPre+'-ellip-3')
     return ell_2, ell_3
 
-def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50, physical_scale=None, text=None, ax=None, contrast=None, circle=None):
+def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50, 
+    physical_scale=None, text=None, ax=None, contrast=None, circle=None):
     """Visualize the isophotes."""
     if ax is None:
         fig = plt.figure(figsize=(12, 12))
@@ -695,7 +884,9 @@ def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50,
     if ax is not None:
         return ax
 
-def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_min=1.0, x_max=4.0, physical_unit=False, show_dots=False, vertical_line=True, vertical_pos=100, linecolor='firebrick', label=None):
+def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, 
+    x_min=1.0, x_max=4.0, physical_unit=False, show_dots=False, vertical_line=True, 
+    vertical_pos=100, linecolor='firebrick', label=None):
     """Display the 1-D profiles."""
     if ax is None:
         fig = plt.figure(figsize=(10, 10))
@@ -854,7 +1045,9 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, x_mi
 
 
 # You can plot 1-D SBP using this
-def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0, x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, vertical_line=False, vertical_pos=100, linecolor='firebrick', linestyle='-', label='SBP'):
+def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0, 
+    x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, 
+    vertical_line=False, vertical_pos=100, linecolor='firebrick', linestyle='-', label='SBP'):
     """Display the 1-D profiles."""
     if ax is None:
         fig = plt.figure(figsize=(10, 10))
@@ -919,7 +1112,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0, x
     ax1.set_ylabel(ylabel, fontsize=30)
     ax1.invert_yaxis()
     if label is not None:
-        ax1.legend(fontsize=25, frameon=False)
+        ax1.legend(fontsize=25, frameon=False, loc='upper right')
     
     if physical_unit is True:
         ax4 = ax1.twiny() 
