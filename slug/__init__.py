@@ -64,7 +64,7 @@ SkyObj_aperture_dic = { '20': 5.0,
                         '118': 35.0 }
 
 # Calculate mean/median value of nearby sky objects
-def skyobj_value(path, cen_ra, cen_dec, matching_radius, aperture, print_number=False, 
+def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius, aperture, print_number=False, 
                             sigma_upper=3., sigma_lower=3., showmedian=False):
     '''Calculate the mean/median value of nearby SKY OBJECTS around a given RA and DEC.
     Importing sky objects catalog can be really slow.
@@ -88,7 +88,6 @@ def skyobj_value(path, cen_ra, cen_dec, matching_radius, aperture, print_number=
     from astropy.coordinates import SkyCoord
     from astropy.stats import sigma_clip
 
-    sky_cat = Table.read(path, format='fits') # This step costs a lot of time (since the catalog is really large)
     ra, dec = cen_ra, cen_dec
     bkg_pos = SkyCoord(ra=ra * u.degree, dec=dec * u.degree, frame='icrs')
     catalog = SkyCoord(ra=sky_cat['i_ra'] * u.degree, dec=sky_cat['i_dec'] * u.degree)
