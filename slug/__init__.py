@@ -352,7 +352,7 @@ def h5_gen_mock_image(h5_path, pixel_scale, i_gal_flux, i_gal_rh, i_gal_q, i_ser
     # Convolve galaxy with PSF
     final = galsim.Convolve([gal, psf])
     # Draw the image with a particular pixel scale.
-    image = final.drawImage(scale=pixel_scale, nx=field.shape[1], ny=field.shape[0])
+    image = final.drawImage(scale=pixel_scale, nx=field.shape[0], ny=field.shape[1])
     
     if groupname is None:
         groupname = 'n' + str(i_sersic_index)
