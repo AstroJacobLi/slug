@@ -1,4 +1,5 @@
 # Import packages
+from __future__ import division
 import os
 import copy
 import slug
@@ -335,11 +336,11 @@ def h5_gen_mock_image(h5_path, pixel_scale, i_gal_flux, i_gal_rh, i_gal_q, i_ser
     field = f['background']['image'][:]
     w = wcs.WCS(f['background']['image_header'].value)
     cen = field.shape[0] / 2  # Central position of the image
-    print 'Size (in pixel):', [field.shape[0], field.shape[1]]
-    print 'Angular size (in arcsec):', [
+    print ('Size (in pixel):', [field.shape[0], field.shape[1]])
+    print ('Angular size (in arcsec):', [
         field.shape[0] * pixel_scale, field.shape[1] * pixel_scale
-    ]
-    print 'The center of this image:', [field.shape[0] / 2, field.shape[1] / 2]
+    ])
+    print ('The center of this image:', [field.shape[0] / 2, field.shape[1] / 2])
     # Define sersic galaxy
     gal = galsim.Sersic(i_sersic_index, half_light_radius=i_gal_rh, flux=i_gal_flux)
     # Shear the galaxy by some value.
@@ -352,7 +353,7 @@ def h5_gen_mock_image(h5_path, pixel_scale, i_gal_flux, i_gal_rh, i_gal_q, i_ser
     # Convolve galaxy with PSF
     final = galsim.Convolve([gal, psf])
     # Draw the image with a particular pixel scale.
-    image = final.drawImage(scale=pixel_scale, nx=field.shape[0], ny=field.shape[1])
+    image = final.drawImage(scale=pixel_scale, nx=field.shape[1], ny=field.shape[0])
     
     if groupname is None:
         groupname = 'n' + str(i_sersic_index)
@@ -701,7 +702,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
     sma_ini=10.0, sma_max=900.0, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, outPre=None):
     # Centeral coordinate 
     img_data = fits.open(img_path)[0].data
-    x_cen, y_cen = img_data.shape[0]/2, img_data.shape[1]/2
+    x_cen, y_cen = int(img_data.shape[1]/2), int(img_data.shape[0]/2)
 
     # Initial guess of axis ratio and position angle 
     ba_ini, pa_ini = 0.5, 90.0
@@ -794,7 +795,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
         ba_ini = 1 - mean_e
     pa_ini = mean_pa
 
-    step = 0.2
+    step = 0.1
 
     ell_3, bin_3 = galSBP.galSBP(img_path, 
                                  mask=msk_path,
