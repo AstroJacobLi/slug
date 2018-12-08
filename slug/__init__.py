@@ -699,7 +699,7 @@ def evaluate_sky_dragonfly(img, b=15, f=3, sigma=1.5, radius=1.0, threshold=0.05
     return bkg_global
 
 def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, 
-    sma_ini=10.0, sma_max=900.0, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, outPre=None):
+    sma_ini=10.0, sma_max=900.0, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, r_interval=(20, 50), outPre=None):
     # Centeral coordinate 
     img_data = fits.open(img_path)[0].data
     x_cen, y_cen = int(img_data.shape[1]/2), int(img_data.shape[0]/2)
@@ -772,8 +772,8 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
                                  suffix='', location='./Data/', outPre=outPre+'-ellip-2')
 
     # Calculate the mean ellipticity and position angle in 20 kpc ~ 50 kpc
-    interval = np.intersect1d(np.where(ell_2['sma'].data*pixel_scale*phys_size > 20),
-               np.where(ell_2['sma'].data*pixel_scale*phys_size < 50))
+    interval = np.intersect1d(np.where(ell_2['sma'].data*pixel_scale*phys_size > r_interval[0]),
+               np.where(ell_2['sma'].data*pixel_scale*phys_size < r_interval[1]))
     mean_e = ell_2['ell'][interval].mean()
     stdev_e = ell_2['ell'][interval].std()
     mean_pa = ell_2['pa_norm'][interval].mean()
