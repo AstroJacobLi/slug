@@ -25,6 +25,9 @@ from kungpao import io
 from kungpao.display import display_single, IMG_CMAP, SEG_CMAP
 from kungpao.galsbp import galSBP
 
+# Version
+__version__ = "0.1"
+
 # Define pixel scale of different surveys, unit = arcsec / pixel
 HSC_pixel_scale = 0.168
 DECaLS_pixel_scale = 0.262
@@ -63,6 +66,26 @@ SkyObj_aperture_dic = { '20': 5.0,
                         '57': 17.0,
                         '84': 25.0,
                         '118': 35.0 }
+
+
+__all__ = ['h5_rewrite_dataset', 'str2dic', 'skyobj_value', 'make_HSC_detect_mask', 
+           'diagnose_image_mask','convert_HSC_binary_mask', 'print_HSC_binary_mask', 'gen_url_decals', 
+           'login_naoj_server', 'gen_url_hsc_s18a', 'gen_url_hsc_s16a', 'h5_gen_mock_imag', 
+           'phys_size', 'rebin', 'extract_obj', 'make_binary_mask', 'evaluate_sky', 
+           'evaluate_sky_dragonfly', 'run_SBP', 'display_isophote', 'SBP_shape', 'SBP_single', 'h5_print_attrs']
+
+# rewrite dataset
+def h5_rewrite_dataset(mother_group, key, new_data):
+    if np.any(np.array(mother_group.keys())==key):
+        mother_group.__delitem__(key)
+        mother_group.create_dataset(key, data=new_data)
+    else:
+        mother_group.create_dataset(key, data=new_data)
+
+# string to dictionary
+def str2dic(string):
+    import yaml
+    return yaml.load(string)
 
 # Calculate mean/median value of nearby sky objects
 def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius, aperture, print_number=False, 
