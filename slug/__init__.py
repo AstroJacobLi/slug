@@ -74,6 +74,108 @@ __all__ = ['h5_rewrite_dataset', 'str2dic', 'skyobj_value', 'make_HSC_detect_mas
            'phys_size', 'rebin', 'extract_obj', 'make_binary_mask', 'evaluate_sky', 
            'evaluate_sky_dragonfly', 'run_SBP', 'display_isophote', 'SBP_shape', 'SBP_single', 'h5_print_attrs']
 
+
+# Add sources to tractor
+def add_tractor_sources(obj_cat, sources, w, shape_method='manual'):
+    from tractor import NullWCS, NullPhotoCal, ConstantSky
+    from tractor.galaxy import GalaxyShape, DevGalaxy, ExpGalaxy
+    from tractor.psf import Flux, PixPos, PointSource, PixelizedPSF
+    from tractor.ellipses import EllipseE
+    obj_type = np.array(map(lambda st: st.rstrip(' '), obj_cat['type']))
+    comp_galaxy = obj_cat[obj_type == 'COMP']
+    dev_galaxy = obj_cat[obj_type == 'DEV']
+    exp_galaxy = obj_cat[obj_type == 'EXP']
+    rex_galaxy = obj_cat[obj_type == 'REX']
+    psf_galaxy = obj_cat[np.logical_or(obj_type =='PSF', obj_type=='   ')]
+
+    if shape_method is 'manual':
+        # Using manually measured shapes
+        if sources is None:
+            sources = []
+        for obj in comp_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(
+                CompositeGalaxy(
+                    PixPos(pos_x, pos_y), Flux(0.4 * obj['flux']),
+                    GalaxyShape(obj['a_arcsec'] * 0.8, 0.9,
+                                90.0 + obj['theta'] * 180.0 / np.pi),
+                    Flux(0.6 * obj['flux']),
+                    GalaxyShape(obj['a_arcsec'], obj['b_arcsec'] / obj['a_arcsec'],
+                                90.0 + obj['theta'] * 180.0 / np.pi)))
+        for obj in dev_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(
+                DevGalaxy(
+                    PixPos(pos_x, pos_y), Flux(obj['flux']),
+                    GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
+                                (90.0 + obj['theta'] * 180.0 / np.pi))))
+        for obj in exp_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(
+                ExpGalaxy(
+                    PixPos(pos_x, pos_y), Flux(obj['flux']),
+                    GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
+                                (90.0 + obj['theta'] * 180.0 / np.pi))))
+        for obj in rex_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(
+                ExpGalaxy(
+                    PixPos(pos_x, pos_y), Flux(obj['flux']),
+                    GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
+                                (90.0 + obj['theta'] * 180.0 / np.pi))))
+        for obj in psf_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(PointSource(PixPos(pos_x, pos_y), Flux(obj['flux'])))
+
+        print("Now you have %d sources" % len(sources))
+
+    elif shape_method is 'decals':
+        ## Using DECaLS shapes
+        if sources is None:
+            sources = []
+        for obj in comp_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(
+                CompositeGalaxy(
+                    PixPos(pos_x, pos_y), Flux(0.4 * obj['flux']),
+                    EllipseE(obj['shapeexp_r'], obj['shapeexp_e1'],
+                             obj['shapeexp_e2']), Flux(0.6 * obj['flux']),
+                    EllipseE(obj['shapedev_r'], obj['shapedev_e1'],
+                             obj['shapedev_e2'])))
+        for obj in dev_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(
+                DevGalaxy(
+                    PixPos(pos_x, pos_y), Flux(obj['flux']),
+                    EllipseE(obj['shapedev_r'], obj['shapedev_e1'],
+                             -obj['shapedev_e2'])))
+        for obj in exp_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(
+                ExpGalaxy(
+                    PixPos(pos_x, pos_y), Flux(obj['flux']),
+                    EllipseE(obj['shapeexp_r'], obj['shapeexp_e1'],
+                             -obj['shapeexp_e2'])))
+        for obj in rex_galaxy:
+            #if obj['point_source'] > 0.0:
+            #            sources.append(PointSource(PixPos(w.wcs_world2pix([[obj['ra'], obj['dec']]],1)[0]),
+            #                                               Flux(obj['flux'])))
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(
+                ExpGalaxy(
+                    PixPos(pos_x, pos_y), Flux(obj['flux']),
+                    EllipseE(obj['shapeexp_r'], obj['shapeexp_e1'],
+                             -obj['shapeexp_e2'])))
+
+        for obj in psf_galaxy:
+            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
+            sources.append(PointSource(PixPos(pos_x, pos_y), Flux(obj['flux'])))
+
+        print("Now you have %d sources" % len(sources))
+    else:
+         raise ValueError('Cannot use this shape method') 
+    return sources
+
 # rewrite dataset
 def h5_rewrite_dataset(mother_group, key, new_data):
     if np.any(np.array(mother_group.keys())==key):
@@ -156,6 +258,40 @@ def make_HSC_detect_mask(bin_msk, objects, segmap, r=10.0, radius=1.5, threshold
                     cen_obj['theta'], r=r)
     from astropy.convolution import convolve, Gaussian2DKernel
     HSC_mask = (TDmask[:, :, 5] + TDmask[:, :, 9]).astype(bool)*(~cen_mask)
+    # Convolve the image with a Gaussian kernel with the width of 1.5 pixel
+    cvl = convolve(HSC_mask.astype('float'), Gaussian2DKernel(radius))
+    HSC_detect_mask = cvl >= threshold
+    return HSC_detect_mask
+
+# Make HSC bright star mask
+def make_HSC_bright_obj_mask(bin_msk, objects, segmap, r=10.0, radius=1.5, threshold=0.01):
+    '''Make HSC bright star mask, 
+    based on HSC binary mask flags.
+    
+    Parameters:
+    -----------
+    bin_msk: 2-D np.array, can be loaded from HSC image cutouts
+    objects: table, returned from sep.extract_obj
+    segmap: 2-D np.array, returned from sep.extract_obj
+    r: float, blow-up parameter
+    radius: float, convolution radius
+    threshold: float, threshold of making mask after convolution
+
+    Returns:
+    -----------
+    HSC_detect_mask: 2-D boolean np.array
+    
+    Related Function:
+    -----------------
+    convert_HSC_binary_mask(bin_msk)
+    '''
+    TDmask = slug.convert_HSC_binary_mask(bin_msk)
+    cen_mask = np.zeros(bin_msk.shape, dtype=np.bool)
+    cen_obj = objects[segmap[int(bin_msk.shape[0] / 2.), int(bin_msk.shape[1] / 2.)] - 1]
+    sep.mask_ellipse(cen_mask, cen_obj['x'], cen_obj['y'], cen_obj['a'], cen_obj['b'],
+                    cen_obj['theta'], r=r)
+    from astropy.convolution import convolve, Gaussian2DKernel
+    HSC_mask = (TDmask[:, :, 9]).astype(bool)*(~cen_mask)
     # Convolve the image with a Gaussian kernel with the width of 1.5 pixel
     cvl = convolve(HSC_mask.astype('float'), Gaussian2DKernel(radius))
     HSC_detect_mask = cvl >= threshold
