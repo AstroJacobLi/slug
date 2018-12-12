@@ -381,7 +381,10 @@ def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
 # Login NAOJ server
 def login_naoj_server(config_path):
     ''' Runs well under python 2. In python 3, there's a widget 
-    to enter username and password directly in Jupyter Notebook.'''
+    to enter username and password directly in Jupyter Notebook.
+    In the configuration file, I wrote username in the first line, 
+    and password in the second line.
+    '''
     import urllib
     import urllib2
     # Import HSC username and password
@@ -426,7 +429,7 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False, only_image=False):
         if_variance_mask = 'off'
     else:
         if_variance_mask = 'on'
-        
+
     if pixel_unit:
         return ['https://hscdata.mtk.nao.ac.jp/das_quarry/dr2.1/cgi-bin/cutout?ra='
             + str(ra) 
