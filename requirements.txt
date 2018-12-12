@@ -1,0 +1,16 @@
+numpy
+scipy
+matplotlib
+astropy
+yaml
+sep
+kungpao
+urllib
+urllib2
+galsim
+tractor
+photutils
+palettable
+tqdm
+cosmology
+astroquery
