@@ -407,7 +407,7 @@ def login_naoj_server(config_path):
     urllib2.install_opener(opener)
 
 # Generate HSC image url
-def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False):
+def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False, only_image=False):
     '''Generate image url of given position.
     
     Parameters:
@@ -422,6 +422,11 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False):
     -----------
     url: list of str, url of S18A image.  
     '''
+    if only_image:
+        if_variance_mask = 'off'
+    else:
+        if_variance_mask = 'on'
+        
     if pixel_unit:
         return ['https://hscdata.mtk.nao.ac.jp/das_quarry/dr2.1/cgi-bin/cutout?ra='
             + str(ra) 
@@ -431,7 +436,7 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False):
             + str(w*HSC_pixel_scale)
             + 'asec&sh='
             + str(h*HSC_pixel_scale)
-            + 'asec&type=coadd&image=on&mask=on&variance=on&filter=HSC-'
+            + 'asec&type=coadd&image=on&mask=' + if_variance_mask + '&variance=' + if_variance_mask + '&filter=HSC-'
             + str(band.upper())
             + '&tract=&rerun=s18a_wide']
     else:        
@@ -443,7 +448,7 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False):
            + str(w)
            + 'asec&sh='
            + str(h)
-           + 'asec&type=coadd&image=on&mask=on&variance=on&filter=HSC-'
+           + 'asec&type=coadd&image=on&mask=' + if_variance_mask + '&variance=' + if_variance_mask + '&filter=HSC-'
            + str(band.upper())
            + '&tract=&rerun=s18a_wide']
 
