@@ -15,6 +15,7 @@ You can install all the requirements by:
 - scipy
 - matplotlib
 - sep
+- [tractor](https://github.com/dstndstn/tractor)
 - [kungpao](https://github.com/dr-guangtou/kungpao)
 - [galsim](https://github.com/GalSim-developers/GalSim)
 - [astropy](http://www.astropy.org)
