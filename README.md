@@ -8,7 +8,8 @@ Author: Jiaxuan Li (UCSC, PKU)
 
 ## Requirements:
 You can install all the requirements by
-'''pip install -r requirements.txt'''
+```pip install -r requirements.txt```
+
 
 - numpy
 - scipy
