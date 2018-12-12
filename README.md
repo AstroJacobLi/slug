@@ -7,18 +7,19 @@ Author: Jiaxuan Li (UCSC, PKU)
 
 
 ## Requirements:
-You can install all the requirements by
-```pip install -r requirements.txt```
+You can install all the requirements by:
 
+`pip install -r requirements.txt`
 
 - numpy
 - scipy
 - matplotlib
 - sep
 - [kungpao](https://github.com/dr-guangtou/kungpao)
-- astropy
-- photutils
-- palettable
-- tqdm
+- [galsim](https://github.com/GalSim-developers/GalSim)
+- [astropy](http://www.astropy.org)
+- [photutils](https://photutils.readthedocs.io/en/stable/)
+- [palettable](https://pypi.org/project/palettable/)
+- [tqdm](https://pypi.org/project/tqdm/)
 - [cosmology](https://github.com/esheldon/cosmology)
 - [astroquery](https://astroquery.readthedocs.io/en/latest/)
