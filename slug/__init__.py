@@ -78,7 +78,7 @@ __all__ = ['h5_rewrite_dataset', 'str2dic', 'skyobj_value', 'make_HSC_detect_mas
 # Add sources to tractor
 def add_tractor_sources(obj_cat, sources, w, shape_method='manual'):
     from tractor import NullWCS, NullPhotoCal, ConstantSky
-    from tractor.galaxy import GalaxyShape, DevGalaxy, ExpGalaxy
+    from tractor.galaxy import GalaxyShape, DevGalaxy, ExpGalaxy, CompositeGalaxy
     from tractor.psf import Flux, PixPos, PointSource, PixelizedPSF
     from tractor.ellipses import EllipseE
     obj_type = np.array(map(lambda st: st.rstrip(' '), obj_cat['type']))
@@ -230,7 +230,7 @@ def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius, aperture, print_numb
         return np.mean(x)
 
 # Make HSC detection and bright star mask
-def make_HSC_detect_mask(bin_msk, objects, segmap, r=10.0, radius=1.5, threshold=0.01):
+def make_HSC_detect_mask(bin_msk, img, objects, segmap, r=10.0, radius=1.5, threshold=0.01):
     '''Make HSC detection and bright star mask, 
     based on HSC binary mask flags.
     
@@ -251,10 +251,14 @@ def make_HSC_detect_mask(bin_msk, objects, segmap, r=10.0, radius=1.5, threshold
     -----------------
     convert_HSC_binary_mask(bin_msk)
     '''
+    import sep
     TDmask = slug.convert_HSC_binary_mask(bin_msk)
     cen_mask = np.zeros(bin_msk.shape, dtype=np.bool)
     cen_obj = objects[segmap[int(bin_msk.shape[0] / 2.), int(bin_msk.shape[1] / 2.)] - 1]
-    sep.mask_ellipse(cen_mask, cen_obj['x'], cen_obj['y'], cen_obj['a'], cen_obj['b'],
+    
+    fraction_radius = sep.flux_radius(img, cen_obj['x'], cen_obj['y'], 10*cen_obj['a'], 0.5)[0]
+    ba = np.divide(cen_obj['b'], cen_obj['a'])
+    sep.mask_ellipse(cen_mask, cen_obj['x'], cen_obj['y'], fraction_radius, fraction_radius * ba,
                     cen_obj['theta'], r=r)
     from astropy.convolution import convolve, Gaussian2DKernel
     HSC_mask = (TDmask[:, :, 5] + TDmask[:, :, 9]).astype(bool)*(~cen_mask)
@@ -335,6 +339,15 @@ def print_HSC_binary_mask(TDmsk, path):
         _ = display_single(TDmsk[:,:,i].astype(float), cmap=SEG_CMAP, scale='linear')
         plt.savefig(path + 'HSC-bin-mask-' + HSC_binray_mask_dict[i] + '.png')
 
+
+
+# Generate DECaLS tractor url, given brickname
+def gen_url_decals_tractor(brickname):
+    return [
+        'http://portal.nersc.gov/project/cosmo/data/legacysurvey/dr7/tractor/'
+        + brickname[:3] + '/tractor-' + brickname + '.fits'
+    ]
+
 # Generate DECaLS image url
 def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
     '''Generate image url of given position.
@@ -394,6 +407,7 @@ def login_naoj_server(config_path):
     # Create a password manager
     password_mgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
 
+    ###### For downloading images ######
     # Add the username and password.
     top_level_url = 'https://hscdata.mtk.nao.ac.jp/das_quarry/dr2.1/'
     password_mgr.add_password(None, top_level_url, username, password)
@@ -409,6 +423,21 @@ def login_naoj_server(config_path):
     # Now all calls to urllib2.urlopen use our opener.
     urllib2.install_opener(opener)
 
+    ###### For downloading PSFs ######
+    # Add the username and password.
+    top_level_url = 'https://hscdata.mtk.nao.ac.jp/psf/6/'
+    password_mgr.add_password(None, top_level_url, username, password)
+    handler = urllib2.HTTPBasicAuthHandler(password_mgr)
+
+    # create "opener" (OpenerDirector instance)
+    opener = urllib2.build_opener(handler)
+
+    # use the opener to fetch a URL
+    opener.open(top_level_url)
+
+    # Install the opener.
+    # Now all calls to urllib2.urlopen use our opener.
+    urllib2.install_opener(opener)
 # Generate HSC image url
 def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False, only_image=False):
     '''Generate image url of given position.
@@ -420,7 +449,9 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False, only_image=False):
     w: float, width (arcsec)
     h: float, height (arcsec)
     band: string, such as 'r'
-    
+    pixel_unit: boolean, if your width and height are in pixel unit
+    only_image: boolean, if you only want image layer
+
     Returns:
     -----------
     url: list of str, url of S18A image.  
@@ -454,6 +485,32 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False, only_image=False):
            + 'asec&type=coadd&image=on&mask=' + if_variance_mask + '&variance=' + if_variance_mask + '&filter=HSC-'
            + str(band.upper())
            + '&tract=&rerun=s18a_wide']
+
+
+# Generate HSC PSF url
+def gen_psf_url_hsc_s18a(ra, dec, band):
+    '''Generate PSF url of given position.
+    
+    Parameters:
+    -----------
+    ra: float, RA (degrees)
+    dec: float, DEC (degrees)
+    band: string, such as 'r'
+    
+    Returns:
+    -----------
+    url: list of str, url of S18A PSF.  
+    '''
+
+    return ['https://hscdata.mtk.nao.ac.jp/psf/6/cgi/getpsf?ra='
+        + str(ra) 
+        + '&dec='
+        + str(dec)
+        + '&filter='
+        + str(band)
+        + '&rerun=s18a_wide'
+        + '&tract=&patch=&type=coadd']
+
 
 def gen_url_hsc_s16a(ra, dec, w, h, band, pixel_unit=False):
     '''Generate image url of given position.
@@ -496,12 +553,29 @@ def gen_url_hsc_s16a(ra, dec, w, h, band, pixel_unit=False):
            + '&tract=&rerun=s16a_wide2']
 
 # Generate mock images
-def h5_gen_mock_image(h5_path, pixel_scale, i_gal_flux, i_gal_rh, i_gal_q, i_sersic_index, i_gal_beta, i_psf_rh, groupname=None):
+def h5_gen_mock_image(h5_path, pixel_scale, band, i_gal_flux, i_gal_rh, i_gal_q, i_sersic_index, i_gal_beta, i_psf_rh, groupname=None):
+    '''
+    Generate mock images.
+
+    Parameters:
+    -----------
+    h5_path: string, the path of your h5 file.
+    pixel_scale: float, in the unit of arcsec/pixel.
+    band: string, such as 'r-band'.
+    i_gal-flux: float, input galsim flux of the fake galaxy.
+    i_gal_rh: float, input half-light-radius of the fake galaxy.
+    i_gal_q: float, input b/a.
+    i_sersic_index: float, input sersic index.
+    i_gal_beta: float, input position angle (in degrees).
+    i_psf_rh: float, the half-light-radius of PSF.
+    groupname: string, such as 'model-0'.
+
+    '''
     import h5py
     import galsim
     f = h5py.File(h5_path, 'r+')
-    field = f['background']['image'][:]
-    w = wcs.WCS(f['background']['image_header'].value)
+    field = f['Background'][band]['image'][:]
+    w = wcs.WCS(f['Background'][band]['image_header'].value)
     cen = field.shape[0] / 2  # Central position of the image
     print ('Size (in pixel):', [field.shape[0], field.shape[1]])
     print ('Angular size (in arcsec):', [
@@ -524,14 +598,14 @@ def h5_gen_mock_image(h5_path, pixel_scale, i_gal_flux, i_gal_rh, i_gal_q, i_ser
     
     if groupname is None:
         groupname = 'n' + str(i_sersic_index)
-
-    g1 = f['ModelImage'].create_group(groupname)
+    
+    g1 = f['ModelImage'][band].create_group(groupname)
     g1.create_dataset('modelimage', data=image.array)
 
     # Generate mock image
     mock_img = image.array + field
 
-    g2 = f['MockImage'].create_group(groupname)
+    g2 = f['MockImage'][band].create_group(groupname)
     g2.create_dataset('mockimage', data=mock_img)
 
     # Plot fake galaxy and the composite mock image
@@ -540,8 +614,6 @@ def h5_gen_mock_image(h5_path, pixel_scale, i_gal_flux, i_gal_rh, i_gal_q, i_ser
     display_single(mock_img, scale_bar_length=10, ax=ax2)
     plt.show(block=False)
     plt.subplots_adjust(wspace=0.)
-    
-    
     f.close()
 
 # Calculate physical size of a given redshift
