@@ -1,0 +1,874 @@
+SIMPLE  =                    T / Standard FITS format                           BITPIX  =                    8 / Character data                                 NAXIS   =                    1 / Text string                                    NAXIS1  =                37150 / Number of characters                           VOTMETA =                    T / Table metadata in VOTable format               EXTEND  =                    T / There are standard extensions                  COMMENT                                                                         COMMENT The data in this primary HDU consists of bytes which                    COMMENT comprise a VOTABLE document.                                            COMMENT The VOTable describes the metadata of the table contained               COMMENT in the following BINTABLE extension.                                    COMMENT Such a BINTABLE extension can be used on its own as a perfectly         COMMENT good table, but the information from this HDU may provide some          COMMENT useful additional metadata.                                             COMMENT There is one following BINTABLE.                                        NTABLE  =                    1 / Number of following BINTABLE HDUs              END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             <?xml version='1.0'?>
+<VOTABLE version="1.3"
+ xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+<!--
+ !  VOTable written by STIL version 3.3-1 (uk.ac.starlink.votable.VOTableWriter)
+ !  at 2018-12-01T04:32:49
+ !-->
+<RESOURCE>
+<!-- Describes BINTABLE extensions in the following HDU.-->
+<TABLE name="Joined" nrows="87">
+<DESCRIPTION>
+This table provides stellar masses, restframe photometry, and other
+ancillary stellar population parameters from stellar population fits
+to restframe u-Y SEDs (using aperture-matched photometry) for all
+GAMA DR3 galaxies with z &lt; 0.65 galaxies in the equatorial survey
+regions.
+</DESCRIPTION>
+<PARAM arraysize="7" datatype="char" name="DMU" ucd="meta.id.parent" value="SpecCat">
+<DESCRIPTION>DMU that produced this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="3" datatype="char" name="Version" ucd="meta.version" value="v27">
+<DESCRIPTION>Version of this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="10" datatype="char" name="Date" ucd="time.creation" value="2015-05-21">
+<DESCRIPTION>Publication date</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="39" datatype="char" name="Contact" ucd="meta.curation" value="Joe Liske &lt;jochen.liske@uni-hamburg.de&gt;">
+<DESCRIPTION>Author or contact person</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="16" datatype="char" name="DMU" ucd="meta.id.parent" value="SersicPhotometry">
+<DESCRIPTION>DMU that produced this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="3" datatype="char" name="Version" ucd="meta.version" value="v09">
+<DESCRIPTION>Version of this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="10" datatype="char" name="Date" ucd="time.creation" value="2015-12-17">
+<DESCRIPTION>Publication date</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="34" datatype="char" name="Contact" ucd="meta.curation" value="Lee Kelvin &lt;l.s.kelvin@ljmu.ac.uk&gt;">
+<DESCRIPTION>Author or contact person</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="33" datatype="char" name="Match type" value="Pair match; Best match, symmetric">
+<DESCRIPTION>Type of match which created this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="11" datatype="char" name="Match algorithm" value="Exact Value">
+<DESCRIPTION>Matching algorithm which created this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="82" datatype="char" name="Join Type" value="1 and 2 (An output row for each row represented in both input tables (INNER JOIN))">
+<DESCRIPTION>Determines which rows appear in output table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="15" datatype="char" name="First input table" value="4: SpecObj.fits"/>
+<PARAM arraysize="21" datatype="char" name="Second input table" value="5: SersicCatSDSS.fits"/>
+<PARAM arraysize="13" datatype="char" name="DMU" ucd="meta.id.parent" value="StellarMasses">
+<DESCRIPTION>DMU that produced this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="3" datatype="char" name="Version" ucd="meta.version" value="v19">
+<DESCRIPTION>Version of this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="10" datatype="char" name="Date" ucd="time.creation" value="2016-09-27">
+<DESCRIPTION>Publication date</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="36" datatype="char" name="Contact" ucd="meta.curation" value="Edward Taylor &lt;entaylor@swin.edu.au&gt;">
+<DESCRIPTION>Author or contact person</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="33" datatype="char" name="Match type" value="Pair match; Best match, symmetric">
+<DESCRIPTION>Type of match which created this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="11" datatype="char" name="Match algorithm" value="Exact Value">
+<DESCRIPTION>Matching algorithm which created this table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="82" datatype="char" name="Join Type" value="1 and 2 (An output row for each row represented in both input tables (INNER JOIN))">
+<DESCRIPTION>Determines which rows appear in output table</DESCRIPTION>
+</PARAM>
+<PARAM arraysize="13" datatype="char" name="First input table" value="6: match(4,5)"/>
+<PARAM arraysize="21" datatype="char" name="Second input table" value="7: StellarMasses.fits"/>
+<FIELD datatype="int" name="CATAID" ucd="meta.id;meta.main">
+<DESCRIPTION>Unique ID of GAMA object</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD arraysize="33" datatype="char" name="SPECID" ucd="meta.id.cross;spect">
+<DESCRIPTION>ID of best matched spectrum</DESCRIPTION>
+</FIELD>
+<FIELD arraysize="9" datatype="char" name="SURVEY" ucd="meta.dataset">
+<DESCRIPTION>Survey best matched spectrum originated from</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="RA" ucd="pos.eq.ra" unit="deg">
+<DESCRIPTION>RA of spectrum (J2000)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="DEC" ucd="pos.eq.dec" unit="deg">
+<DESCRIPTION>DEC of spectrum (J2000)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="Z" ucd="src.redshift">
+<DESCRIPTION>Heliocentric redshift</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="NQ" ucd="meta.code.qual;src.redshift">
+<DESCRIPTION>Normalised redshift quality (use nQ &gt; 2 for science)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PROB" ucd="stat.probability;src.redshift">
+<DESCRIPTION>Probability that redshift is correct</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="R_PETRO" ucd="phot.mag;em.opt.R" unit="mag">
+<DESCRIPTION>Extinction-corrected SDSS DR7 Petrosian mag</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="SURVEY_OLDCLASS" ucd="meta.code.class">
+<DESCRIPTION>Useful for selecting samples, see notes</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="short" name="SURVEY_CLASS" ucd="meta.code.class">
+<DESCRIPTION>Useful for selecting samples, see notes</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="CENFLUX_u" ucd="phot.count;em.opt.u" unit="counts">
+<DESCRIPTION>Central pixel flux value prior to background estimation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="BACKFLUX_u" ucd="phot.count;em.opt.u" unit="counts">
+<DESCRIPTION>SEx subtracted background at object position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PSFNUM_u" ucd="meta.number;em.opt.u">
+<DESCRIPTION>PSFEx number of stars used</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PSFCHI2_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>PSFEx PSF reduced Chi^2</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="PSFFWHM_u" ucd="instr.det.psf;meta.modelled;em.opt.u" unit="arcsec">
+<DESCRIPTION>PSFEx PSF FWHM</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="NSEC_u" ucd="meta.number;em.opt.u">
+<DESCRIPTION>SEx number of secondary components detected</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="GALXCEN_u" ucd="pos.cartesian.x;meta.modelled;em.opt.u" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (x)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCEN_u" ucd="pos.cartesian.y;meta.modelled;em.opt.u" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (y)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG_u" ucd="phot.mag;meta.modelled;em.opt.u" unit="mag">
+<DESCRIPTION>GALFIT magnitude of Sersic model</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALRE_u" ucd="phys.angSize;meta.modelled;em.opt.u" unit="arcsec">
+<DESCRIPTION>GALFIT effective (half-light) radius (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEX_u" ucd="stat.fit.param;meta.modelled;em.opt.u">
+<DESCRIPTION>GALFIT Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIP_u" ucd="src.ellipticity;meta.modelled;em.opt.u">
+<DESCRIPTION>GALFIT ellipticity (1-(b/a))</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPA_u" ucd="pos.posAng;meta.modelled;em.opt.u" unit="deg">
+<DESCRIPTION>GALFIT position angle (x+, CCW) (see notes)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALXCENERR_u" ucd="pos.cartesian.x;stat.error;meta.modelled;em.opt.u" unit="pixel">
+<DESCRIPTION>GALFIT error on x position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCENERR_u" ucd="pos.cartesian.y;stat.error;meta.modelled;em.opt.u" unit="pixel">
+<DESCRIPTION>GALFIT error on y position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAGERR_u" ucd="phot.mag;stat.error;meta.modelled;em.opt.u" unit="mag">
+<DESCRIPTION>GALFIT error on magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALREERR_u" ucd="phys.angSize;stat.error;meta.modelled;em.opt.u" unit="arcsec">
+<DESCRIPTION>GALFIT error on re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEXERR_u" ucd="stat.fit.param;stat.error;meta.modelled;em.opt.u">
+<DESCRIPTION>GALFIT error on Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIPERR_u" ucd="src.ellipticity;stat.error;meta.modelled;em.opt.u">
+<DESCRIPTION>GALFIT error on ellipticity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPAERR_u" ucd="pos.posAng;stat.error;meta.modelled;em.opt.u" unit="deg">
+<DESCRIPTION>GALFIT error on position angle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="GALRA_u" ucd="pos.eq.ra;meta.modelled;em.opt.u" unit="deg">
+<DESCRIPTION>GALFIT Right Ascension as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALDEC_u" ucd="pos.eq.dec;meta.modelled;em.opt.u" unit="deg">
+<DESCRIPTION>GALFIT Declination as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG10RE_u" ucd="phot.mag;meta.modelled;em.opt.u" unit="mag">
+<DESCRIPTION>GALFIT magnitude of model, truncated at 10*re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMU0_u" ucd="phot.mag.sb;meta.modelled;em.opt.u" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT central surface brightness</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUE_u" ucd="phot.mag.sb;meta.modelled;em.opt.u" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness at re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUEAVG_u" ucd="phot.mag.sb;meta.modelled;em.opt.u" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness within re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALR90_u" ucd="phys.angSize;meta.modelled;em.opt.u" unit="arcsec">
+<DESCRIPTION>GALFIT rad containing 90% of total light (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2FULL_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>GALFIT Chi^2 goodness-of-fit parameter (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="int" name="GALNDOF_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>GALFIT model number of degrees of freedom (pri + sec)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>GALFIT reduced Chi^2 of output model (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="GALPLAN_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>SIGMA chosen GALFIT modelling plan (see notes)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2FULL_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>PRIMARY Chi^2 goodness-of-fit paramter (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PRINFP_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>PRIMARY model number of free parameters (primary only)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="int" name="PRINDOF_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>PRIMARY model number of degrees of freedom (primary only)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2_u" ucd="stat.fit.goodness;em.opt.u">
+<DESCRIPTION>PRIMARY reduced Chi^2 of output model (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="CENFLUX_g" ucd="phot.count;em.opt.g" unit="counts">
+<DESCRIPTION>Central pixel flux value prior to background estimation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="BACKFLUX_g" ucd="phot.count;em.opt.g" unit="counts">
+<DESCRIPTION>SEx subtracted background at object position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PSFNUM_g" ucd="meta.number;em.opt.g">
+<DESCRIPTION>PSFEx number of stars used</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PSFCHI2_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>PSFEx PSF reduced Chi^2</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="PSFFWHM_g" ucd="instr.det.psf;meta.modelled;em.opt.g" unit="arcsec">
+<DESCRIPTION>PSFEx PSF FWHM</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="NSEC_g" ucd="meta.number;em.opt.g">
+<DESCRIPTION>SEx number of secondary components detected</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="GALXCEN_g" ucd="pos.cartesian.x;meta.modelled;em.opt.g" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (x)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCEN_g" ucd="pos.cartesian.y;meta.modelled;em.opt.g" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (y)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG_g" ucd="phot.mag;meta.modelled;em.opt.g" unit="mag">
+<DESCRIPTION>GALFIT magnitude of Sersic model</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALRE_g" ucd="phys.angSize;meta.modelled;em.opt.g" unit="arcsec">
+<DESCRIPTION>GALFIT effective (half-light) radius (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEX_g" ucd="stat.fit.param;meta.modelled;em.opt.g">
+<DESCRIPTION>GALFIT Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIP_g" ucd="src.ellipticity;meta.modelled;em.opt.g">
+<DESCRIPTION>GALFIT ellipticity (1-(b/a))</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPA_g" ucd="pos.posAng;meta.modelled;em.opt.g" unit="deg">
+<DESCRIPTION>GALFIT position angle (x+, CCW) (see notes)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALXCENERR_g" ucd="pos.cartesian.x;stat.error;meta.modelled;em.opt.g" unit="pixel">
+<DESCRIPTION>GALFIT error on x position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCENERR_g" ucd="pos.cartesian.y;stat.error;meta.modelled;em.opt.g" unit="pixel">
+<DESCRIPTION>GALFIT error on y position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAGERR_g" ucd="phot.mag;stat.error;meta.modelled;em.opt.g" unit="mag">
+<DESCRIPTION>GALFIT error on magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALREERR_g" ucd="phys.angSize;stat.error;meta.modelled;em.opt.g" unit="arcsec">
+<DESCRIPTION>GALFIT error on re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEXERR_g" ucd="stat.fit.param;stat.error;meta.modelled;em.opt.g">
+<DESCRIPTION>GALFIT error on Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIPERR_g" ucd="src.ellipticity;stat.error;meta.modelled;em.opt.g">
+<DESCRIPTION>GALFIT error on ellipticity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPAERR_g" ucd="pos.posAng;stat.error;meta.modelled;em.opt.g" unit="deg">
+<DESCRIPTION>GALFIT error on position angle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="GALRA_g" ucd="pos.eq.ra;meta.modelled;em.opt.g" unit="deg">
+<DESCRIPTION>GALFIT Right Ascension as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALDEC_g" ucd="pos.eq.dec;meta.modelled;em.opt.g" unit="deg">
+<DESCRIPTION>GALFIT Declination as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG10RE_g" ucd="phot.mag;meta.modelled;em.opt.g" unit="mag">
+<DESCRIPTION>GALFIT magnitude of model, truncated at 10*re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMU0_g" ucd="phot.mag.sb;meta.modelled;em.opt.g" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT central surface brightness</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUE_g" ucd="phot.mag.sb;meta.modelled;em.opt.g" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness at re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUEAVG_g" ucd="phot.mag.sb;meta.modelled;em.opt.g" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness within re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALR90_g" ucd="phys.angSize;meta.modelled;em.opt.g" unit="arcsec">
+<DESCRIPTION>GALFIT rad containing 90% of total light (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2FULL_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>GALFIT Chi^2 goodness-of-fit parameter (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="int" name="GALNDOF_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>GALFIT model number of degrees of freedom (pri + sec)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>GALFIT reduced Chi^2 of output model (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="GALPLAN_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>SIGMA chosen GALFIT modelling plan (see notes)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2FULL_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>PRIMARY Chi^2 goodness-of-fit paramter (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PRINFP_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>PRIMARY model number of free parameters (primary only)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="int" name="PRINDOF_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>PRIMARY model number of degrees of freedom (primary only)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2_g" ucd="stat.fit.goodness;em.opt.g">
+<DESCRIPTION>PRIMARY reduced Chi^2 of output model (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="CENFLUX_r" ucd="phot.count;em.opt.r" unit="counts">
+<DESCRIPTION>Central pixel flux value prior to background estimation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="BACKFLUX_r" ucd="phot.count;em.opt.r" unit="counts">
+<DESCRIPTION>SEx subtracted background at object position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PSFNUM_r" ucd="meta.number;em.opt.r">
+<DESCRIPTION>PSFEx number of stars used</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PSFCHI2_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>PSFEx PSF reduced Chi^2</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="PSFFWHM_r" ucd="instr.det.psf;meta.modelled;em.opt.r" unit="arcsec">
+<DESCRIPTION>PSFEx PSF FWHM</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="NSEC_r" ucd="meta.number;em.opt.r">
+<DESCRIPTION>SEx number of secondary components detected</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="GALXCEN_r" ucd="pos.cartesian.x;meta.modelled;em.opt.r" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (x)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCEN_r" ucd="pos.cartesian.y;meta.modelled;em.opt.r" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (y)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG_r" ucd="phot.mag;meta.modelled;em.opt.r" unit="mag">
+<DESCRIPTION>GALFIT magnitude of Sersic model</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALRE_r" ucd="phys.angSize;meta.modelled;em.opt.r" unit="arcsec">
+<DESCRIPTION>GALFIT effective (half-light) radius (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEX_r" ucd="stat.fit.param;meta.modelled;em.opt.r">
+<DESCRIPTION>GALFIT Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIP_r" ucd="src.ellipticity;meta.modelled;em.opt.r">
+<DESCRIPTION>GALFIT ellipticity (1-(b/a))</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPA_r" ucd="pos.posAng;meta.modelled;em.opt.r" unit="deg">
+<DESCRIPTION>GALFIT position angle (x+, CCW) (see notes)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALXCENERR_r" ucd="pos.cartesian.x;stat.error;meta.modelled;em.opt.r" unit="pixel">
+<DESCRIPTION>GALFIT error on x position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCENERR_r" ucd="pos.cartesian.y;stat.error;meta.modelled;em.opt.r" unit="pixel">
+<DESCRIPTION>GALFIT error on y position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAGERR_r" ucd="phot.mag;stat.error;meta.modelled;em.opt.r" unit="mag">
+<DESCRIPTION>GALFIT error on magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALREERR_r" ucd="phys.angSize;stat.error;meta.modelled;em.opt.r" unit="arcsec">
+<DESCRIPTION>GALFIT error on re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEXERR_r" ucd="stat.fit.param;stat.error;meta.modelled;em.opt.r">
+<DESCRIPTION>GALFIT error on Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIPERR_r" ucd="src.ellipticity;stat.error;meta.modelled;em.opt.r">
+<DESCRIPTION>GALFIT error on ellipticity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPAERR_r" ucd="pos.posAng;stat.error;meta.modelled;em.opt.r" unit="deg">
+<DESCRIPTION>GALFIT error on position angle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="GALRA_r" ucd="pos.eq.ra;meta.modelled;em.opt.r" unit="deg">
+<DESCRIPTION>GALFIT Right Ascension as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALDEC_r" ucd="pos.eq.dec;meta.modelled;em.opt.r" unit="deg">
+<DESCRIPTION>GALFIT Declination as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG10RE_r" ucd="phot.mag;meta.modelled;em.opt.r" unit="mag">
+<DESCRIPTION>GALFIT magnitude of model, truncated at 10*re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMU0_r" ucd="phot.mag.sb;meta.modelled;em.opt.r" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT central surface brightness</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUE_r" ucd="phot.mag.sb;meta.modelled;em.opt.r" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness at re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUEAVG_r" ucd="phot.mag.sb;meta.modelled;em.opt.r" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness within re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALR90_r" ucd="phys.angSize;meta.modelled;em.opt.r" unit="arcsec">
+<DESCRIPTION>GALFIT rad containing 90% of total light (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2FULL_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>GALFIT Chi^2 goodness-of-fit parameter (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="int" name="GALNDOF_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>GALFIT model number of degrees of freedom (pri + sec)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>GALFIT reduced Chi^2 of output model (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="GALPLAN_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>SIGMA chosen GALFIT modelling plan (see notes)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2FULL_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>PRIMARY Chi^2 goodness-of-fit paramter (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PRINFP_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>PRIMARY model number of free parameters (primary only)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="int" name="PRINDOF_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>PRIMARY model number of degrees of freedom (primary only)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2_r" ucd="stat.fit.goodness;em.opt.r">
+<DESCRIPTION>PRIMARY reduced Chi^2 of output model (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="CENFLUX_i" ucd="phot.count;em.opt.i" unit="counts">
+<DESCRIPTION>Central pixel flux value prior to background estimation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="BACKFLUX_i" ucd="phot.count;em.opt.i" unit="counts">
+<DESCRIPTION>SEx subtracted background at object position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PSFNUM_i" ucd="meta.number;em.opt.i">
+<DESCRIPTION>PSFEx number of stars used</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PSFCHI2_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>PSFEx PSF reduced Chi^2</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="PSFFWHM_i" ucd="instr.det.psf;meta.modelled;em.opt.i" unit="arcsec">
+<DESCRIPTION>PSFEx PSF FWHM</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="NSEC_i" ucd="meta.number;em.opt.i">
+<DESCRIPTION>SEx number of secondary components detected</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="GALXCEN_i" ucd="pos.cartesian.x;meta.modelled;em.opt.i" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (x)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCEN_i" ucd="pos.cartesian.y;meta.modelled;em.opt.i" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (y)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG_i" ucd="phot.mag;meta.modelled;em.opt.i" unit="mag">
+<DESCRIPTION>GALFIT magnitude of Sersic model</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALRE_i" ucd="phys.angSize;meta.modelled;em.opt.i" unit="arcsec">
+<DESCRIPTION>GALFIT effective (half-light) radius (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEX_i" ucd="stat.fit.param;meta.modelled;em.opt.i">
+<DESCRIPTION>GALFIT Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIP_i" ucd="src.ellipticity;meta.modelled;em.opt.i">
+<DESCRIPTION>GALFIT ellipticity (1-(b/a))</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPA_i" ucd="pos.posAng;meta.modelled;em.opt.i" unit="deg">
+<DESCRIPTION>GALFIT position angle (x+, CCW) (see notes)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALXCENERR_i" ucd="pos.cartesian.x;stat.error;meta.modelled;em.opt.i" unit="pixel">
+<DESCRIPTION>GALFIT error on x position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCENERR_i" ucd="pos.cartesian.y;stat.error;meta.modelled;em.opt.i" unit="pixel">
+<DESCRIPTION>GALFIT error on y position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAGERR_i" ucd="phot.mag;stat.error;meta.modelled;em.opt.i" unit="mag">
+<DESCRIPTION>GALFIT error on magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALREERR_i" ucd="phys.angSize;stat.error;meta.modelled;em.opt.i" unit="arcsec">
+<DESCRIPTION>GALFIT error on re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEXERR_i" ucd="stat.fit.param;stat.error;meta.modelled;em.opt.i">
+<DESCRIPTION>GALFIT error on Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIPERR_i" ucd="src.ellipticity;stat.error;meta.modelled;em.opt.i">
+<DESCRIPTION>GALFIT error on ellipticity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPAERR_i" ucd="pos.posAng;stat.error;meta.modelled;em.opt.i" unit="deg">
+<DESCRIPTION>GALFIT error on position angle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="GALRA_i" ucd="pos.eq.ra;meta.modelled;em.opt.i" unit="deg">
+<DESCRIPTION>GALFIT Right Ascension as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALDEC_i" ucd="pos.eq.dec;meta.modelled;em.opt.i" unit="deg">
+<DESCRIPTION>GALFIT Declination as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG10RE_i" ucd="phot.mag;meta.modelled;em.opt.i" unit="mag">
+<DESCRIPTION>GALFIT magnitude of model, truncated at 10*re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMU0_i" ucd="phot.mag.sb;meta.modelled;em.opt.i" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT central surface brightness</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUE_i" ucd="phot.mag.sb;meta.modelled;em.opt.i" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness at re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUEAVG_i" ucd="phot.mag.sb;meta.modelled;em.opt.i" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness within re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALR90_i" ucd="phys.angSize;meta.modelled;em.opt.i" unit="arcsec">
+<DESCRIPTION>GALFIT rad containing 90% of total light (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2FULL_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>GALFIT Chi^2 goodness-of-fit parameter (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="int" name="GALNDOF_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>GALFIT model number of degrees of freedom (pri + sec)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>GALFIT reduced Chi^2 of output model (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="GALPLAN_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>SIGMA chosen GALFIT modelling plan (see notes)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2FULL_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>PRIMARY Chi^2 goodness-of-fit paramter (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PRINFP_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>PRIMARY model number of free parameters (primary only)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="int" name="PRINDOF_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>PRIMARY model number of degrees of freedom (primary only)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2_i" ucd="stat.fit.goodness;em.opt.i">
+<DESCRIPTION>PRIMARY reduced Chi^2 of output model (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="CENFLUX_z" ucd="phot.count;em.opt.z" unit="counts">
+<DESCRIPTION>Central pixel flux value prior to background estimation</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="BACKFLUX_z" ucd="phot.count;em.opt.z" unit="counts">
+<DESCRIPTION>SEx subtracted background at object position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PSFNUM_z" ucd="meta.number;em.opt.z">
+<DESCRIPTION>PSFEx number of stars used</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PSFCHI2_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>PSFEx PSF reduced Chi^2</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="PSFFWHM_z" ucd="instr.det.psf;meta.modelled;em.opt.z" unit="arcsec">
+<DESCRIPTION>PSFEx PSF FWHM</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="NSEC_z" ucd="meta.number;em.opt.z">
+<DESCRIPTION>SEx number of secondary components detected</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="GALXCEN_z" ucd="pos.cartesian.x;meta.modelled;em.opt.z" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (x)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCEN_z" ucd="pos.cartesian.y;meta.modelled;em.opt.z" unit="pixel">
+<DESCRIPTION>GALFIT pixel pos. of model in cutout (y)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG_z" ucd="phot.mag;meta.modelled;em.opt.z" unit="mag">
+<DESCRIPTION>GALFIT magnitude of Sersic model</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALRE_z" ucd="phys.angSize;meta.modelled;em.opt.z" unit="arcsec">
+<DESCRIPTION>GALFIT effective (half-light) radius (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEX_z" ucd="stat.fit.param;meta.modelled;em.opt.z">
+<DESCRIPTION>GALFIT Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIP_z" ucd="src.ellipticity;meta.modelled;em.opt.z">
+<DESCRIPTION>GALFIT ellipticity (1-(b/a))</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPA_z" ucd="pos.posAng;meta.modelled;em.opt.z" unit="deg">
+<DESCRIPTION>GALFIT position angle (x+, CCW) (see notes)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALXCENERR_z" ucd="pos.cartesian.x;stat.error;meta.modelled;em.opt.z" unit="pixel">
+<DESCRIPTION>GALFIT error on x position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALYCENERR_z" ucd="pos.cartesian.y;stat.error;meta.modelled;em.opt.z" unit="pixel">
+<DESCRIPTION>GALFIT error on y position</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAGERR_z" ucd="phot.mag;stat.error;meta.modelled;em.opt.z" unit="mag">
+<DESCRIPTION>GALFIT error on magnitude</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALREERR_z" ucd="phys.angSize;stat.error;meta.modelled;em.opt.z" unit="arcsec">
+<DESCRIPTION>GALFIT error on re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALINDEXERR_z" ucd="stat.fit.param;stat.error;meta.modelled;em.opt.z">
+<DESCRIPTION>GALFIT error on Sersic index</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALELLIPERR_z" ucd="src.ellipticity;stat.error;meta.modelled;em.opt.z">
+<DESCRIPTION>GALFIT error on ellipticity</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALPAERR_z" ucd="pos.posAng;stat.error;meta.modelled;em.opt.z" unit="deg">
+<DESCRIPTION>GALFIT error on position angle</DESCRIPTION>
+</FIELD>
+<FIELD datatype="double" name="GALRA_z" ucd="pos.eq.ra;meta.modelled;em.opt.z" unit="deg">
+<DESCRIPTION>GALFIT Right Ascension as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALDEC_z" ucd="pos.eq.dec;meta.modelled;em.opt.z" unit="deg">
+<DESCRIPTION>GALFIT Declination as determined by GALFIT</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMAG10RE_z" ucd="phot.mag;meta.modelled;em.opt.z" unit="mag">
+<DESCRIPTION>GALFIT magnitude of model, truncated at 10*re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMU0_z" ucd="phot.mag.sb;meta.modelled;em.opt.z" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT central surface brightness</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUE_z" ucd="phot.mag.sb;meta.modelled;em.opt.z" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness at re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALMUEAVG_z" ucd="phot.mag.sb;meta.modelled;em.opt.z" unit="mag/arcsec^2">
+<DESCRIPTION>GALFIT effective surface brightness within re</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALR90_z" ucd="phys.angSize;meta.modelled;em.opt.z" unit="arcsec">
+<DESCRIPTION>GALFIT rad containing 90% of total light (semi-major axis)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2FULL_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>GALFIT Chi^2 goodness-of-fit parameter (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="int" name="GALNDOF_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>GALFIT model number of degrees of freedom (pri + sec)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="GALCHI2_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>GALFIT reduced Chi^2 of output model (pri + sec)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="GALPLAN_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>SIGMA chosen GALFIT modelling plan (see notes)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2FULL_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>PRIMARY Chi^2 goodness-of-fit paramter (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="short" name="PRINFP_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>PRIMARY model number of free parameters (primary only)</DESCRIPTION>
+<VALUES null='-32768'/>
+</FIELD>
+<FIELD datatype="int" name="PRINDOF_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>PRIMARY model number of degrees of freedom (primary only)</DESCRIPTION>
+<VALUES null='-2147483648'/>
+</FIELD>
+<FIELD datatype="float" name="PRICHI2_z" ucd="stat.fit.goodness;em.opt.z">
+<DESCRIPTION>PRIMARY reduced Chi^2 of output model (primary only)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="fluxscale" ucd="arith.factor">
+<DESCRIPTION>Aperture correction factor for scaling total luminosities and stellar masses, see notes</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="nbands" ucd="meta.number">
+<DESCRIPTION>Effective no. of bands used in the fit (treat &lt; 3.5 with caution)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="logmstar" ucd="phys.mass" unit="dex(Msun)">
+<DESCRIPTION>Stellar mass within the photometric aperture, see notes</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dellogmstar" ucd="stat.error" unit="dex(Msun)">
+<DESCRIPTION>Formal uncertainty on logmstar</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="logmoverl_i" ucd="phys.composition.massLightRatio" unit="dex(Msun/Lsun,i)">
+<DESCRIPTION>Mass-to-light ratio (restframe i-band)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dellogmoverl_i" ucd="stat.error" unit="dex(Msun/Lsun,i)">
+<DESCRIPTION>Formal uncertainty on logmoverl_i</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="logage" ucd="time.age" unit="dex(yr)">
+<DESCRIPTION>SPS age T = t(z_obs) - t(z_form)</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dellogage" ucd="stat.error" unit="dex(yr)">
+<DESCRIPTION>Formal uncertainty on logage</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="logtau" ucd="time.scale" unit="dex(yr)">
+<DESCRIPTION>SPS e-folding time for the exponentially declining SFH</DESCRIPTION>
+</FIELD>
+<FIELD datatype="float" name="dellogtau" ucd="stat.error" unit="dex(yr)">
+<DESCRIPTION>Formal uncertainty on logtau</DESCRIPTION>
+</FIELD>
+<!-- Dummy VOTable - no DATA element -->
+</TABLE>
+</RESOURCE>
+</VOTABLE>
+                                                                                                                                                                                                                                                                                                  XTENSION= 'BINTABLE'           / binary table extension                         BITPIX  =                    8 / 8-bit bytes                                    NAXIS   =                    2 / 2-dimensional table                            NAXIS1  =                  800 / width of table in bytes                        NAXIS2  =                   87 / number of rows in table                        PCOUNT  =                    0 / size of special data area                      GCOUNT  =                    1 / one data group                                 TFIELDS =                  196 / number of columns                              EXTNAME = 'Joined  '           / table name                                     TTYPE1  = 'CATAID  '           / label for column 1                             TFORM1  = 'J       '           / format for column 1                            TNULL1  =          -2147483648 / blank value for column 1                       TCOMM1  = 'Unique ID of GAMA object'                                            TUCD1   = 'meta.id;meta.main'                                                   TTYPE2  = 'SPECID  '           / label for column 2                             TFORM2  = '33A     '           / format for column 2                            TCOMM2  = 'ID of best matched spectrum'                                         TUCD2   = 'meta.id.cross;spect'                                                 TTYPE3  = 'SURVEY  '           / label for column 3                             TFORM3  = '9A      '           / format for column 3                            TCOMM3  = 'Survey best matched spectrum originated from'                        TUCD3   = 'meta.dataset'                                                        TTYPE4  = 'RA      '           / label for column 4                             TFORM4  = 'D       '           / format for column 4                            TUNIT4  = 'deg     '           / units for column 4                             TCOMM4  = 'RA of spectrum (J2000)'                                              TUCD4   = 'pos.eq.ra'                                                           TTYPE5  = 'DEC     '           / label for column 5                             TFORM5  = 'D       '           / format for column 5                            TUNIT5  = 'deg     '           / units for column 5                             TCOMM5  = 'DEC of spectrum (J2000)'                                             TUCD5   = 'pos.eq.dec'                                                          TTYPE6  = 'Z       '           / label for column 6                             TFORM6  = 'E       '           / format for column 6                            TCOMM6  = 'Heliocentric redshift'                                               TUCD6   = 'src.redshift'                                                        TTYPE7  = 'NQ      '           / label for column 7                             TFORM7  = 'I       '           / format for column 7                            TNULL7  =               -32768 / blank value for column 7                       TCOMM7  = 'Normalised redshift quality (use nQ > 2 for science)'                TUCD7   = 'meta.code.qual;src.redshift'                                         TTYPE8  = 'PROB    '           / label for column 8                             TFORM8  = 'E       '           / format for column 8                            TCOMM8  = 'Probability that redshift is correct'                                TUCD8   = 'stat.probability;src.redshift'                                       TTYPE9  = 'R_PETRO '           / label for column 9                             TFORM9  = 'E       '           / format for column 9                            TUNIT9  = 'mag     '           / units for column 9                             TCOMM9  = 'Extinction-corrected SDSS DR7 Petrosian mag'                         TUCD9   = 'phot.mag;em.opt.R'                                                   TTYPE10 = 'SURVEY_OLDCLASS'    / label for column 10                            TFORM10 = 'I       '           / format for column 10                           TNULL10 =               -32768 / blank value for column 10                      TCOMM10 = 'Useful for selecting samples, see notes'                             TUCD10  = 'meta.code.class'                                                     TTYPE11 = 'SURVEY_CLASS'       / label for column 11                            TFORM11 = 'I       '           / format for column 11                           TNULL11 =               -32768 / blank value for column 11                      TCOMM11 = 'Useful for selecting samples, see notes'                             TUCD11  = 'meta.code.class'                                                     TTYPE12 = 'CENFLUX_u'          / label for column 12                            TFORM12 = 'E       '           / format for column 12                           TUNIT12 = 'counts  '           / units for column 12                            TCOMM12 = 'Central pixel flux value prior to background estimation'             TUCD12  = 'phot.count;em.opt.u'                                                 TTYPE13 = 'BACKFLUX_u'         / label for column 13                            TFORM13 = 'E       '           / format for column 13                           TUNIT13 = 'counts  '           / units for column 13                            TCOMM13 = 'SEx subtracted background at object position'                        TUCD13  = 'phot.count;em.opt.u'                                                 TTYPE14 = 'PSFNUM_u'           / label for column 14                            TFORM14 = 'I       '           / format for column 14                           TNULL14 =               -32768 / blank value for column 14                      TCOMM14 = 'PSFEx number of stars used'                                          TUCD14  = 'meta.number;em.opt.u'                                                TTYPE15 = 'PSFCHI2_u'          / label for column 15                            TFORM15 = 'E       '           / format for column 15                           TCOMM15 = 'PSFEx PSF reduced Chi^2'                                             TUCD15  = 'stat.fit.goodness;em.opt.u'                                          TTYPE16 = 'PSFFWHM_u'          / label for column 16                            TFORM16 = 'E       '           / format for column 16                           TUNIT16 = 'arcsec  '           / units for column 16                            TCOMM16 = 'PSFEx PSF FWHM'                                                      TUCD16  = 'instr.det.psf;meta.modelled;em.opt.u'                                TTYPE17 = 'NSEC_u  '           / label for column 17                            TFORM17 = 'I       '           / format for column 17                           TNULL17 =               -32768 / blank value for column 17                      TCOMM17 = 'SEx number of secondary components detected'                         TUCD17  = 'meta.number;em.opt.u'                                                TTYPE18 = 'GALXCEN_u'          / label for column 18                            TFORM18 = 'E       '           / format for column 18                           TUNIT18 = 'pixel   '           / units for column 18                            TCOMM18 = 'GALFIT pixel pos. of model in cutout (x)'                            TUCD18  = 'pos.cartesian.x;meta.modelled;em.opt.u'                              TTYPE19 = 'GALYCEN_u'          / label for column 19                            TFORM19 = 'E       '           / format for column 19                           TUNIT19 = 'pixel   '           / units for column 19                            TCOMM19 = 'GALFIT pixel pos. of model in cutout (y)'                            TUCD19  = 'pos.cartesian.y;meta.modelled;em.opt.u'                              TTYPE20 = 'GALMAG_u'           / label for column 20                            TFORM20 = 'E       '           / format for column 20                           TUNIT20 = 'mag     '           / units for column 20                            TCOMM20 = 'GALFIT magnitude of Sersic model'                                    TUCD20  = 'phot.mag;meta.modelled;em.opt.u'                                     TTYPE21 = 'GALRE_u '           / label for column 21                            TFORM21 = 'E       '           / format for column 21                           TUNIT21 = 'arcsec  '           / units for column 21                            TCOMM21 = 'GALFIT effective (half-light) radius (semi-major axis)'              TUCD21  = 'phys.angSize;meta.modelled;em.opt.u'                                 TTYPE22 = 'GALINDEX_u'         / label for column 22                            TFORM22 = 'E       '           / format for column 22                           TCOMM22 = 'GALFIT Sersic index'                                                 TUCD22  = 'stat.fit.param;meta.modelled;em.opt.u'                               TTYPE23 = 'GALELLIP_u'         / label for column 23                            TFORM23 = 'E       '           / format for column 23                           TCOMM23 = 'GALFIT ellipticity (1-(b/a))'                                        TUCD23  = 'src.ellipticity;meta.modelled;em.opt.u'                              TTYPE24 = 'GALPA_u '           / label for column 24                            TFORM24 = 'E       '           / format for column 24                           TUNIT24 = 'deg     '           / units for column 24                            TCOMM24 = 'GALFIT position angle (x+, CCW) (see notes)'                         TUCD24  = 'pos.posAng;meta.modelled;em.opt.u'                                   TTYPE25 = 'GALXCENERR_u'       / label for column 25                            TFORM25 = 'E       '           / format for column 25                           TUNIT25 = 'pixel   '           / units for column 25                            TCOMM25 = 'GALFIT error on x position'                                          TUCD25  = 'pos.cartesian.x;stat.error;meta.modelled;em.opt.u'                   TTYPE26 = 'GALYCENERR_u'       / label for column 26                            TFORM26 = 'E       '           / format for column 26                           TUNIT26 = 'pixel   '           / units for column 26                            TCOMM26 = 'GALFIT error on y position'                                          TUCD26  = 'pos.cartesian.y;stat.error;meta.modelled;em.opt.u'                   TTYPE27 = 'GALMAGERR_u'        / label for column 27                            TFORM27 = 'E       '           / format for column 27                           TUNIT27 = 'mag     '           / units for column 27                            TCOMM27 = 'GALFIT error on magnitude'                                           TUCD27  = 'phot.mag;stat.error;meta.modelled;em.opt.u'                          TTYPE28 = 'GALREERR_u'         / label for column 28                            TFORM28 = 'E       '           / format for column 28                           TUNIT28 = 'arcsec  '           / units for column 28                            TCOMM28 = 'GALFIT error on re'                                                  TUCD28  = 'phys.angSize;stat.error;meta.modelled;em.opt.u'                      TTYPE29 = 'GALINDEXERR_u'      / label for column 29                            TFORM29 = 'E       '           / format for column 29                           TCOMM29 = 'GALFIT error on Sersic index'                                        TUCD29  = 'stat.fit.param;stat.error;meta.modelled;em.opt.u'                    TTYPE30 = 'GALELLIPERR_u'      / label for column 30                            TFORM30 = 'E       '           / format for column 30                           TCOMM30 = 'GALFIT error on ellipticity'                                         TUCD30  = 'src.ellipticity;stat.error;meta.modelled;em.opt.u'                   TTYPE31 = 'GALPAERR_u'         / label for column 31                            TFORM31 = 'E       '           / format for column 31                           TUNIT31 = 'deg     '           / units for column 31                            TCOMM31 = 'GALFIT error on position angle'                                      TUCD31  = 'pos.posAng;stat.error;meta.modelled;em.opt.u'                        TTYPE32 = 'GALRA_u '           / label for column 32                            TFORM32 = 'D       '           / format for column 32                           TUNIT32 = 'deg     '           / units for column 32                            TCOMM32 = 'GALFIT Right Ascension as determined by GALFIT'                      TUCD32  = 'pos.eq.ra;meta.modelled;em.opt.u'                                    TTYPE33 = 'GALDEC_u'           / label for column 33                            TFORM33 = 'E       '           / format for column 33                           TUNIT33 = 'deg     '           / units for column 33                            TCOMM33 = 'GALFIT Declination as determined by GALFIT'                          TUCD33  = 'pos.eq.dec;meta.modelled;em.opt.u'                                   TTYPE34 = 'GALMAG10RE_u'       / label for column 34                            TFORM34 = 'E       '           / format for column 34                           TUNIT34 = 'mag     '           / units for column 34                            TCOMM34 = 'GALFIT magnitude of model, truncated at 10*re'                       TUCD34  = 'phot.mag;meta.modelled;em.opt.u'                                     TTYPE35 = 'GALMU0_u'           / label for column 35                            TFORM35 = 'E       '           / format for column 35                           TUNIT35 = 'mag/arcsec^2'       / units for column 35                            TCOMM35 = 'GALFIT central surface brightness'                                   TUCD35  = 'phot.mag.sb;meta.modelled;em.opt.u'                                  TTYPE36 = 'GALMUE_u'           / label for column 36                            TFORM36 = 'E       '           / format for column 36                           TUNIT36 = 'mag/arcsec^2'       / units for column 36                            TCOMM36 = 'GALFIT effective surface brightness at re'                           TUCD36  = 'phot.mag.sb;meta.modelled;em.opt.u'                                  TTYPE37 = 'GALMUEAVG_u'        / label for column 37                            TFORM37 = 'E       '           / format for column 37                           TUNIT37 = 'mag/arcsec^2'       / units for column 37                            TCOMM37 = 'GALFIT effective surface brightness within re'                       TUCD37  = 'phot.mag.sb;meta.modelled;em.opt.u'                                  TTYPE38 = 'GALR90_u'           / label for column 38                            TFORM38 = 'E       '           / format for column 38                           TUNIT38 = 'arcsec  '           / units for column 38                            TCOMM38 = 'GALFIT rad containing 90% of total light (semi-major axis)'          TUCD38  = 'phys.angSize;meta.modelled;em.opt.u'                                 TTYPE39 = 'GALCHI2FULL_u'      / label for column 39                            TFORM39 = 'E       '           / format for column 39                           TCOMM39 = 'GALFIT Chi^2 goodness-of-fit parameter (pri + sec)'                  TUCD39  = 'stat.fit.goodness;em.opt.u'                                          TTYPE40 = 'GALNDOF_u'          / label for column 40                            TFORM40 = 'J       '           / format for column 40                           TNULL40 =          -2147483648 / blank value for column 40                      TCOMM40 = 'GALFIT model number of degrees of freedom (pri + sec)'               TUCD40  = 'stat.fit.goodness;em.opt.u'                                          TTYPE41 = 'GALCHI2_u'          / label for column 41                            TFORM41 = 'E       '           / format for column 41                           TCOMM41 = 'GALFIT reduced Chi^2 of output model (pri + sec)'                    TUCD41  = 'stat.fit.goodness;em.opt.u'                                          TTYPE42 = 'GALPLAN_u'          / label for column 42                            TFORM42 = 'I       '           / format for column 42                           TNULL42 =               -32768 / blank value for column 42                      TCOMM42 = 'SIGMA chosen GALFIT modelling plan (see notes)'                      TUCD42  = 'stat.fit.goodness;em.opt.u'                                          TTYPE43 = 'PRICHI2FULL_u'      / label for column 43                            TFORM43 = 'E       '           / format for column 43                           TCOMM43 = 'PRIMARY Chi^2 goodness-of-fit paramter (primary only)'               TUCD43  = 'stat.fit.goodness;em.opt.u'                                          TTYPE44 = 'PRINFP_u'           / label for column 44                            TFORM44 = 'I       '           / format for column 44                           TNULL44 =               -32768 / blank value for column 44                      TCOMM44 = 'PRIMARY model number of free parameters (primary only)'              TUCD44  = 'stat.fit.goodness;em.opt.u'                                          TTYPE45 = 'PRINDOF_u'          / label for column 45                            TFORM45 = 'J       '           / format for column 45                           TNULL45 =          -2147483648 / blank value for column 45                      TCOMM45 = 'PRIMARY model number of degrees of freedom (primary only)'           TUCD45  = 'stat.fit.goodness;em.opt.u'                                          TTYPE46 = 'PRICHI2_u'          / label for column 46                            TFORM46 = 'E       '           / format for column 46                           TCOMM46 = 'PRIMARY reduced Chi^2 of output model (primary only)'                TUCD46  = 'stat.fit.goodness;em.opt.u'                                          TTYPE47 = 'CENFLUX_g'          / label for column 47                            TFORM47 = 'E       '           / format for column 47                           TUNIT47 = 'counts  '           / units for column 47                            TCOMM47 = 'Central pixel flux value prior to background estimation'             TUCD47  = 'phot.count;em.opt.g'                                                 TTYPE48 = 'BACKFLUX_g'         / label for column 48                            TFORM48 = 'E       '           / format for column 48                           TUNIT48 = 'counts  '           / units for column 48                            TCOMM48 = 'SEx subtracted background at object position'                        TUCD48  = 'phot.count;em.opt.g'                                                 TTYPE49 = 'PSFNUM_g'           / label for column 49                            TFORM49 = 'I       '           / format for column 49                           TNULL49 =               -32768 / blank value for column 49                      TCOMM49 = 'PSFEx number of stars used'                                          TUCD49  = 'meta.number;em.opt.g'                                                TTYPE50 = 'PSFCHI2_g'          / label for column 50                            TFORM50 = 'E       '           / format for column 50                           TCOMM50 = 'PSFEx PSF reduced Chi^2'                                             TUCD50  = 'stat.fit.goodness;em.opt.g'                                          TTYPE51 = 'PSFFWHM_g'          / label for column 51                            TFORM51 = 'E       '           / format for column 51                           TUNIT51 = 'arcsec  '           / units for column 51                            TCOMM51 = 'PSFEx PSF FWHM'                                                      TUCD51  = 'instr.det.psf;meta.modelled;em.opt.g'                                TTYPE52 = 'NSEC_g  '           / label for column 52                            TFORM52 = 'I       '           / format for column 52                           TNULL52 =               -32768 / blank value for column 52                      TCOMM52 = 'SEx number of secondary components detected'                         TUCD52  = 'meta.number;em.opt.g'                                                TTYPE53 = 'GALXCEN_g'          / label for column 53                            TFORM53 = 'E       '           / format for column 53                           TUNIT53 = 'pixel   '           / units for column 53                            TCOMM53 = 'GALFIT pixel pos. of model in cutout (x)'                            TUCD53  = 'pos.cartesian.x;meta.modelled;em.opt.g'                              TTYPE54 = 'GALYCEN_g'          / label for column 54                            TFORM54 = 'E       '           / format for column 54                           TUNIT54 = 'pixel   '           / units for column 54                            TCOMM54 = 'GALFIT pixel pos. of model in cutout (y)'                            TUCD54  = 'pos.cartesian.y;meta.modelled;em.opt.g'                              TTYPE55 = 'GALMAG_g'           / label for column 55                            TFORM55 = 'E       '           / format for column 55                           TUNIT55 = 'mag     '           / units for column 55                            TCOMM55 = 'GALFIT magnitude of Sersic model'                                    TUCD55  = 'phot.mag;meta.modelled;em.opt.g'                                     TTYPE56 = 'GALRE_g '           / label for column 56                            TFORM56 = 'E       '           / format for column 56                           TUNIT56 = 'arcsec  '           / units for column 56                            TCOMM56 = 'GALFIT effective (half-light) radius (semi-major axis)'              TUCD56  = 'phys.angSize;meta.modelled;em.opt.g'                                 TTYPE57 = 'GALINDEX_g'         / label for column 57                            TFORM57 = 'E       '           / format for column 57                           TCOMM57 = 'GALFIT Sersic index'                                                 TUCD57  = 'stat.fit.param;meta.modelled;em.opt.g'                               TTYPE58 = 'GALELLIP_g'         / label for column 58                            TFORM58 = 'E       '           / format for column 58                           TCOMM58 = 'GALFIT ellipticity (1-(b/a))'                                        TUCD58  = 'src.ellipticity;meta.modelled;em.opt.g'                              TTYPE59 = 'GALPA_g '           / label for column 59                            TFORM59 = 'E       '           / format for column 59                           TUNIT59 = 'deg     '           / units for column 59                            TCOMM59 = 'GALFIT position angle (x+, CCW) (see notes)'                         TUCD59  = 'pos.posAng;meta.modelled;em.opt.g'                                   TTYPE60 = 'GALXCENERR_g'       / label for column 60                            TFORM60 = 'E       '           / format for column 60                           TUNIT60 = 'pixel   '           / units for column 60                            TCOMM60 = 'GALFIT error on x position'                                          TUCD60  = 'pos.cartesian.x;stat.error;meta.modelled;em.opt.g'                   TTYPE61 = 'GALYCENERR_g'       / label for column 61                            TFORM61 = 'E       '           / format for column 61                           TUNIT61 = 'pixel   '           / units for column 61                            TCOMM61 = 'GALFIT error on y position'                                          TUCD61  = 'pos.cartesian.y;stat.error;meta.modelled;em.opt.g'                   TTYPE62 = 'GALMAGERR_g'        / label for column 62                            TFORM62 = 'E       '           / format for column 62                           TUNIT62 = 'mag     '           / units for column 62                            TCOMM62 = 'GALFIT error on magnitude'                                           TUCD62  = 'phot.mag;stat.error;meta.modelled;em.opt.g'                          TTYPE63 = 'GALREERR_g'         / label for column 63                            TFORM63 = 'E       '           / format for column 63                           TUNIT63 = 'arcsec  '           / units for column 63                            TCOMM63 = 'GALFIT error on re'                                                  TUCD63  = 'phys.angSize;stat.error;meta.modelled;em.opt.g'                      TTYPE64 = 'GALINDEXERR_g'      / label for column 64                            TFORM64 = 'E       '           / format for column 64                           TCOMM64 = 'GALFIT error on Sersic index'                                        TUCD64  = 'stat.fit.param;stat.error;meta.modelled;em.opt.g'                    TTYPE65 = 'GALELLIPERR_g'      / label for column 65                            TFORM65 = 'E       '           / format for column 65                           TCOMM65 = 'GALFIT error on ellipticity'                                         TUCD65  = 'src.ellipticity;stat.error;meta.modelled;em.opt.g'                   TTYPE66 = 'GALPAERR_g'         / label for column 66                            TFORM66 = 'E       '           / format for column 66                           TUNIT66 = 'deg     '           / units for column 66                            TCOMM66 = 'GALFIT error on position angle'                                      TUCD66  = 'pos.posAng;stat.error;meta.modelled;em.opt.g'                        TTYPE67 = 'GALRA_g '           / label for column 67                            TFORM67 = 'D       '           / format for column 67                           TUNIT67 = 'deg     '           / units for column 67                            TCOMM67 = 'GALFIT Right Ascension as determined by GALFIT'                      TUCD67  = 'pos.eq.ra;meta.modelled;em.opt.g'                                    TTYPE68 = 'GALDEC_g'           / label for column 68                            TFORM68 = 'E       '           / format for column 68                           TUNIT68 = 'deg     '           / units for column 68                            TCOMM68 = 'GALFIT Declination as determined by GALFIT'                          TUCD68  = 'pos.eq.dec;meta.modelled;em.opt.g'                                   TTYPE69 = 'GALMAG10RE_g'       / label for column 69                            TFORM69 = 'E       '           / format for column 69                           TUNIT69 = 'mag     '           / units for column 69                            TCOMM69 = 'GALFIT magnitude of model, truncated at 10*re'                       TUCD69  = 'phot.mag;meta.modelled;em.opt.g'                                     TTYPE70 = 'GALMU0_g'           / label for column 70                            TFORM70 = 'E       '           / format for column 70                           TUNIT70 = 'mag/arcsec^2'       / units for column 70                            TCOMM70 = 'GALFIT central surface brightness'                                   TUCD70  = 'phot.mag.sb;meta.modelled;em.opt.g'                                  TTYPE71 = 'GALMUE_g'           / label for column 71                            TFORM71 = 'E       '           / format for column 71                           TUNIT71 = 'mag/arcsec^2'       / units for column 71                            TCOMM71 = 'GALFIT effective surface brightness at re'                           TUCD71  = 'phot.mag.sb;meta.modelled;em.opt.g'                                  TTYPE72 = 'GALMUEAVG_g'        / label for column 72                            TFORM72 = 'E       '           / format for column 72                           TUNIT72 = 'mag/arcsec^2'       / units for column 72                            TCOMM72 = 'GALFIT effective surface brightness within re'                       TUCD72  = 'phot.mag.sb;meta.modelled;em.opt.g'                                  TTYPE73 = 'GALR90_g'           / label for column 73                            TFORM73 = 'E       '           / format for column 73                           TUNIT73 = 'arcsec  '           / units for column 73                            TCOMM73 = 'GALFIT rad containing 90% of total light (semi-major axis)'          TUCD73  = 'phys.angSize;meta.modelled;em.opt.g'                                 TTYPE74 = 'GALCHI2FULL_g'      / label for column 74                            TFORM74 = 'E       '           / format for column 74                           TCOMM74 = 'GALFIT Chi^2 goodness-of-fit parameter (pri + sec)'                  TUCD74  = 'stat.fit.goodness;em.opt.g'                                          TTYPE75 = 'GALNDOF_g'          / label for column 75                            TFORM75 = 'J       '           / format for column 75                           TNULL75 =          -2147483648 / blank value for column 75                      TCOMM75 = 'GALFIT model number of degrees of freedom (pri + sec)'               TUCD75  = 'stat.fit.goodness;em.opt.g'                                          TTYPE76 = 'GALCHI2_g'          / label for column 76                            TFORM76 = 'E       '           / format for column 76                           TCOMM76 = 'GALFIT reduced Chi^2 of output model (pri + sec)'                    TUCD76  = 'stat.fit.goodness;em.opt.g'                                          TTYPE77 = 'GALPLAN_g'          / label for column 77                            TFORM77 = 'I       '           / format for column 77                           TNULL77 =               -32768 / blank value for column 77                      TCOMM77 = 'SIGMA chosen GALFIT modelling plan (see notes)'                      TUCD77  = 'stat.fit.goodness;em.opt.g'                                          TTYPE78 = 'PRICHI2FULL_g'      / label for column 78                            TFORM78 = 'E       '           / format for column 78                           TCOMM78 = 'PRIMARY Chi^2 goodness-of-fit paramter (primary only)'               TUCD78  = 'stat.fit.goodness;em.opt.g'                                          TTYPE79 = 'PRINFP_g'           / label for column 79                            TFORM79 = 'I       '           / format for column 79                           TNULL79 =               -32768 / blank value for column 79                      TCOMM79 = 'PRIMARY model number of free parameters (primary only)'              TUCD79  = 'stat.fit.goodness;em.opt.g'                                          TTYPE80 = 'PRINDOF_g'          / label for column 80                            TFORM80 = 'J       '           / format for column 80                           TNULL80 =          -2147483648 / blank value for column 80                      TCOMM80 = 'PRIMARY model number of degrees of freedom (primary only)'           TUCD80  = 'stat.fit.goodness;em.opt.g'                                          TTYPE81 = 'PRICHI2_g'          / label for column 81                            TFORM81 = 'E       '           / format for column 81                           TCOMM81 = 'PRIMARY reduced Chi^2 of output model (primary only)'                TUCD81  = 'stat.fit.goodness;em.opt.g'                                          TTYPE82 = 'CENFLUX_r'          / label for column 82                            TFORM82 = 'E       '           / format for column 82                           TUNIT82 = 'counts  '           / units for column 82                            TCOMM82 = 'Central pixel flux value prior to background estimation'             TUCD82  = 'phot.count;em.opt.r'                                                 TTYPE83 = 'BACKFLUX_r'         / label for column 83                            TFORM83 = 'E       '           / format for column 83                           TUNIT83 = 'counts  '           / units for column 83                            TCOMM83 = 'SEx subtracted background at object position'                        TUCD83  = 'phot.count;em.opt.r'                                                 TTYPE84 = 'PSFNUM_r'           / label for column 84                            TFORM84 = 'I       '           / format for column 84                           TNULL84 =               -32768 / blank value for column 84                      TCOMM84 = 'PSFEx number of stars used'                                          TUCD84  = 'meta.number;em.opt.r'                                                TTYPE85 = 'PSFCHI2_r'          / label for column 85                            TFORM85 = 'E       '           / format for column 85                           TCOMM85 = 'PSFEx PSF reduced Chi^2'                                             TUCD85  = 'stat.fit.goodness;em.opt.r'                                          TTYPE86 = 'PSFFWHM_r'          / label for column 86                            TFORM86 = 'E       '           / format for column 86                           TUNIT86 = 'arcsec  '           / units for column 86                            TCOMM86 = 'PSFEx PSF FWHM'                                                      TUCD86  = 'instr.det.psf;meta.modelled;em.opt.r'                                TTYPE87 = 'NSEC_r  '           / label for column 87                            TFORM87 = 'I       '           / format for column 87                           TNULL87 =               -32768 / blank value for column 87                      TCOMM87 = 'SEx number of secondary components detected'                         TUCD87  = 'meta.number;em.opt.r'                                                TTYPE88 = 'GALXCEN_r'          / label for column 88                            TFORM88 = 'E       '           / format for column 88                           TUNIT88 = 'pixel   '           / units for column 88                            TCOMM88 = 'GALFIT pixel pos. of model in cutout (x)'                            TUCD88  = 'pos.cartesian.x;meta.modelled;em.opt.r'                              TTYPE89 = 'GALYCEN_r'          / label for column 89                            TFORM89 = 'E       '           / format for column 89                           TUNIT89 = 'pixel   '           / units for column 89                            TCOMM89 = 'GALFIT pixel pos. of model in cutout (y)'                            TUCD89  = 'pos.cartesian.y;meta.modelled;em.opt.r'                              TTYPE90 = 'GALMAG_r'           / label for column 90                            TFORM90 = 'E       '           / format for column 90                           TUNIT90 = 'mag     '           / units for column 90                            TCOMM90 = 'GALFIT magnitude of Sersic model'                                    TUCD90  = 'phot.mag;meta.modelled;em.opt.r'                                     TTYPE91 = 'GALRE_r '           / label for column 91                            TFORM91 = 'E       '           / format for column 91                           TUNIT91 = 'arcsec  '           / units for column 91                            TCOMM91 = 'GALFIT effective (half-light) radius (semi-major axis)'              TUCD91  = 'phys.angSize;meta.modelled;em.opt.r'                                 TTYPE92 = 'GALINDEX_r'         / label for column 92                            TFORM92 = 'E       '           / format for column 92                           TCOMM92 = 'GALFIT Sersic index'                                                 TUCD92  = 'stat.fit.param;meta.modelled;em.opt.r'                               TTYPE93 = 'GALELLIP_r'         / label for column 93                            TFORM93 = 'E       '           / format for column 93                           TCOMM93 = 'GALFIT ellipticity (1-(b/a))'                                        TUCD93  = 'src.ellipticity;meta.modelled;em.opt.r'                              TTYPE94 = 'GALPA_r '           / label for column 94                            TFORM94 = 'E       '           / format for column 94                           TUNIT94 = 'deg     '           / units for column 94                            TCOMM94 = 'GALFIT position angle (x+, CCW) (see notes)'                         TUCD94  = 'pos.posAng;meta.modelled;em.opt.r'                                   TTYPE95 = 'GALXCENERR_r'       / label for column 95                            TFORM95 = 'E       '           / format for column 95                           TUNIT95 = 'pixel   '           / units for column 95                            TCOMM95 = 'GALFIT error on x position'                                          TUCD95  = 'pos.cartesian.x;stat.error;meta.modelled;em.opt.r'                   TTYPE96 = 'GALYCENERR_r'       / label for column 96                            TFORM96 = 'E       '           / format for column 96                           TUNIT96 = 'pixel   '           / units for column 96                            TCOMM96 = 'GALFIT error on y position'                                          TUCD96  = 'pos.cartesian.y;stat.error;meta.modelled;em.opt.r'                   TTYPE97 = 'GALMAGERR_r'        / label for column 97                            TFORM97 = 'E       '           / format for column 97                           TUNIT97 = 'mag     '           / units for column 97                            TCOMM97 = 'GALFIT error on magnitude'                                           TUCD97  = 'phot.mag;stat.error;meta.modelled;em.opt.r'                          TTYPE98 = 'GALREERR_r'         / label for column 98                            TFORM98 = 'E       '           / format for column 98                           TUNIT98 = 'arcsec  '           / units for column 98                            TCOMM98 = 'GALFIT error on re'                                                  TUCD98  = 'phys.angSize;stat.error;meta.modelled;em.opt.r'                      TTYPE99 = 'GALINDEXERR_r'      / label for column 99                            TFORM99 = 'E       '           / format for column 99                           TCOMM99 = 'GALFIT error on Sersic index'                                        TUCD99  = 'stat.fit.param;stat.error;meta.modelled;em.opt.r'                    TTYPE100= 'GALELLIPERR_r'      / label for column 100                           TFORM100= 'E       '           / format for column 100                          TCOMM100= 'GALFIT error on ellipticity'                                         TUCD100 = 'src.ellipticity;stat.error;meta.modelled;em.opt.r'                   TTYPE101= 'GALPAERR_r'         / label for column 101                           TFORM101= 'E       '           / format for column 101                          TUNIT101= 'deg     '           / units for column 101                           TCOMM101= 'GALFIT error on position angle'                                      TUCD101 = 'pos.posAng;stat.error;meta.modelled;em.opt.r'                        TTYPE102= 'GALRA_r '           / label for column 102                           TFORM102= 'D       '           / format for column 102                          TUNIT102= 'deg     '           / units for column 102                           TCOMM102= 'GALFIT Right Ascension as determined by GALFIT'                      TUCD102 = 'pos.eq.ra;meta.modelled;em.opt.r'                                    TTYPE103= 'GALDEC_r'           / label for column 103                           TFORM103= 'E       '           / format for column 103                          TUNIT103= 'deg     '           / units for column 103                           TCOMM103= 'GALFIT Declination as determined by GALFIT'                          TUCD103 = 'pos.eq.dec;meta.modelled;em.opt.r'                                   TTYPE104= 'GALMAG10RE_r'       / label for column 104                           TFORM104= 'E       '           / format for column 104                          TUNIT104= 'mag     '           / units for column 104                           TCOMM104= 'GALFIT magnitude of model, truncated at 10*re'                       TUCD104 = 'phot.mag;meta.modelled;em.opt.r'                                     TTYPE105= 'GALMU0_r'           / label for column 105                           TFORM105= 'E       '           / format for column 105                          TUNIT105= 'mag/arcsec^2'       / units for column 105                           TCOMM105= 'GALFIT central surface brightness'                                   TUCD105 = 'phot.mag.sb;meta.modelled;em.opt.r'                                  TTYPE106= 'GALMUE_r'           / label for column 106                           TFORM106= 'E       '           / format for column 106                          TUNIT106= 'mag/arcsec^2'       / units for column 106                           TCOMM106= 'GALFIT effective surface brightness at re'                           TUCD106 = 'phot.mag.sb;meta.modelled;em.opt.r'                                  TTYPE107= 'GALMUEAVG_r'        / label for column 107                           TFORM107= 'E       '           / format for column 107                          TUNIT107= 'mag/arcsec^2'       / units for column 107                           TCOMM107= 'GALFIT effective surface brightness within re'                       TUCD107 = 'phot.mag.sb;meta.modelled;em.opt.r'                                  TTYPE108= 'GALR90_r'           / label for column 108                           TFORM108= 'E       '           / format for column 108                          TUNIT108= 'arcsec  '           / units for column 108                           TCOMM108= 'GALFIT rad containing 90% of total light (semi-major axis)'          TUCD108 = 'phys.angSize;meta.modelled;em.opt.r'                                 TTYPE109= 'GALCHI2FULL_r'      / label for column 109                           TFORM109= 'E       '           / format for column 109                          TCOMM109= 'GALFIT Chi^2 goodness-of-fit parameter (pri + sec)'                  TUCD109 = 'stat.fit.goodness;em.opt.r'                                          TTYPE110= 'GALNDOF_r'          / label for column 110                           TFORM110= 'J       '           / format for column 110                          TNULL110=          -2147483648 / blank value for column 110                     TCOMM110= 'GALFIT model number of degrees of freedom (pri + sec)'               TUCD110 = 'stat.fit.goodness;em.opt.r'                                          TTYPE111= 'GALCHI2_r'          / label for column 111                           TFORM111= 'E       '           / format for column 111                          TCOMM111= 'GALFIT reduced Chi^2 of output model (pri + sec)'                    TUCD111 = 'stat.fit.goodness;em.opt.r'                                          TTYPE112= 'GALPLAN_r'          / label for column 112                           TFORM112= 'I       '           / format for column 112                          TNULL112=               -32768 / blank value for column 112                     TCOMM112= 'SIGMA chosen GALFIT modelling plan (see notes)'                      TUCD112 = 'stat.fit.goodness;em.opt.r'                                          TTYPE113= 'PRICHI2FULL_r'      / label for column 113                           TFORM113= 'E       '           / format for column 113                          TCOMM113= 'PRIMARY Chi^2 goodness-of-fit paramter (primary only)'               TUCD113 = 'stat.fit.goodness;em.opt.r'                                          TTYPE114= 'PRINFP_r'           / label for column 114                           TFORM114= 'I       '           / format for column 114                          TNULL114=               -32768 / blank value for column 114                     TCOMM114= 'PRIMARY model number of free parameters (primary only)'              TUCD114 = 'stat.fit.goodness;em.opt.r'                                          TTYPE115= 'PRINDOF_r'          / label for column 115                           TFORM115= 'J       '           / format for column 115                          TNULL115=          -2147483648 / blank value for column 115                     TCOMM115= 'PRIMARY model number of degrees of freedom (primary only)'           TUCD115 = 'stat.fit.goodness;em.opt.r'                                          TTYPE116= 'PRICHI2_r'          / label for column 116                           TFORM116= 'E       '           / format for column 116                          TCOMM116= 'PRIMARY reduced Chi^2 of output model (primary only)'                TUCD116 = 'stat.fit.goodness;em.opt.r'                                          TTYPE117= 'CENFLUX_i'          / label for column 117                           TFORM117= 'E       '           / format for column 117                          TUNIT117= 'counts  '           / units for column 117                           TCOMM117= 'Central pixel flux value prior to background estimation'             TUCD117 = 'phot.count;em.opt.i'                                                 TTYPE118= 'BACKFLUX_i'         / label for column 118                           TFORM118= 'E       '           / format for column 118                          TUNIT118= 'counts  '           / units for column 118                           TCOMM118= 'SEx subtracted background at object position'                        TUCD118 = 'phot.count;em.opt.i'                                                 TTYPE119= 'PSFNUM_i'           / label for column 119                           TFORM119= 'I       '           / format for column 119                          TNULL119=               -32768 / blank value for column 119                     TCOMM119= 'PSFEx number of stars used'                                          TUCD119 = 'meta.number;em.opt.i'                                                TTYPE120= 'PSFCHI2_i'          / label for column 120                           TFORM120= 'E       '           / format for column 120                          TCOMM120= 'PSFEx PSF reduced Chi^2'                                             TUCD120 = 'stat.fit.goodness;em.opt.i'                                          TTYPE121= 'PSFFWHM_i'          / label for column 121                           TFORM121= 'E       '           / format for column 121                          TUNIT121= 'arcsec  '           / units for column 121                           TCOMM121= 'PSFEx PSF FWHM'                                                      TUCD121 = 'instr.det.psf;meta.modelled;em.opt.i'                                TTYPE122= 'NSEC_i  '           / label for column 122                           TFORM122= 'I       '           / format for column 122                          TNULL122=               -32768 / blank value for column 122                     TCOMM122= 'SEx number of secondary components detected'                         TUCD122 = 'meta.number;em.opt.i'                                                TTYPE123= 'GALXCEN_i'          / label for column 123                           TFORM123= 'E       '           / format for column 123                          TUNIT123= 'pixel   '           / units for column 123                           TCOMM123= 'GALFIT pixel pos. of model in cutout (x)'                            TUCD123 = 'pos.cartesian.x;meta.modelled;em.opt.i'                              TTYPE124= 'GALYCEN_i'          / label for column 124                           TFORM124= 'E       '           / format for column 124                          TUNIT124= 'pixel   '           / units for column 124                           TCOMM124= 'GALFIT pixel pos. of model in cutout (y)'                            TUCD124 = 'pos.cartesian.y;meta.modelled;em.opt.i'                              TTYPE125= 'GALMAG_i'           / label for column 125                           TFORM125= 'E       '           / format for column 125                          TUNIT125= 'mag     '           / units for column 125                           TCOMM125= 'GALFIT magnitude of Sersic model'                                    TUCD125 = 'phot.mag;meta.modelled;em.opt.i'                                     TTYPE126= 'GALRE_i '           / label for column 126                           TFORM126= 'E       '           / format for column 126                          TUNIT126= 'arcsec  '           / units for column 126                           TCOMM126= 'GALFIT effective (half-light) radius (semi-major axis)'              TUCD126 = 'phys.angSize;meta.modelled;em.opt.i'                                 TTYPE127= 'GALINDEX_i'         / label for column 127                           TFORM127= 'E       '           / format for column 127                          TCOMM127= 'GALFIT Sersic index'                                                 TUCD127 = 'stat.fit.param;meta.modelled;em.opt.i'                               TTYPE128= 'GALELLIP_i'         / label for column 128                           TFORM128= 'E       '           / format for column 128                          TCOMM128= 'GALFIT ellipticity (1-(b/a))'                                        TUCD128 = 'src.ellipticity;meta.modelled;em.opt.i'                              TTYPE129= 'GALPA_i '           / label for column 129                           TFORM129= 'E       '           / format for column 129                          TUNIT129= 'deg     '           / units for column 129                           TCOMM129= 'GALFIT position angle (x+, CCW) (see notes)'                         TUCD129 = 'pos.posAng;meta.modelled;em.opt.i'                                   TTYPE130= 'GALXCENERR_i'       / label for column 130                           TFORM130= 'E       '           / format for column 130                          TUNIT130= 'pixel   '           / units for column 130                           TCOMM130= 'GALFIT error on x position'                                          TUCD130 = 'pos.cartesian.x;stat.error;meta.modelled;em.opt.i'                   TTYPE131= 'GALYCENERR_i'       / label for column 131                           TFORM131= 'E       '           / format for column 131                          TUNIT131= 'pixel   '           / units for column 131                           TCOMM131= 'GALFIT error on y position'                                          TUCD131 = 'pos.cartesian.y;stat.error;meta.modelled;em.opt.i'                   TTYPE132= 'GALMAGERR_i'        / label for column 132                           TFORM132= 'E       '           / format for column 132                          TUNIT132= 'mag     '           / units for column 132                           TCOMM132= 'GALFIT error on magnitude'                                           TUCD132 = 'phot.mag;stat.error;meta.modelled;em.opt.i'                          TTYPE133= 'GALREERR_i'         / label for column 133                           TFORM133= 'E       '           / format for column 133                          TUNIT133= 'arcsec  '           / units for column 133                           TCOMM133= 'GALFIT error on re'                                                  TUCD133 = 'phys.angSize;stat.error;meta.modelled;em.opt.i'                      TTYPE134= 'GALINDEXERR_i'      / label for column 134                           TFORM134= 'E       '           / format for column 134                          TCOMM134= 'GALFIT error on Sersic index'                                        TUCD134 = 'stat.fit.param;stat.error;meta.modelled;em.opt.i'                    TTYPE135= 'GALELLIPERR_i'      / label for column 135                           TFORM135= 'E       '           / format for column 135                          TCOMM135= 'GALFIT error on ellipticity'                                         TUCD135 = 'src.ellipticity;stat.error;meta.modelled;em.opt.i'                   TTYPE136= 'GALPAERR_i'         / label for column 136                           TFORM136= 'E       '           / format for column 136                          TUNIT136= 'deg     '           / units for column 136                           TCOMM136= 'GALFIT error on position angle'                                      TUCD136 = 'pos.posAng;stat.error;meta.modelled;em.opt.i'                        TTYPE137= 'GALRA_i '           / label for column 137                           TFORM137= 'D       '           / format for column 137                          TUNIT137= 'deg     '           / units for column 137                           TCOMM137= 'GALFIT Right Ascension as determined by GALFIT'                      TUCD137 = 'pos.eq.ra;meta.modelled;em.opt.i'                                    TTYPE138= 'GALDEC_i'           / label for column 138                           TFORM138= 'E       '           / format for column 138                          TUNIT138= 'deg     '           / units for column 138                           TCOMM138= 'GALFIT Declination as determined by GALFIT'                          TUCD138 = 'pos.eq.dec;meta.modelled;em.opt.i'                                   TTYPE139= 'GALMAG10RE_i'       / label for column 139                           TFORM139= 'E       '           / format for column 139                          TUNIT139= 'mag     '           / units for column 139                           TCOMM139= 'GALFIT magnitude of model, truncated at 10*re'                       TUCD139 = 'phot.mag;meta.modelled;em.opt.i'                                     TTYPE140= 'GALMU0_i'           / label for column 140                           TFORM140= 'E       '           / format for column 140                          TUNIT140= 'mag/arcsec^2'       / units for column 140                           TCOMM140= 'GALFIT central surface brightness'                                   TUCD140 = 'phot.mag.sb;meta.modelled;em.opt.i'                                  TTYPE141= 'GALMUE_i'           / label for column 141                           TFORM141= 'E       '           / format for column 141                          TUNIT141= 'mag/arcsec^2'       / units for column 141                           TCOMM141= 'GALFIT effective surface brightness at re'                           TUCD141 = 'phot.mag.sb;meta.modelled;em.opt.i'                                  TTYPE142= 'GALMUEAVG_i'        / label for column 142                           TFORM142= 'E       '           / format for column 142                          TUNIT142= 'mag/arcsec^2'       / units for column 142                           TCOMM142= 'GALFIT effective surface brightness within re'                       TUCD142 = 'phot.mag.sb;meta.modelled;em.opt.i'                                  TTYPE143= 'GALR90_i'           / label for column 143                           TFORM143= 'E       '           / format for column 143                          TUNIT143= 'arcsec  '           / units for column 143                           TCOMM143= 'GALFIT rad containing 90% of total light (semi-major axis)'          TUCD143 = 'phys.angSize;meta.modelled;em.opt.i'                                 TTYPE144= 'GALCHI2FULL_i'      / label for column 144                           TFORM144= 'E       '           / format for column 144                          TCOMM144= 'GALFIT Chi^2 goodness-of-fit parameter (pri + sec)'                  TUCD144 = 'stat.fit.goodness;em.opt.i'                                          TTYPE145= 'GALNDOF_i'          / label for column 145                           TFORM145= 'J       '           / format for column 145                          TNULL145=          -2147483648 / blank value for column 145                     TCOMM145= 'GALFIT model number of degrees of freedom (pri + sec)'               TUCD145 = 'stat.fit.goodness;em.opt.i'                                          TTYPE146= 'GALCHI2_i'          / label for column 146                           TFORM146= 'E       '           / format for column 146                          TCOMM146= 'GALFIT reduced Chi^2 of output model (pri + sec)'                    TUCD146 = 'stat.fit.goodness;em.opt.i'                                          TTYPE147= 'GALPLAN_i'          / label for column 147                           TFORM147= 'I       '           / format for column 147                          TNULL147=               -32768 / blank value for column 147                     TCOMM147= 'SIGMA chosen GALFIT modelling plan (see notes)'                      TUCD147 = 'stat.fit.goodness;em.opt.i'                                          TTYPE148= 'PRICHI2FULL_i'      / label for column 148                           TFORM148= 'E       '           / format for column 148                          TCOMM148= 'PRIMARY Chi^2 goodness-of-fit paramter (primary only)'               TUCD148 = 'stat.fit.goodness;em.opt.i'                                          TTYPE149= 'PRINFP_i'           / label for column 149                           TFORM149= 'I       '           / format for column 149                          TNULL149=               -32768 / blank value for column 149                     TCOMM149= 'PRIMARY model number of free parameters (primary only)'              TUCD149 = 'stat.fit.goodness;em.opt.i'                                          TTYPE150= 'PRINDOF_i'          / label for column 150                           TFORM150= 'J       '           / format for column 150                          TNULL150=          -2147483648 / blank value for column 150                     TCOMM150= 'PRIMARY model number of degrees of freedom (primary only)'           TUCD150 = 'stat.fit.goodness;em.opt.i'                                          TTYPE151= 'PRICHI2_i'          / label for column 151                           TFORM151= 'E       '           / format for column 151                          TCOMM151= 'PRIMARY reduced Chi^2 of output model (primary only)'                TUCD151 = 'stat.fit.goodness;em.opt.i'                                          TTYPE152= 'CENFLUX_z'          / label for column 152                           TFORM152= 'E       '           / format for column 152                          TUNIT152= 'counts  '           / units for column 152                           TCOMM152= 'Central pixel flux value prior to background estimation'             TUCD152 = 'phot.count;em.opt.z'                                                 TTYPE153= 'BACKFLUX_z'         / label for column 153                           TFORM153= 'E       '           / format for column 153                          TUNIT153= 'counts  '           / units for column 153                           TCOMM153= 'SEx subtracted background at object position'                        TUCD153 = 'phot.count;em.opt.z'                                                 TTYPE154= 'PSFNUM_z'           / label for column 154                           TFORM154= 'I       '           / format for column 154                          TNULL154=               -32768 / blank value for column 154                     TCOMM154= 'PSFEx number of stars used'                                          TUCD154 = 'meta.number;em.opt.z'                                                TTYPE155= 'PSFCHI2_z'          / label for column 155                           TFORM155= 'E       '           / format for column 155                          TCOMM155= 'PSFEx PSF reduced Chi^2'                                             TUCD155 = 'stat.fit.goodness;em.opt.z'                                          TTYPE156= 'PSFFWHM_z'          / label for column 156                           TFORM156= 'E       '           / format for column 156                          TUNIT156= 'arcsec  '           / units for column 156                           TCOMM156= 'PSFEx PSF FWHM'                                                      TUCD156 = 'instr.det.psf;meta.modelled;em.opt.z'                                TTYPE157= 'NSEC_z  '           / label for column 157                           TFORM157= 'I       '           / format for column 157                          TNULL157=               -32768 / blank value for column 157                     TCOMM157= 'SEx number of secondary components detected'                         TUCD157 = 'meta.number;em.opt.z'                                                TTYPE158= 'GALXCEN_z'          / label for column 158                           TFORM158= 'E       '           / format for column 158                          TUNIT158= 'pixel   '           / units for column 158                           TCOMM158= 'GALFIT pixel pos. of model in cutout (x)'                            TUCD158 = 'pos.cartesian.x;meta.modelled;em.opt.z'                              TTYPE159= 'GALYCEN_z'          / label for column 159                           TFORM159= 'E       '           / format for column 159                          TUNIT159= 'pixel   '           / units for column 159                           TCOMM159= 'GALFIT pixel pos. of model in cutout (y)'                            TUCD159 = 'pos.cartesian.y;meta.modelled;em.opt.z'                              TTYPE160= 'GALMAG_z'           / label for column 160                           TFORM160= 'E       '           / format for column 160                          TUNIT160= 'mag     '           / units for column 160                           TCOMM160= 'GALFIT magnitude of Sersic model'                                    TUCD160 = 'phot.mag;meta.modelled;em.opt.z'                                     TTYPE161= 'GALRE_z '           / label for column 161                           TFORM161= 'E       '           / format for column 161                          TUNIT161= 'arcsec  '           / units for column 161                           TCOMM161= 'GALFIT effective (half-light) radius (semi-major axis)'              TUCD161 = 'phys.angSize;meta.modelled;em.opt.z'                                 TTYPE162= 'GALINDEX_z'         / label for column 162                           TFORM162= 'E       '           / format for column 162                          TCOMM162= 'GALFIT Sersic index'                                                 TUCD162 = 'stat.fit.param;meta.modelled;em.opt.z'                               TTYPE163= 'GALELLIP_z'         / label for column 163                           TFORM163= 'E       '           / format for column 163                          TCOMM163= 'GALFIT ellipticity (1-(b/a))'                                        TUCD163 = 'src.ellipticity;meta.modelled;em.opt.z'                              TTYPE164= 'GALPA_z '           / label for column 164                           TFORM164= 'E       '           / format for column 164                          TUNIT164= 'deg     '           / units for column 164                           TCOMM164= 'GALFIT position angle (x+, CCW) (see notes)'                         TUCD164 = 'pos.posAng;meta.modelled;em.opt.z'                                   TTYPE165= 'GALXCENERR_z'       / label for column 165                           TFORM165= 'E       '           / format for column 165                          TUNIT165= 'pixel   '           / units for column 165                           TCOMM165= 'GALFIT error on x position'                                          TUCD165 = 'pos.cartesian.x;stat.error;meta.modelled;em.opt.z'                   TTYPE166= 'GALYCENERR_z'       / label for column 166                           TFORM166= 'E       '           / format for column 166                          TUNIT166= 'pixel   '           / units for column 166                           TCOMM166= 'GALFIT error on y position'                                          TUCD166 = 'pos.cartesian.y;stat.error;meta.modelled;em.opt.z'                   TTYPE167= 'GALMAGERR_z'        / label for column 167                           TFORM167= 'E       '           / format for column 167                          TUNIT167= 'mag     '           / units for column 167                           TCOMM167= 'GALFIT error on magnitude'                                           TUCD167 = 'phot.mag;stat.error;meta.modelled;em.opt.z'                          TTYPE168= 'GALREERR_z'         / label for column 168                           TFORM168= 'E       '           / format for column 168                          TUNIT168= 'arcsec  '           / units for column 168                           TCOMM168= 'GALFIT error on re'                                                  TUCD168 = 'phys.angSize;stat.error;meta.modelled;em.opt.z'                      TTYPE169= 'GALINDEXERR_z'      / label for column 169                           TFORM169= 'E       '           / format for column 169                          TCOMM169= 'GALFIT error on Sersic index'                                        TUCD169 = 'stat.fit.param;stat.error;meta.modelled;em.opt.z'                    TTYPE170= 'GALELLIPERR_z'      / label for column 170                           TFORM170= 'E       '           / format for column 170                          TCOMM170= 'GALFIT error on ellipticity'                                         TUCD170 = 'src.ellipticity;stat.error;meta.modelled;em.opt.z'                   TTYPE171= 'GALPAERR_z'         / label for column 171                           TFORM171= 'E       '           / format for column 171                          TUNIT171= 'deg     '           / units for column 171                           TCOMM171= 'GALFIT error on position angle'                                      TUCD171 = 'pos.posAng;stat.error;meta.modelled;em.opt.z'                        TTYPE172= 'GALRA_z '           / label for column 172                           TFORM172= 'D       '           / format for column 172                          TUNIT172= 'deg     '           / units for column 172                           TCOMM172= 'GALFIT Right Ascension as determined by GALFIT'                      TUCD172 = 'pos.eq.ra;meta.modelled;em.opt.z'                                    TTYPE173= 'GALDEC_z'           / label for column 173                           TFORM173= 'E       '           / format for column 173                          TUNIT173= 'deg     '           / units for column 173                           TCOMM173= 'GALFIT Declination as determined by GALFIT'                          TUCD173 = 'pos.eq.dec;meta.modelled;em.opt.z'                                   TTYPE174= 'GALMAG10RE_z'       / label for column 174                           TFORM174= 'E       '           / format for column 174                          TUNIT174= 'mag     '           / units for column 174                           TCOMM174= 'GALFIT magnitude of model, truncated at 10*re'                       TUCD174 = 'phot.mag;meta.modelled;em.opt.z'                                     TTYPE175= 'GALMU0_z'           / label for column 175                           TFORM175= 'E       '           / format for column 175                          TUNIT175= 'mag/arcsec^2'       / units for column 175                           TCOMM175= 'GALFIT central surface brightness'                                   TUCD175 = 'phot.mag.sb;meta.modelled;em.opt.z'                                  TTYPE176= 'GALMUE_z'           / label for column 176                           TFORM176= 'E       '           / format for column 176                          TUNIT176= 'mag/arcsec^2'       / units for column 176                           TCOMM176= 'GALFIT effective surface brightness at re'                           TUCD176 = 'phot.mag.sb;meta.modelled;em.opt.z'                                  TTYPE177= 'GALMUEAVG_z'        / label for column 177                           TFORM177= 'E       '           / format for column 177                          TUNIT177= 'mag/arcsec^2'       / units for column 177                           TCOMM177= 'GALFIT effective surface brightness within re'                       TUCD177 = 'phot.mag.sb;meta.modelled;em.opt.z'                                  TTYPE178= 'GALR90_z'           / label for column 178                           TFORM178= 'E       '           / format for column 178                          TUNIT178= 'arcsec  '           / units for column 178                           TCOMM178= 'GALFIT rad containing 90% of total light (semi-major axis)'          TUCD178 = 'phys.angSize;meta.modelled;em.opt.z'                                 TTYPE179= 'GALCHI2FULL_z'      / label for column 179                           TFORM179= 'E       '           / format for column 179                          TCOMM179= 'GALFIT Chi^2 goodness-of-fit parameter (pri + sec)'                  TUCD179 = 'stat.fit.goodness;em.opt.z'                                          TTYPE180= 'GALNDOF_z'          / label for column 180                           TFORM180= 'J       '           / format for column 180                          TNULL180=          -2147483648 / blank value for column 180                     TCOMM180= 'GALFIT model number of degrees of freedom (pri + sec)'               TUCD180 = 'stat.fit.goodness;em.opt.z'                                          TTYPE181= 'GALCHI2_z'          / label for column 181                           TFORM181= 'E       '           / format for column 181                          TCOMM181= 'GALFIT reduced Chi^2 of output model (pri + sec)'                    TUCD181 = 'stat.fit.goodness;em.opt.z'                                          TTYPE182= 'GALPLAN_z'          / label for column 182                           TFORM182= 'I       '           / format for column 182                          TNULL182=               -32768 / blank value for column 182                     TCOMM182= 'SIGMA chosen GALFIT modelling plan (see notes)'                      TUCD182 = 'stat.fit.goodness;em.opt.z'                                          TTYPE183= 'PRICHI2FULL_z'      / label for column 183                           TFORM183= 'E       '           / format for column 183                          TCOMM183= 'PRIMARY Chi^2 goodness-of-fit paramter (primary only)'               TUCD183 = 'stat.fit.goodness;em.opt.z'                                          TTYPE184= 'PRINFP_z'           / label for column 184                           TFORM184= 'I       '           / format for column 184                          TNULL184=               -32768 / blank value for column 184                     TCOMM184= 'PRIMARY model number of free parameters (primary only)'              TUCD184 = 'stat.fit.goodness;em.opt.z'                                          TTYPE185= 'PRINDOF_z'          / label for column 185                           TFORM185= 'J       '           / format for column 185                          TNULL185=          -2147483648 / blank value for column 185                     TCOMM185= 'PRIMARY model number of degrees of freedom (primary only)'           TUCD185 = 'stat.fit.goodness;em.opt.z'                                          TTYPE186= 'PRICHI2_z'          / label for column 186                           TFORM186= 'E       '           / format for column 186                          TCOMM186= 'PRIMARY reduced Chi^2 of output model (primary only)'                TUCD186 = 'stat.fit.goodness;em.opt.z'                                          TTYPE187= 'fluxscale'          / label for column 187                           TFORM187= 'E       '           / format for column 187                          TUCD187 = 'arith.factor'                                                        TTYPE188= 'nbands  '           / label for column 188                           TFORM188= 'E       '           / format for column 188                          TCOMM188= 'Effective no. of bands used in the fit (treat < 3.5 with caution)'   TUCD188 = 'meta.number'                                                         TTYPE189= 'logmstar'           / label for column 189                           TFORM189= 'E       '           / format for column 189                          TUNIT189= 'dex(Msun)'          / units for column 189                           TCOMM189= 'Stellar mass within the photometric aperture, see notes'             TUCD189 = 'phys.mass'                                                           TTYPE190= 'dellogmstar'        / label for column 190                           TFORM190= 'E       '           / format for column 190                          TUNIT190= 'dex(Msun)'          / units for column 190                           TCOMM190= 'Formal uncertainty on logmstar'                                      TUCD190 = 'stat.error'                                                          TTYPE191= 'logmoverl_i'        / label for column 191                           TFORM191= 'E       '           / format for column 191                          TUNIT191= 'dex(Msun/Lsun,i)'   / units for column 191                           TCOMM191= 'Mass-to-light ratio (restframe i-band)'                              TUCD191 = 'phys.composition.massLightRatio'                                     TTYPE192= 'dellogmoverl_i'     / label for column 192                           TFORM192= 'E       '           / format for column 192                          TUNIT192= 'dex(Msun/Lsun,i)'   / units for column 192                           TCOMM192= 'Formal uncertainty on logmoverl_i'                                   TUCD192 = 'stat.error'                                                          TTYPE193= 'logage  '           / label for column 193                           TFORM193= 'E       '           / format for column 193                          TUNIT193= 'dex(yr) '           / units for column 193                           TCOMM193= 'SPS age T = t(z_obs) - t(z_form)'                                    TUCD193 = 'time.age'                                                            TTYPE194= 'dellogage'          / label for column 194                           TFORM194= 'E       '           / format for column 194                          TUNIT194= 'dex(yr) '           / units for column 194                           TCOMM194= 'Formal uncertainty on logage'                                        TUCD194 = 'stat.error'                                                          TTYPE195= 'logtau  '           / label for column 195                           TFORM195= 'E       '           / format for column 195                          TUNIT195= 'dex(yr) '           / units for column 195                           TCOMM195= 'SPS e-folding time for the exponentially declining SFH'              TUCD195 = 'time.scale'                                                          TTYPE196= 'dellogtau'          / label for column 196                           TFORM196= 'E       '           / format for column 196                          TUNIT196= 'dex(yr) '           / units for column 196                           TCOMM196= 'Formal uncertainty on logtau'                                        TUCD196 = 'stat.error'                                                          DATE-HDU= '2018-12-01T04:32:49' / Date of HDU creation (UTC)                    STILVERS= '3.3-1   '           / Version of STIL software                       STILCLAS= 'uk.ac.starlink.votable.FitsPlusTableWriter' / STIL Author class      END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              	ã528120755683092480               SDSS     @`¥·∞â†'?‰èÓıÏÄ«=€ÿ     Ar8≠  C-48?◊<Ì 	?é{?ñë˚ BU~´B\ò»Aè=AxMv@∑ \>ºBè.<=◊ßá=‘ï>™W®A
+ñ"?ñB[=kÌ˙Ah@`¥·\¶ ?$ÇAèÈÛAs=MA⁄'DAÕÄBÙPΩFJ€  ,ô?ëçÔ C6-∞    œ?aMáDérÂ?s  ?n{?ç% B bBŸpÿAÄìA(⁄†@ä´6=ﬂ;d¬ë˜
+<ò_<ö‘,<∞ ≈>≠ˇ=i·±;¡T ?∏∞Ú@`¥·Üò5?$xAÄÄ≤Av"ÍA√xÔA∑˛)B{ÊIG>8  •?ìy  EUJW   h?ââíE8^h?ßÃ ?n{?í™; BHsCŸXAmè≈A9 –@ãõ==ºûÌ¬û7ˆ</O<XD–<u>.Î˝<ÍJå;Q∑?£n/@`¥·Üò5?$ÄAnb¯AfxAªÚzA∞psBäÙwGâ®  Óv?ì» E„ï˙   ∫?ßôüEù[m?Øf !?Ä  ?Ñ«è BÓ0æCæòAf¬AKÉl@ùhs=ÎÖ¬ë—É< ê.<,1<F?>{µT=çP;e`B?lj@`¥·õêÍû?$xAg"ÌAO"A∫$"AÆ ∂B´bîGïÚ˜  Áø?•§r E˚©U   ^?ºrqE÷• @˘
+L ?ãÖ?Üœ B %ØBŸ©A\Aö±√@∏£=È˘¬åÇh<P©<Dõ¶<Ú{≥?y˝p=“Ω<;ÿD–?ıœ´@`¥·õêÍû?$ÄA]ifA7sûAΩLA∞d'Cé1GL8î  ©?ö™e EyÔ   ›?®äÌ?úòˇ@≈≈A::«=—™H@ ∞Ç=›ﬂ∏Aêì>- /AZ>ÁH z≠343508625177733120               SDSS     @jˆM3H,?Û≠ñ¶†Z=&     Atêü  C&€§?™] ?îz·?∏j  BK…RBJ¸πAìtº@õﬁP@8>B>¿¬0ó$=“Ta=È·±=∫í£?5úÂ>ß8==•A.í£@jˆL¬Pr?ùlAìóxAòvA«CÈAΩ}¶A•KF.  '“?V´ C'Ù    ∏?RM⁄Dí|F?y≠∏ ,?kÖ?Æﬁ© BÌÍıB›¬A}6zAr’@∑]Ã>Å◊‹¬
+H<z¨⁄<Q∑<u¬è>Ël«=ßRT;åÁ?≤ˇ@jˆL¬Pr?ùlµA~ëANã)A«ÔãAªF„BÔDòG"m   ∫?L™æ EQex   x?? dER˚V@$$ì *?Ö∏?ñ"Ê C»+BÏ"hAoûÌA1	>@¶1'>á8¬b4<ªô;¸PH;Ëß> <Ï=!aÂ;#◊
+>ò≠¨@jˆLÏA›?ùm	Ap≈YAGâÉAªXAÆﬁ8BùnzGJVª  Ó[?YQ0 E 5   Õ?h¿	Eó‹⁄@√T &?}p§?ô,| B˝y¡BÓ	’Ag*ôAKdò@±Ö>HÄ¬
+Òﬁ<Á;Ô4◊<-‡>an=>v…;0Ú|>¬¯8@jˆLÏA›?ùm	AhsõA8ÇAπøA≠9äB¡£≈GE"  ÊΩ?Z∑? E¥°W   «?iHÕE«±|@πS. ?è\)?Øº”  B√H>B≤ ™A]µtAüüS@ÿ,=>à€å¬-<e`B<B¯8<·GÆ?ä>Oﬂ;æÌ?A|@jˆM:í£?ùm	A_nEAüAΩygA∞ﬁC<˛$FﬁÃ)  ÖÑ?UóÙ En‹   	¥?eÎ'?èõõ@∆1/A:7=Â”Ö?˝h#=˙¢ÜA@>BZAAÙ>∂Âë ê0348013605586757632               SDSS     @kÂ›)4≠?ÛlaR*o?>ô[     A{dƒ  CK0@⁄⁄Ω ?Üff?≥5~ BNË$BLAóæw@zM˘@@é>˜¬a*>£n>©>M?Ut?÷°=éÛMAÄAU@kÂ‹úM© ?õdAóÊQAñüA«‡ˆAΩÓÊAàÿF%≈W  'ƒ?Öeı Bˇ\    Ü?sØ&D`üø(* (?u¬è?±y) BΩ<BßõåAÉœvAﬁ∏@≥é">nò¡óÃd<©ì<ñªô<éär>™¡ñ=ﬂ§@;ﬁ“â?…ˇ.@kÂ‹±F^â?õc^AÑwANã@A≈ﬁAπL#Bêh1FÈ˝)  xÉ?xáB E(ÊÁ   c?mTˆE2¸˙ø!a‹ ?Ä  ?ú6 BÃ∏ìB∑¬™Au‹]AË|@Ω„T>,•¡ç¯°<F?<2ïÍ<%zx>J,	=â‘ï;ÜYK?Öëh@kÂ‹€7…õ?õc^AwJ>A1‚AΩ%*A∞VïBóVΩG◊  è2?~Å EÜ∏ˇ   ”?qﬁrEèÓ·@¢ê ?z·H?ï≥– B üæB±ß’Am®XA#Mó@Ã«„>ÛM¡cÔû<,1<ªô<<j>}<X=ò_;Éo?qA @kÂ‹0$?õc^AoAHA\€A∫¯A≠◊eBµ≥◊G·∏  á•?Ü‘N EäAZ   ó?ÖVˆE∫JVæaNC ?îz·?¥Ò‘ Bñ®öBç‡“Ag€ıA#@Õóˆ>z·¡ªe,<ó$<`u˜<‚e?>!|<µ›?Ëê.@kÂ‹0$?õc≤Aiw2Aç‰A∏{A™‹åB∂??F•u§  Qù?Å¿D E∑   	?≠µ∏?≠H÷@»fXA9˝™=◊ı?ˇ^Y=„KA2“>3MAj≥>‹t÷ ¿659811189332666368               SDSS     @k{÷bwƒ]@&a(9.>ªÑ     AO  Bıí0@˝¸w ?òQÏ?ñ"Ê  BPøBHõ¶Aç»ÄAœœ[@ñÆ}>oO¬fkÓ>x‘˛>èù≤?ÉA∏ãˆ?Ã%Ø=ÃcÒArff@k{’‰£É'@11<AéCçAêÏVAﬂÿÿA‘ëC'Ø¸F °  '“?ÄöÃ B·ˇL    5@sÄD9.äæ.% ?ÅGÆ?ê~– BçÊœB•ÊAà}V@π	@aŸ>Ωóˆ¬à4a<≥g°<Á∞<|PH>$ù=r◊;ÎÌ˙?Fö‘@k{’‰£É'@11∫AàΩrAÉ2AΩä0A≤ÎäAÊvøF¬Ì√  X‰?åXí Ee5›   ¶@	Á@EÌ`@‘? (?}p§?ùÚg BçVBÃ˝IA~åÁ@√¨@ÇRΩ>∂’–¬ë”&<kÌ˙<îFt<ñªô>?`G=ûÉ‰;ùIR?µt@k{÷#ç£¬@11∫AB⁄AdfŒA∂iA™€WB	ÏªGt  n6?ú'– F·Õ   
+É@WıÕE`(ó>‰æ∫ .?Ö∏?í;% Bç4B´]IA{~˙@Éèj@[\)>—Ç™¬Ü»¡<:«<Åo <∑Ä4=ˇZn=ñªô;£◊
+>Œär@k{÷M‘@12A{ıÄAg¨A¨2ñA°≥AüıêF§í  [%?®˘ò F	5:   †@èÙ≥E∞p¿Ï	 ?áÆ?x3∆  BMÓ/BtéÛAp ≈@Ít¶@õOﬂ>·Ú¬á`∏<úwö<ÕûÑ='Ü¬?Õñ>Fˆî<'Á?i¶µ@k{÷M‘@12µAq%cA@,≈A±Ü@A•ëNBBŸ¯Flñ4  /ñ?ü“ E8cä   ≈@Ö'ø?Ña@«◊KA9æÒ=∆üì@H?=Œ¬¿A¡›>ïA¯œ>·}À 	U<324412863475116032               SDSS     @g-ƒÔàπx?’€ÿ/◊>"¥     AÄ(c  C6=èøKÆP ?é{?í;% BKÇ¯BN2 AìIAHx›@Õ ¡>=•BítT>ì>(>¬©ìAπÅ?Ì»=ØÏWAÄl"@g-ƒ≈óNf>®∏(AìÎ0A[ãA⁄]`AÕ7eB‡N‡F!m’  'À?Å–Ø C[5l    k@êDáv0@ÄPﬂ ?z·H?äk• BkbhBl¨¿Aà"4@â$»@Ñl">CØ∏BiÛ3<kÌ˙<É‰&<y	l=ΩB0=í◊s;ˇó$?ÕÅ@g-ƒ≈óNf>®¥9AàÄzAkùßA∫“zAØâ@Aƒ$IFX7†  5?Çfı Dø≈r   ?|?EQøœ@›¨ ?}p§?Ç- BbtÒBÇó2A}¢ú@Ñ∑,@ÑÑ∂>YJıB49;˘	l<Á<Ï¿=~>=5‹∆;åÁ?¡U@g-ƒÔàπx>®µâA~_vAWIFA∞µ†A•kûAΩÓ‡Fl´Ú  7i?àÆ: EÒ$   }?ñí«E©®“@±±¢ #?Ö∏?y BvraB|÷9At‚@óÅ@ì™Œ>ZüæBy;¡T ;Ô4◊<B¯8=•=>ﬂ§;ó$?◊@g-ƒÔàπx>®¥9AuŒ∏ACz€AØA£H°AÔ(§FuOö  :õ?ÖÚ E*à   Q?§äE˘üõBûD ?ì33?îfê BV ¶Bd„nAp¶L@Ä¥√Axl>ÀüVBS¡â<ùIR<Éo=lø±?ª?(y><u¬è?º~(@g-ƒÔàπx>®¥9AsV®=“¯ÖA´íAúB{eFaü8  /&?ô!õ E
+r<   9@+◊T?à¨•@…m˛A:Ëı=¡åπ@è=–´∞AG4>$¡¥A·>©≈¯ 7T600222606422992896               SDSS     @j∞“«∏ê÷@‡‘V.	ˇ>%_     AÜÃı  B¿I?ÔX ?ôôö?§tß  BJU–BI=•A£Í?Ä‹=¸Ñ∂=˛˘€BìÇú>yrG>Ç√ =wŒŸ> Ç>Êµ>÷9B(Ø“@j∞“‹±F_@ßA£ÍA≤ß[A≥~A≤π•?∂näF3¡œ  '“?êt\ BÆ3    !?ìÜD6IÈ@iÊ& ?xQÏ?ûa|  BKÄiBJëhAèıé@•“@ó>cº”B]ﬂä<π#£<®¡U<‹]d=Ô?>ÄN•<ç∏ª@)@@j∞“≤ø€M@%AêqAOëA∂†%A™…àA[_“Fœ≤  'Æ?q¢ C˜†   ?t¡ÿE∞âA–ë ?ÅGÆ?Ö•π BJáEBK_ŸAÜ8R@	Á@õ√a>~ë BT	’                            @j∞“‹±F_@yAÜªVA9î
+AÆxîA¢ÄÄAz≥F-V  'E?ç
+ DRL   ?ãQ≈EmèApp¯ ?Ö∏?ÑXy BI˙ìBKôeAÄÜ¬@gxÛ@›2a>}øHBOŸ< ê.<'Á<ÕûÑ>Râπ>l"h<tº?ü1ê@j∞“Ò©˚Á@£AÅj@Úm*A±ŒA§YuBƒKF;”  '?ôŸ∫ DÇ…}   s?ó´ÈEù¸‚A» ?ëÎÖ?Ç-  BJ√BK∫˚A}É‰@5vì@´πå>z)«BFNÛ<«À<•zx=^i≠>°õÚ>À6z<æÌ@R˘€@j∞“«∏ê÷@£A~ªJA €fA™∆Aûd}A¶·EF5q  '«?ë˜8 C¬ƒ≥   +?¶¬?G	@»∑A:j4=¥Ôî@/=∞ÄVA|±=Ô·ÆA=ù>π‚à Ï©320912292155779072               SDSS     @fç“s’∫≤ø«û‰yí>*ÚR     Aá˝  B´˙Z@Å∏C ?ö·H?ï≥– BKúBL˙xA†~@ÄU…@íYK>är¬Åx‚>usÎ>ÅÚ>ıõ=@fœå@%¯°>Tz·BGLJ@fç“s’∫≤æ<ËSA†Ä∫AÖ¯ÁA“ãjA∆÷òA…eMF,7Ò  'À?ä}› AÚ=h    ?À˝—D	)©æ35 ?z·H?âd Bº|BøÇhAÜÛ∂Aîs@ÃAâ>kÌ˙¬0é"<ﬁ“â<‹]d=‘˝Ù@?≥>ù/<LÃÕ@|@fç“^›)æ<Ú–AáøoAP„ÁA‘rûA«T»C$:ÔGé  âë?ã'≥ E2må   ? ¨lDË√ >Ìƒ7 ?Ö∏?zŒF 	Bﬂ∞BÀÙØAyV÷Avﬂ@≥GÆ>X¸P¬KW®<LÃÕ<T˝Ù<‰éä?(Wˆ=¡ \;ùIR?ë·±@fç“àŒp;æ<ÌëAz•$APnΩA∆©ÜA∫NBÌ|öGSü˛  ≠Ñ?úﬁ E‰•)   q@ﬂ@E:≈ñ?≈Ô ?Üff?vwp 	B„£B—·ÀAtQA;Pe@†-‡>ÚÂ¬Tû<]/<IÖ=\)?˜‹=æÌ;ﬁ“â?ôˇ.@fç“àŒp;æ<ÌëAudÁAV…OAøx A≥bÇB†ÄcGi(  µ?§Àé F	‘ª   
+(@Y#EÇCAú ?àı√?s‹ Bµ;BπÕ”AjoiA«<¯@˝¶µ>/É{¬># <µ‹∆<ùIR>0é@Ì^ì?M<ÄùI@S~ë@fç“s’∫≤æ<0AläõA?A…p$Aªf?Cè._G2È  Åy?éè Ec÷   l?Ê¡?›E'@…∆ÌA:0h=ºLO@X=…n
+AuÌ>]ÇA‰M>¿πE 0‚323201202047182848               SDSS     @fŸ*ÿﬁ©øW4.€µû>8      AÉÉ4  B±g⁄¿íh◊  ∆< ?¨ÃÕ  BKı®BLæ≈AïæA®/}AYK>{/Ï¬\C>Ye,>@7?A ¡Bla@åˆî>o AãVm@fŸ+UÔﬁøÇπıAñ6A6"+AÂ¥ÂA◊çCzMFÀ`  '“?Äiî B§`Â    F?ñIˆD=y‹@*wæ ?ãÖ?Üœ BeóYBLxAç,@M÷"@iIR>£ÒA?úÌë<‰éä<…Ö<´6z=ˇ≈=ı¬è<2ïÍ?§9X@fŸ+I∫øÇ∫ùAçq«Ax¬’A∏‘ÛAÆ±AÉ∏íFA2\  ,á?ä◊∂ DU@˜   Œ?òÕE^?Ì3Õ ?áÆ?á—$  B|ÁRBMAÇ[å@mÔä@ÇÜY>èêó@Y}ø<mëh<B¯8<%zx=ñπ˘=Ä—∑;™d√?0[¿@fŸ++˝¥ÃøÇπ°AÇ∂÷A[—A±ÏA¶F2AßÚ∆FS˘Q  0ˆ?ää◊ D‚R‘   &?ì=^ElW<øì˚ ?áÆ?äk•  BÄlÁBM≤-A|˜œ@lôf@ÇàŒ>õ≤ˇ@8$<B¯8<IR<_=Ü{=cº”;ê-‡?J#@fŸ++˝¥ÃøÇπNA}ÆlAR~˝A≠<ÿA¢
+AßFD{  1Y?~G¨ DŒèÚ   (?Ü6ãEô∫\A⁄ ?è\)?¢I=  B]&õBMYAx¿É@[:,@Åä	>ß†˘@÷ÎÓ<´6z<äqﬁ<æﬂ§>H)>ß< ê.?è€ı@fŸ+ˇCøÇπ°Ayt ALA©zAûHáAô≤F9,  *Õ?ä_ Dpﬂ   √?Æoê?íﬂH@…Ω‘A9Ø-=∆ªÙ@5b=œ§ôAR>#<AûB>æîk  ûŸ322008506406299648               SDSS     @fŒ”ZÖáîøÂÅZ≥R®>8⁄<     AÉ“  B4%R¿É˘o 	@AÎÖ?›ªÆ  BMÏ"BP)ìAú¨q@øÃN@ß8Ô>M∏ªBrÃÁ>≤Ò™>≈˝ã?Cñ@ÕyÔ@X	’>FçπB®>@fŒ”o~=ø,:AùA=A|T*A÷◊A…ÃB+¢ÃFÏ|  '“?xˇ B>    $?®¯˙CòTA?	zÙ ?ê£◊?ÁGÑ  B¢oBÇ6Aä(çA¡X@£+>ùŸ¡§ä==E÷9='Á=;/Ï?c1>Ñ–<be?Œß@fŒ”ôo®/ø, Aä∂˙Aj »AÀîAæ‰ÕBãbéF∞Ôú  PØ?åYu DXtB   ¬?fgÜDx∞?sZ ?ëÎÖ?Ë%Ø B∫ \BêæjAÅe…@Ê
+@ÑZ>ûû¡ùå≥8—∑    9ùIR;Ä€]:∑Ä4    <LÃÕ@fŒ”√a@ø,
+(AÅ√ÛAmmdAª∞êA∞gËB$i¢Fﬂû£  f?å.w EÇ„   ?îhÁDﬂfø¿fJÈ ?Ö∏?º¡U B∂0ÿBí?ÊAzƒú@Ô∫	@ç–}>ô0æ¡ïF<∞Ú|<ïÈ‚<kÌ˙>N“Ÿ=ö‘,;Œp;?AñS@fŒ”Æh]∑ø, A{û∆A]h»A∏–ÁA≠=˝B6ó)F÷0B  d»?àü DÁR   s?xlÑE!Æ¿˚∫2 ?é{?≤∆i  BÜô	Be;dAvy>@ÀmÊ@åΩ<>á†˘¡ô5®=IR=	7L=+6z>˘Ÿ‰>WçP<|PH@É@fŒ”ÑvÚ¶ø,
+–AwPAUXA¥3#A®®jBÿbFÉ9˘  :Æ?è÷ DwÚ—   Â?´Rq?∞rÂ@…Ô™A9ø^=ÆL@hÄ=∑z&A¥B>¶\AÖ->´ªT è?323209173506484224               SDSS     @fœJﬂ¯"ºø·ÿY»…2>9     Aêï¸  ByäE=„®é ?Üff?Æ ~ BKŸeBKküA£±[?˘Œ»?)x’>ßÜ¬¬{F?>≠´ü>Îx=»¥9>éÿ≤>sú=° ¡AS@fœJÙÿEøƒ∆A£±[A∑*VAøÔ<Aª‘x@w˜¯F:¸‡  'À?ñ^W BOÇò    @ZŸCÂö@fR8 ?s33?äk• BÇ!£BvøcAçfœ@Ñ"@'!->}Vm¬*‹]<ŸË><·GÆ<Dõ¶=©—•=:«<IR?√Õ6@fœJﬂ¯"ºø∆Aç)Aíf1AºÁ[A≥áÎAÇÄ5Fvπ¿  =>?ÄÎ Dy∂ˇ   √?Ñƒ0D…)w@ÖÏ? ?Çè\?ÉzN Bß∫†B©÷9AºABˇ@ÖïÅ>tSè¬Ã<t!<Np;<jJå>SÌ1={~ë;¥9X?RZÓ@fœK	ÈçŒøƒA≈ÒAnm
+Aº€çA±àÒB;«´F„ É  k†?Ü˝	 Ei    ™?á0˙E!hòAämv ?Çè\?|äú BÅBwﬁÌA4n@wh~@/∆®>Xy>¬ñ÷<mëh<IÖ<Ï¿=u~ù=hs;¥9X?kÙà@fœJÙÿEøƒAoKAÅπ%AÆí¶A§˛A}eÓFÜZ  <∆?ç+N DÚ¯u   «?®9E_¸∫@=$ ?Çè\?Çú$ Bk˛BBk¡UAxl"@àj∑@Fe>X«„¬1ﬂV<≤ïÍ<úwö<«À>*Ω=≥33<9#£?˝Y¥@fœJÙÿEøƒAxƒAtÔA≠_5A£LAòÂ
+F`0  5?áL DçR   ?¥«?¥»Æ@ "A:«=øn?ˇ◊Ω=…è¸A'¿>"~≤ACü>Ø´  #~5336805235661209600              SDSS     @eœ%;:?˝¥Çæã¡j>DÂ     AÜ•  Bxï¿y˚i ?∫·H?ØMæ BLæ´BO4àAù¨A–¢Ah?]øH¬]ã«>ŒÊ2>ˆ8Ü@	?}C"˛A‰éÛ=≠V@µ≥@eœ%;:?Ì•πAûÙ(¿"ûA‰’VA‘4pD6ïNEW  'œ>` @åâ’    ?â’Cá@° ?xQÏ?ù< BL•,B\g8Aè-¨@ì)˙@õè≈> ⁄∫¬ûó$<Ùÿ=tº=
+	>ó1Ò>J=q<XD–?¢u@eœ%;:?Ì£¬Aè∞_A_PkA¡:¡AµDAÙˇF0ê°  *?Éñß D;%u   í?ëüDﬂyè@x ¥ ?É◊
+?ç% BLiDBmò‚AÑ∂„@á®‡@ôW?>¿  ¬òab<äqﬁ<¢3ú<¶L0>2·>	∫^;˘	l?CØ∏@eœ%1√?Ì§jAÖ6AJrjAµó1A©∞AﬁØªFrÄë  -˝?®Ω Dè-•   ?çÖE9∑∞@…º® ?Çè\?âd BLósB}QÏAÄO@Ü∆“@ó9¡>Ω!ˇ¬ïêU<Ñµ›<öu<£S>&±ÿ=ÎÖ<	†'?W’g@eœ%;:?Ì§jAÄ ıACæ"A±)A•>˛A⁄EFü*  1)?œ!G Dè˙µ   Ó?íé5EÇÖ…@ù˘ ?p£◊?óﬂ; BL‰˜BM2A|±[@G⁄Ÿ@X”[>∫)«¬†x8=Yc=r‰è=M5®>å√~>{J#<é@C|Ó@eœ%;:?Ì§A}$"AaBŸA®ù¶Aû*~Ap≤«G2µ©  '∑@è˛Ñ D%Œ“   ﬁ?±ö?õßë@À.ÏA9‡ê=ª˘Æ@N=√›A¢ >≈A∑
+>¿◊â 	É∂532620507288201216               SDSS     @amæv»¥9?Èz∑VC¥>Jûo     AÑ  B]Ó˘@õjc ?ëÎÖ?±Ë> BO‹BO;A†‹]@hS:@8Ô>äÁ’B!Ω>ó>´>â†'>C…Ô?à«ø?#ä=ﬁ“âA{˚@amΩ¯Ùs?KŸA†Á˝A©≠FAÕ( Aƒx÷ALú*F  'œ?Z’Œ B.    $?wãCüµN?ñ≥a ?p£◊?≥§î BêînBö&˜AçJ#@≈&Ö@LcÒ>¢@∏BQÔ=o= ˘	<æÌ>}=À˚<*d√?§<ü@amæaœ˛∞?K‘kAçzàAèA√ª™Aπá_A‚rsF©˝⁄  TÂ?Ä' Dïèi   –?xûõDõ2\ø#c1 '?s33?§„Ω B™M‡B¿u?AÅ~≈@˘∆ª@ÄV÷>≠OﬂBG±'<Ñµ›<ç∏ª<Np;>:ÂÂ=Ä  ;†ê.?˙D@amæv»¥9?K’ªAÅ÷¢As◊˜Aº∏[A±ê¡B-™GG~  |?èåe E&ß—   	Ú?ÜºD¸¸‡?då 2?xQÏ?ùÉQ BÆOOB¥a;AyFtAå¥@ëx>®1'BE´Ó<XD–<g∞<t!>Ç˝Â=ì©*;ùIR?óç@amæv»¥9?K’Az,%A^§dAªjqAØºBf9åFı™£  w)?ÉÚ E•Î   ‚?{âﬂE,·æ„åD ?Üff?§í Bí2âBöÆVAn|AÜ†È@¡jË>π	lBBu<¬&Å<¿É=^i≠?ﬁYk>ÇZÓ<2ïÍ?éV@amæv»¥9?K÷bAoÙTA6<fA¡<œA¥Z;CéFÆP  UΩ?ÅÙ^ D}∞à   ·?ÇŒ ?•ÀJ@ÀtA:¬¬=øc∫?ˇê\=»∞ÙA2‡> ïÚAoi>ΩHW kÑ345757951929116672               SDSS     @kZqué?‚
+RiY_Ó>]cà     Aáé§  BG*ê¿8i  ?é{?Üœ BFéBKA©ßª?•Û>ﬁ($?   ¡2/>∆‹]>ULò=≠V>.f∞>Õ˙D=≤ïÍ@Ÿ^û@kZ√7!’?N•A©ßªA≥ZA∏DhAµÑ @÷óF$oÖ  'œ?Ñ.U A `&    ?≥„∞CÈÖM?ƒá6 ?Ö∏?ã∏Â BJncBM‰ZAèÆÊ@¨æË@”∞ä>\¨AÒÖà=ìﬁ<ˆîF=bÇA?'ˇ>›IR<ùIR@>⁄∫@kZ‹áTÛ?S;AêÖA0¢A»ÔA∫‘6BG°F#å  '@?ÑÊ\ C˛m∂   ˛?m#D“&v@b_§ %?ÅGÆ?äk• BJ”BN~AÜ=q@q¶¯@∑+‘>wYA´®ç<|PH<e`B<üæw>#Ñ>$x<Á?ùÅ@kZÒÄ
+|?S;AÜÍmA-ˆ™A∑ä,A™‚¨AÌ’ÄF"YÕ  '5?ÑÅÌ Díê¸   ¸?ì$ E!pÜ@¶⁄ '?áÆ?àØO BI—ÉBM√ AÅ…R@}h8@Ωo>W€ıA∏zD<`u˜<F?<≠´ü>9)è>-\˚<-‡?∑@kZx¿?S;AÇÄUA Z
+A¥hKAßôkBÆ4F#C  '.?Ö,( Dñâ¡   ??ç–2E}∑Az ?áÆ?ÄﬂŒ BJoBNLdAÎ@M€"@•AÚ>êÂ`A∆ªô<®¡U<ïÈ‚=«„>wC’>}p§<we˛?ÓÆ}@kZÒÄ
+|?S„AÄáSA-læA≠å A°TA∂“F"‡^  'µ?ÉC9 C¸VÍ   º?ë~9?äg@À°A9ŸO=ø@@ „=ƒé∑A\ª>äÖAS9>¿| Ê636205227829127168               SDSS     @`£lÙ!-@“vâ >_zN     Aá|D  B,&é@rC 
+?ßÆ?Ÿdÿ +∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Cçp@&åf ?ä=q?∏j  BL6…BK˚Aì6@a¬â@rÕü>ã(¡Ù '=:«= 'R==>ÒÅ>pé<§®¡@*¯8@`£l -∂@&êÇAìÉ AÇ5ùA¡>.A∂R$Aï∑F+A  'ø?â‡Á D‘Z   ¸?üDï]8øì‘Ê ?Ö∏?ñë˚  BwK¨B_z«AÜØ∏@ì9á@ñÆ}>èﬂ;¡Ôò»<óçP<Öáî<úwö>3∂Z> 7<	†'?à£◊@`£lÙ!-@&ê¨Aá*≈AVhA∫ ÖAÆL=AÌôaFYm  5?ÇÈ6 D¢ÙH   º?â≠pDÏTªAn) ?áÆ?ó  Bz∑öB_√‰AÇ¶@èy}@ñÿE>åÃÕ¡ÏÅÿ<á+<jJå<ë—N>"%±=ÎÖ;ˇó$?ÄåÁ@`£må?@&ê÷AÉ!fAMi6Aµ∑ÀA©‚XAÁ Fc$â  5œ?áı D®”   –?åR_EÏ¿6îg ?ö·H?¶0˝  BK êBLZ∫AÅ˜@bŒ?@t[¿>ôJı¡˘b∑=RΩ=‰&=%ù>Ö™+>càf<õ•„@«@`£m	÷∂@&ë AÅU:A^æ∞AÆ”A£·Aó-F/Íà  '≤?ç–) D•   ∏?©zG?ê§ñ@ÀÏåA:5~=°C.@Zj=´-Añ!>â4A£(>ß1w ŸßG15_Y1_IN1_352                   GAMA     @kÌa˘Ü?¸î&˛qäá>d8	 ?Ä  AöXÈ  B”µ-Ω•p∂ 
+?Üff?†“ BJÜBJbAßu?©g?a‰˜=Ã/É¡≤Ãd>N;Õ>>Ì=ôe,>ˆ»?ì˜œ>àBæ±∑@kÌb8⁄<!?‰†‰AßuA•∑®A≤D®A≠%ü?®F"Ø‡  '∑?ÉÉ B)]U    ?¡è=Céeá@Z
+p ?xQÏ?ïDª BKi*BJÇA°á>Ç∂Õ@H¥9>+C¬≥3∆< ∆< ∆< ∆< ∆< ∆< ∆< @kÌbË—?‰†‰A°DUA\ÜÇA°ﬂ—Aóæ‹?î D‚®  &J>=mq A¢Â0    V>rr‚D&&@jm\ ?áÆ?{¨q BKO\BKÌAö}ã>Ωj.@∞Î>·AXy=är=ªô= 4n=i;?õ∂F=t!Aè
+=@kÌbË—?‰°8Aõ!"AZRA§W+Aó’R@3Ø®FÂ5  %€?Äfw BcW    V?).ÂDb¿AVΩÙ ?é{?tª BKBJ =Aó’g>∆~@$›>ÑMB9X<ˆîF<‰éä<¬¯8<¬Ûõ>Ù`™=ÑÍKAÅrÂ@kÌb#·Üò?‰°8AóÊ€Ap4ÄAüÂAñV?πNáF1oå  &ì?ì1˝ Ccc—    i@
+ô}D|ÌmAêC¯ ?Ö∏?vwp BL`˘BL"úAòo?Äß=“Ta>Ω‰¬+¸π=∂‚Î=ôôö?[]Ã>à~o?€jË>QA[ØO@kÌa‰˜e˛?‰¢4AòoAôAôE€Aô¨??†lF5††  'á?ì
+ BK¸{     ?À¸{@SËé@  |A9‚b=÷à†@ç=ﬂ‘ΩAc=‹ÚQA¯y>Ûqò xìG15_Y1_BN1_011                   GAMA     @j∏Ä≤B?Û6ÿn¡~ª>k—$ ?Ä  Aêz^  A—Ê7@"íÄ ?è\)?≥5~ -∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C4áˆ@,‰µ !?Ä  ?¶0˝ BK-]BJMAòC˛@mﬁ‡@û?>oÏWø¨/É=á»K=tá˝=û∏R??/Ï=~(@£≤-@j∏Ä«:ºî?ô∂pAò „Akr)A»¿™Aº∑ÄA…_˘F"&9  'ó?É4 CÅOÂ   *?^,~D)n‘@Y≤  ?Çè\?òNQ BJfœBJ„TAéÌë@yÏ@Ñz>C{J?ÿ|Ö<Ù!<÷°b<˛≈m>û<>A£n<ÄùI@8bN@j∏ÄÒ,'¶?ô∂√AèKÓAfA∏=A¨ÕíAbºTFå˝  '{?zâ Cˆ'â   9?]~ËDîeA]ﬂÎ ?É◊
+?ö
+¶ BJú˚BJ◊
+Aä¡U@!¡@è≠C>|£¿y?}< W®<∞Ú|<µ=’$:>„Ω<cº”@m]@j∏Ä‹3r?ô∂√Aã1ZAQûåA≥ÓãA®MìAxtÜFıf  &ñ?wg D3≤ß   ë?å	‹D¡Øœ@ ! ?Üff?©©®  BJåÁBKNVAà˚J?¯é›@ÇãD=˜e˛¡Ωªô=Ufœ=@ÎÓ=Å£n>n"£>ÏM=&L0A6Ãd@j∏Ä‹3r?ô∑AâVùAU,ÅAÆîÔA£[A/x(F .ç  '“?ÄπE Clm8    —?êÃ?ñ@…áÙA:ﬁë=”„`@…2=‚WdA¯>$B˙A≈W>Ê≥¶ ˇ373938721638082560               SDSS     @fÿë>ÅEø˝⁄Øx˛Ô_>v&-     Aàâ  AÌL`@-/- ?Ùz·?ƒˇÎ +∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C;!$?©˛ ?àı√?»Á´ Bv}qBÉ}ÙAí¶µ@ñˆ@\æ>¿¬¢ ™;«‚Ç;Éo=.{>é›#>yß;À)_?êŒp@fÿêÍûnÎøÓ’|Aí‚ˇAçEA∆ãâAºKA∑VTFe  =ç?WÇ Cöx‰   ?1DG√>V±r ?åÃÕ?ÀÇ, Bàú”Bói«AÜÉ@ªã˜@êu˜>*Jå¬d¨"<§®¡<≠´ü<¨ŸË>m	=Í≥h;ÎÌ˙@3ú@fÿë)àèÜøÓ’–AÜÙTAgoπAøDA≥ù;B[F.37  M(? DJÑ   Ê?$˜D±1º|™ ?u¬è?áb BéPoBô˝IAÅa@”’@Ñ>%˝ã¬Çñº<á¸π<ìtº<«‚Ç>É◊û=Ø∑È;¸PH?‚W®@fÿë>ÅEøÓ‘‘AÅ∑´Ar“ÇAªƒµA∞£ÏBtKF<⁄Q  Rπ? Da[2   ∑?ªÂDÎoÀA$Ø¸ ?£◊
+?¶0˝ Bi<πBc~≈AÄ‡B@ëE@xò_>Ã¬~(‹=ÛM=•„=[ã¨>∫I>7Ä4<¨ŸË@üÀ@fÿë)àèÜøÓ’(AÅ1œAhñWA¥ÊA©‡≈AƒaÚEÂm˝  2ç?</ Cyo   w?*Æ?¶¶«@»A9õ=∞xY?˛ú"=∫ï&A3˚>XAnà>™6 l®583242853187086336               SDSS     @ga‰˜e˛?˚9Í›Y>wßá     AàøÉ  AIçê?„f ?¢è\?…V¡ "∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C~Ã?∆“Ë ?ÅGÆ?®À} BL¥ÒBNóAë_@—dæ@ôqv>â¬!Õj=E÷9=5‹∆=ú¨?rπ>ŒÛM<ÕûÑ@VZÓ@gaœ˛∞u?ŸŒØAëó¡AtÔA „√Aæ˚‚B+¯˙F(JÔ  (P?Öó- C¸Dﬁ   Ω?ë $DòÔ>xÄt ?ÅGÆ?ÜÉ‰ BcÂBKÚAá/Ï@õ¯j@õ‰˜>∂lÙ¬DM        :IR;®ÿ“;>Ì    <o4◊@ga˘Ü?ŸœWAá≥%ARèA∫–AÆ◊BF,¥◊  +∏?|”M DU¡Ÿ   ﬂ?îÁ*Ef™?%˚˛ ?Ö∏?Äpπ B_sMBR«EAÇæ‡@öÏ@ü¥¢>®€å¬#A <éär<pÿE=K˚>ÀË^>IÓÃ<-´ü?óßá@gbË—?ŸœAÉH
+AEïΩA∂ù3A™äBßTFI-Ì  -/?éz» DtTt   ?†ñ'E*2¡üı
+ ?Üff?ôõë BKs3BJÃ≥AÜY@©?@≠V>µÈ‚¬(◊$=Uõ=YK=¶Äù?[á`>˝Ãd<—∑@!ƒ3@gbË—?ŸœAÄ`ÁA4\õAµ?¢A®’≥B∆ F+§4  '∞?ädı C»!   -?™?õ°˛@» rA:12=§ìØ@ ¯G=ØåÏA4¥>ñVA∫œ>¢§± 4ª372818044428249088               SDSS     @fïßÊö‘øˆVM”ÿ>}˚î     Aàrd  A·Öõ¿$Å ?è\)?°⁄' &∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Cem?@ë ?Çè\?ëÃ BKŒBw	lAêÁ8AøŸ@¢œB>sÅÿBéŒ=Yc={µ=¥9X?¬¿Å>’?}<–©@oÔû@fï¶ﬁ¸z:ø≤≤lAëu4Aw»;A—eªA≈=ŸBÅçÍFR}Ω  0M?ãt C˛»ﬁ   ¡?ëDXDJ8@)O≥ ?É◊
+?ØMæ Bn∑µBããQAÜw2@‡Ï%@¢6„>w¥¢BÜÖ¢:7Ä49ùIR;ÜYK=K$‹<ìtº:kÌ˙?Ç™@fïßÊö‘ø≤≤lAáAAY∂TA¬
+AµÊ'BC-âFÖ.ç  ?Ú?ÖK∂ Dçß"   µ?òŸDß/«@√\i 
+?àı√?ûa| Bj°-Bç{≥AÇ–±@¡ÃÙ@ÄÔ5>Ç√ Bï˚Á<¬&Å<ﬁ “<Ëß>úx∏>,•<49X?∆˝"@fïßÊö‘ø≤≤lAÉ)}AoŒA∫≠˜AØÅfBMÜFè£  ?µ?è¥ Dç.>   ó?ùO©DÓlL¿[" ?ëÎÖ?†˚¸ BJÇ'B[_ÛA~Åo@‰Å¯@ó≈÷>RàŒBéPb=H¥9=_;d=¿N•?õˆ¿>⁄Óc<ı¬è@°.I@fïßÊö‘ø≤≤AzˆAWkÊAª:AØ^B9Æ™F?&  *Û?éZƒ C‘ö   |?è9?≠Ã@∆∑PA:ßU=óœà@ËW=ûŒ∂A®v=˛“ëA¥l>†å¡ 	l⁄340181779128281088               SDSS     @jûEå“
+˙?Ÿˆ+jÁ’g>Üa     Aä@  Bd∞@nﬁ 	?òQÏ?ΩüÄ 1∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Ce¬¥?SYˆ ?É◊
+?ö
+¶ BKÿ‚BKHfAñ2ñ@Zû®@zªô>sÍ≥¡¶µ=f1˘=Fß=Uœ´>©g>ïµt<¬¯8@v)«@jûE∂√v>œ™ŒAñÖÕAÉÜAƒ1ÂAπ#nAî‚WF*1Î  '•?â`t C´≤°   `?yæDxá‰?L‰ ?ÅGÆ?öË— B_ÆcBKê±Aä$@V[B@ÇAâ>Ñg8øÈÖ<∆?<∫«<ØO>!“=ˇb∑<u?»4n@jûE∂√v>œ¨AärAg©»A∑´êA¨tAótFJ@è  +	?ñcÈ DV    ?à˙HDﬂ}Óø∏Sø ?Çè\?å'˙ B_PBK~(AÑœB@ÉI¸@ïv`>òìu¿:≥h<¨1<ïÈ‚<√…Ô>B–>©*<0Ú|?¢∂Æ@jûEÀº+ï>œ¨AÖHdAOÉA∂†A™9A“:F8Zo  )ß?ç°À DEΩ@   À?‹íhE 's¡°◊¸ ?É◊
+?†åÁ BJ˝øBL_VAÉÁm@B±Ç@rîF>¨ø±¿ŸÇ™=ëú‡=i·±=ï+>Œ‡.>÷RΩ<¯7µ@m!ˇ@jûE‡¥·>œÆºAÑ4OA_!AAÆâ£A£ûñAÄ“‡Fel‚  'œ?∏l< C·2N   ?ﬁñä?å—π@ƒ"A:?ä=∑¥]?ˇ—“=ƒÓ≠AÒg>J0A+¸>≤ˆ& “º527067973282719744               SDSS     @`≠—x-8G?˝º£n/>Übx     Aä;;  B'¢5A≈¥ ?û∏R?ü?ß BÅ‰3BV˘>A†;`cÉ@jÄù?9X¬tÑ∂                            @`≠∆—·ƒ?Ë6πA†J≈@dgAÈA[t<ê:@F$/˚  'Ç?Ñ¸z C´    4@”ùØCy…êA+¸g ?É◊
+?ö
+¶ BLTïBJ◊¬Aï=@§«i@›Uõ=◊ßá¬Shˆ=cº”=PÂ`=ˆ_Ÿ?Æ3ó?s@O=3–}AT=@`≠—x-8G?Ë-åAï˛∏A1ÑyAŒA¿íŸBHêF0˜m  &¡?í  Cíƒπ   ?á'XDä‚Ç@µÉÓ ?Ö∏?å'˙ BKcÒBK<πAâç@p_‘@øØ∏=µ?}¬5˜< W®<¬¯8=‘,>ö_>î„Ω<äqﬁ@Àzx@`≠—¢£Y?Ë-‡AäF∞A.ªAºãíAØ≤¡A¯~WF-‚y  &É?ê{Ã DBrO   î?ñ◊ÁE+ˇAir≠ ?Çè\?yÒ BKñ°BKôAÖ4¢@\*@Ω<6=-Bƒ¬@/<ßÁ<ûÏ¿=ØO>Öpg>áÀ<ÜYKAIπı@`≠—¢£Y?Ë.4AÖÍùA&fA∑ÄA™A©A‡møF=ıó  &ø?ú‚∞ D:ÄÉ   h?õ¿E3ÁNB^• ?ãÖ?Ö6§ BK†BK<6AÑÇ™@	ñÎ@¢ãD=Çﬁ¡“Z∫;Q∑:ùIR<–Â`=ƒ3Ü>%;Dõ¶@Ó£◊@`≠—¢£Y?Ë-‡AÖ<A/˜ÅA≠XwA°2XAoF¢F]Û  '_?≥∏Ì CÇZZ    ≥?∫m2?¶¯‘@ƒ"A9™~=ìMï@?>=üdAó¯=¯¨ÕAâ>>ùU 3P529270570236274688               SDSS     @`’€aª˚?¬âv5ÁBö>ÜÌg     Aã“  AfXÇ@\,„ ?¶ff?•¡Ë ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C/tå>®S 0?hı√?òNQ BLÀ)B`µ%Aïá»@≥{¡@ÜbN>∂8ÜBz◊?=0â†=XD–=W
+=?âª>åI∫<õ•„?ˇ1ê@`’€L¬Pr>A5AïÈ%AÑÂ†A ˘ŒAø†«B°FvA  ,Y?c=u C”Ëπ   Í?]laDL√e@é3  6?u¬è?à@: B`/ûBé⁄kAàJı@·ô∂@ù(ç>∫ëBy¨⁄<àŒp<¨ŸË<»¥9>≠W•>I∫;ˇó$?O∑È@`’€aª˚>FtAà–'A_®eA¬DúA∂BÊB=∞F\€B  <ì?iXÿ DV+}   ;?JÄïD≠	Ÿ@Ãö :?ÅGÆ?Ä£ BT±BÇ™=AÖÀ@¨›ª@çÚÂ>™ÕüByO<]/<ÜYK<üæw>Iå=—Ç™;Â`B?L<ü@`’€v≥ªÑ>FtAÖ~A`fSA∫bYAÆŒiB»GF@et  4Ù?hàÖ DèyJ   á?}Ü%D·ı®A¶tÇ ?ÅGÆ?ãIœ BL&fBI«AÑLd@oN@u˘>†'RB|W®=Å=1ƒ3=•„T>⁄≠ß>óÈ<À˚@@wö@`’€aª˚>IAÑõ3Afu'A≤‡AßÍAüæ“Fø∫  '≈?jå∏ CÄ'˘   1?W"]?ùa‹@ƒ"6A9‡Ñ=À˘?˙Ÿß=◊˙[AÃƒ>(»<AVf>‡Ìe :Ã@G09_Y4_211_125                   GAMA     @`:`ÈN„ìø˚1må>â¢∆ ?Ä  AãÄ  @Oˆ¿ Xé ?∞£◊?ƒ!¿ ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bˇk øÈnj *?Ä  ?¿:  BMabBLΩøAò¬@[åÓ@=hs> 4n¬\.}=ëhs=ökQ=ÉØ∏>æÜç>ñRΩ='ÁA6Bƒ@`:`ÄsWÊøŸâãAò=›Aï¶uA∆2èAºO
+Am∫ˇF7Ä!  'œ?ìÅù C£ôY   ?õ±XD(o|æÍÖ :?áÆ?û–ë BWî{BeΩŸAä§@àª@@ÜÁ=⁄πı¬\2a<ﬁ “<‰éä=-‡>èìQ>Dµ›<ìtº@≤W®@`:`‘V.
+øŸà„Aã:Ao∂6Aæ7NA≤⁄$A∆‡©FZí‚  /?îΩı DF·π   ö?ò‰·Dãö¢?∏ôW J?É◊
+?¢∏R B[(BiØiAÜ^”@Çú$@ÉıZ>Ÿ¬kÅÚ<∏QÏ<¬&Å<‹]d>Q@Î>á<cº”@V∂Æ@`:`˛GôøŸà„AÜº^AgÒA∏ªøA≠vJA∫4©FZè∏  0Ø?è©e Dn=   D?ëÕÌD‡)ùA˚5 *?é{?†˚¸ BKó$BN9AÉﬂŸ@{ z@ô’g=ﬁû¬Yüæ=IÖ=<”[=±¯°?('?g8=#n/A@8Ü@`:`‘V.
+øŸàêAÑ_ÿAKº·A∂ÄÂA™ñFAŒ¬ôF7Æ‚  'Ä?îŒy CªI    ˝?ΩJ'?ë5Ö@√>A: ¡=π,û@ Kô=≈{ıAõ>2µAJΩ>¿{$ Ñé323258651529734144               SDSS     @f‡0¸¯√?Ì;˜'>ãw     Aâï;  AÒs‰øòß/ ?ßÆ?¸˘± ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< CS%–@R
+ ?ãÖ?ªˇ BM/5BL-Aîhs@íL§@ó=Ÿ>9	l¬1ö=g’g=K)_=ä⁄∫?“ö>€"—=%@¿C-@f‡1√L?h)JAî‰aAsRäA»„ñAΩNAÏÙvF"˘è  'À?ÉÂ C‘S   u?ëπ^DK~Î?zÒ ?àı√?ƒê÷ BQ'áB\ˇÊAà˜œ@yÊ@ùIR>Em]¬W1ﬁ<£◊
+<¥9X<µ‹∆>3∂Z>.À˚<^“â@T @f‡1√L?h*ôAâ}4APxÂA∫æ•AÆºA“I|F.£¡  +Ö?Äi∂ D[¿v   S?Ñ6mD†•@∑¶ ?ëÎÖ?«ök Be6…BeíTAÑÏ¿@f'œ@à>B>&µ¬Z`\<°aÂ<úwö<Œp;>1Q+>$®¡<T˝Ù@5ûÑ@f‡1√L?h+AAÖQA[ ÂA¥˚ÌA©î"A®ÁáFMzq  1h?Ö# DlÃè   Ä?áPRDÈ–èA¶h ?√◊
+@·∆  BL¥BMm¨AyjËAü ûAùóY>çOﬂ¬Y·À=\]d=Dõ¶>ßÔûAÆ;@ÕUõ=5sÎ@´†@f‡1&Èx’?h+AA}Èp¡Éç⁄Aœ¬ãAΩ–9Dvp≈F!íè  '“?Å◊^ D<kﬂ   ¶?‰õ%?ò˛Æ@√UA:üÍ=π)7?˛Z/=∆â A⁄Z>˚NA…Ç>±$’ 2æ371701765281703936               SDSS     @fY‡"&˛øıÑ#œÄ‹>çÎŸ     AãJ>  Aπ£–¿ÇŒ& ?é{?ùÚg %∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C8eèΩÖP "?s33?ù< B\ßRBKÅAï;Õ@•¶¯@sa>†˘	¡Óºü=â7L=bÎ=éÛM?#^Ú>°@<–Â`@E˘@fY‡7‹áø¨!AïâNAä9A…iïAæ{A€◊JF,'  *Ï?Ä@: C¬—   s?ÜmπDIo?´ıâ ?Ö∏?ú6 Bp0äBcÃòAàﬁj@•¥ì@çÛ∂>Äh‹¬\]<Ê1˘<«À=o>¢u´>/ù≤<P©?Á$t@fY‡Líø¨ ≈AâK∑AhëEAæxDA≤‰NA¸¶ıF9ãƒ  4h?bò DI!&   S?rdDûKñ@« ?Üff?®À} BleØBPR AÖÆ@àÖ`@r.≤>ö˚¡Úm∆<Ïø±<«À< W®>D>◊‹<AT ?∏[¿@fY‡7‹áø¨ qAÖ˙©AoÖAA∂†A´∂«A¥h‰FJX5  .˛?â  DU°K   ﬂ?î–}D◊Ì˙¡ÜiŸ ?é{?Æﬁ© BLnòBKöAÉÈ‚@f,A@]∏>£˛]¬ =ZQ=8∫«=kÌ˙>π…Ö>çÑM<Ê1˘@P!@fY‡7‹áø¨ ≈AÑ&sApGÅA±J>A¶¬.AåŸÚF"'5  'À?Çeø Có*ƒ   ?åπ?¢…∫@¬?A:WØ=ºø?¸}=…√›Aﬂ>vBA
+∞>∏#ß 0j370524457938216960               SDSS     @fUqKú∑øÙEóNeæ°>èÿÆ     AåH  A⁄%-ø˚ ?¯QÏ?ß~= ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< CiUn@%g ?°GÆ?¶† BJm)BLËXAîo@ß	S@œëh=ÍJåBT v=1[W=9ıZ=≤˛≈?|ÿ^?. “=+AVm@fU\RÁ.ø¢,∫Aî‚ÿA>$ÑAÃﬂ&AøØ“B<ªyFsï  'Ã?f±£ CóµN   q?RÄDLÜˇø£-* ?Æ{?´e˛ BIv„BY⁄Aâ·±@lçΩ@∂€å>.c BpÂ,<Æ}V<¢3ú<ÿD–>W‚F>l"h<jJå@1‰˜@fUõ=»ø¢,Aäé5A6b√Aªî¶AÆÔAËc›FÍ^  )?^≠≈ DÕk   X?0œtDªÙ?Œ#ÿ ?Üff?®\h BISBM∞§AÜåÁ@2; @áÆ=∑YBc∆®<ç∏ª<Éo<æÌ=Ïo>
+	<:«@ï†@fUõ=»ø¢,AÜOAX2rA≤·uAß~AÇMeFÂ/  '¢?Å C˙Ç   B?{E*d@˙ı… ?·GÆ?≤WT BIQhBN$AÖh
+?Ìë@cÅÿ=∫˚BU!H<‘˝Ù<ﬁ “=æw>^°>á8<Á∞A')_@fUõ=»ø¢+øAÖ©fA^≈A©ÓÇAüHAŸ˚F◊à  '´?WÖ C4∂V   ?,û„?üJÎ@¬WA9û¡=Àœ£?˚ßÃ=ÿ§$A™ª>+ÕA-P>‹Ω àu601368572467374080               SDSS     @j¸ÑM:ì@uMU>ê’¶     Aã©û  A±
+óΩΩ;¯ 	?•∏?≠"S *∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< CPüÚ@W¶z 
+?Ö∏?è1ê BN££BJû∏AóüÛ@^©@"—>â¡ao=úwö=~≈m=úø>˜C’>”@O=ˇó@ú-‡@j¸ÑM:ì@(˚+AóˆõAÉ<ÒA≈û,A∫}	AôàlF#ó  (w?Å^c C;Ü˛    ‚?TköDWûÕ¿MHË )?ÅGÆ?í™; Bm»ŒBJ¢4Aâ≈@µOj@Ø=Ÿ>î!¡oˆî<ÎC<ÃÃÕ=0â†>˚J∞>àeï<cº”?⁄¿É@j¸ÑvÚ•§@(˚+Aâ∞“AHŒ6A¿®A¥0òB*JbF;64  .G?Åt% DOFﬁ   £?ù9+D∫“…@/I3 (?Üff?êª BeΩqBJœ≈AÖZÜ@óH@¶0U>ä⁄∫¡å[¿<À˚<∑Ä4=
+qﬁ>°éû>Qhs<g∞?Íë@j¸ÑãÎ[-@(˚+AÖÌ∫ADﬁƒAπ∆áA≠àlB[\F5Uf  ,Î?Å/ D&,Ω   n?à…uE	åu¿Œÿ ?ãÖ?Ñ«è BJÌBK÷AÅY¥@ÿ¥9@’Ø∏>ïÈ‚¡4–}=[ã¨=Bè\>ˆî?ÔCt?Z¶L=Cñ@É◊
+@j¸ÑvÚ•§@(˚UAÇ2¨ApﬁAº◊ÜAØàïB}(F(·%  '•?àP§ CòÚ%    ˘?ù>›?¶°h@¬\A9ÕÍ=…R?˘p=ÿ•Aèù>,BÜA≈O>¿§ ¬I530331598873192448               SDSS     @a1äGÏ˛õ?˙j≥g†˘	>ëÇ™     AãÙ  @Œ3¯¿ÎL1 ?¨ÃÕ?≈o  ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C7-H?“!‘ ?É◊
+?öË— BL<PBI¶ÅAñiy@{vë@Ü8Ü=ßÜ¬¡ê==|PH=hß=g∞>Õf>óˆ+=	7LAdÑ@a1ä	ﬁ?”UGAñ îAÇ¬/A»ø∞AΩg˜A∂		F#7  'î?Éˆ≤ Cë¨y   B?g°YD«∞?4AE ?›p§?πH™ B^ﬂ§B^ÍAâwö@ìcΩ@õó$=#◊
+¡Ò§=≈=	7L=
+	>íZ@>O≈<îFtAqá˝@a1ä\Â¥$?”UGAâ˙YA[¯kAøí¬A≥õ·AıjßFIäï  /^?à'È D*8E   Ï?i7D∞†|@PO  ?ãÖ?ìàf BW*KBV#ÒAÑ8ª@ûrm@™¬¯<ë—N¿Ô;<“àŒ<ÃÃÕ=.{>œe{>pÚ|<Ç@∏AÔ«@a1äGÏ˛õ?”UõAÑ“ıADµAº-AØ—çBﬁôFJ7  +˜?ì.‡ DHDC   Ÿ?åßWDÿè˙A∂Œë ?ãÖ?†“ BJ‹˚BI‘{AÑ
+r@AÓ@uV=déä¬ù =o4◊=h>B=ßRT>ﬂ¯ﬂ>⁄6„=!aÂA’£n@a1ä\Â¥$?”UGAÑY?Ad)A±πîA¶√¶AÅsÌF/˝  'Ω?åÔ= Cö'   ?ó§ï?©bm@¬dA9≥¸=»ÏI?˘[Z=◊n{A{¯>,∂A¨>ø —≥G15_Y2_005_252                   GAMA     @k[Oﬂ;dZøÒ˙ó·2µ_>íÄÒ ?Ä  Aåæç  A¢oú?»Ó‰ ?é{?ü?ß F∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C.ÿ7?ØK˙ /?n{?îfê BLkkBK#◊Aö1[@ñ1@Ï_>PbNBõ‡'=õ==Ñì>Å@@2=«@£◊=(XyA‰è@k[OãXé7øè’gAõ(rA'ÄA–≈áA√
+:BEn·D`§ú  ≥?rËö Bê
+á    \?Hg±DP,·@âc .?z·H?âçz BK6zBLQ Aê¸Ö?O*@äu>EºBr‰©<÷°b<¨1=ínò>f¥„>«∞<^“â@z\í@k[OµI˘Høè‘kAëcôAZ‚DAµ}A™`A2u·FU4  &Õ?j≈e Cfc   &?HSD©˜©@BŒp ?Ä  ?îfê BKïMBKÎ∫Aãx@üﬁ@ß1ê=øÂ…BÉ‚<–Â`<ë—N=ú‡v>¨‰>ÚGE<B¯8A¸@k[OµI˘Høè‘øAã±8A:Ò;Aµ[`A©¿AÜƒSD*6Ã  ?Z±∞ B◊¸    °?*˝öD˘…éAhÁí ?é{?å'˙ BK_VBL{Aäfœ?Àiº@Äò_>uB\ù≤=µ›<¬¯8=È˘>îä??Ê<¨ŸË@Ωôö@k[OµI˘Høè‘øAäøAPÜ&A´3A†	EAÆCDeÏ  ≥?w• BÍ+Ú    Ä?j+Ú?≈@¡;‡A:m‚=πX?˝“=∆…ÏA∆<>ûòAÅØ>¨l °G09_Y1_CS2_187                   GAMA     @`u S‚÷$øÿˇm3	A»>í∫ù ?Ä  Aí∂  Aëa!?◊~˛ ?è\)?´e˛ F∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C·™?≥√ ?Ä  ?û–ë BJ/BKâAöÁ’@Ön@√HÄ=∏QÏBùyı=å~(=ì·>ö«@Â?º˙≠=^“âA∞∏Ô@`u íÃˆææ«˚jAõ¶©AQmàAœÿúA¬ÎõBRãD3Ú˜  ó?HÇS C…ç    …?HˆÉD≥@8q ?p£◊?ãIœ 
+BI˘€BL
+€AëØ@ÿ4@¥V÷=õ=¡’˚≥<–Â`<ÃÃÕ>.{??¢Ì?iË><ºjA|3ú@`u ß≈¨Gæ«˙AëΩnA:∆{AºhíAØ—˜Añ€¿FÃà  &‚?Ç∞u C≥ m   b?ÅrëDä4@7ï "?àı√?â¸è BI§BK0!Aé&µ?ø7-@ùﬂ;<ÿD–¡$wö<∆?<®¡U=´>])>Ï"h<ë—NAÈm∆@`u ß≈¨Gæ«¸πAé≠A<œA∞·wA§⁄›A!òFÜ  &Ò?uΩ≈ CQE%    Î?c¯àD¿Ωí¿M¬ﬂ ?ãÖ?ó BJM”BKmCAâuZ@ºV@∂’–>	Ö¡àPÂ=D2 =+>H?c7∆?òH=£A_C@`u íÃˆææ«˚jAä!’A'T A¥
+'Aßd§AóíF~  '°?k‘ Cw‰$    Ê?âÙÚ?àp@¡;œA9—ã=¡W?¸ä∫=–≤TAíã>#¬kA.>πs… óì525926680028538880               SDSS     @`lpéﬁTµ?ÛïµsÍ≥h>ì     Aé¥  ATw1¿d” ?åÃÕ?ûa| <∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C#£?ìX’ ?s33?§„Ω BMæBLçAö≠¨@9H™@î◊s>Lò_¬:±ﬁ=bÎ=E÷9=§?Ê>Îπ?…=ØO@„ˆ˝@`lp£◊
+=?úÆ Aõ%‘ArãA∆Û!Aª,Aì¿ F^á  'ƒ?}F[ CI˜œ    Ë?^‹{DEqE@:D 6?xQÏ?óﬂ; BMQBL©*Aåßª@cÜ@®_>Êõ¬≤<Œp;<Ω<6=~(>Äyú>ÄùI<Öáî@acà@`lpÕ»uO?úÆ Aç>KAIÒAΩ~ÍA±2≤AÕ	 FÏz  '•?vﬂ2 D+™   è?Ö¡4D≤3À@pj™ 1?}p§?ïDª BMJ¶BLò+AáÜé@q&@ΩË>>8Ô¬0”<©ì<ùIR=är>é£`>â∫^<y	l@sÕ6@`lpÕ»uO?úÆ Aà=ÖA+’ A∫!SA≠R£Aˆƒ¯FÅ  'û?|u D|òD   Ù?´ DÈÚgAt4 ?Üff?°⁄' BMWBL…RAÖÕ@2õ@ëY>/ÏW¬C]~=.{=çP=ïÅ>»ı >ÚÒ™=+@Á{J@`lpÕ»uO?úÆ AÜ?BAKxœA±†0A•Ù™Aäˇ~F"˙ﬂ  'ƒ?É' CyHé    Á?ä!é?Ü=å@¡;ÍA9Ÿ=≥Ù∏@ :=≈ÅKAﬂc>QVAëw>ØÛ*  ˝G345671915144243200               SDSS     @kãîöVW˚ø‘C™yª≠¡>ìæ     AéÒq  AèøΩ¿)v— ?ä=q?ëÃ ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C!4@Ë£ 6?s33?É9 BQ]~BL‘Añ”&AU|@õÕ6>˚⁄Q¡»Û=∆?=ãCñ>6„@$µ£?.HÈ<ÎC@ˆî@kãîØOÑæ¢ÛAóV9AÅ‹A”èÛA«óõBwQìFCT  (?õ¬ò CÖXŸ    ˚?à ›DÕøä≈ú O?É◊
+?ÅΩ˘ BêëNBMSAäë A@†^5?6¡¯£>où≤>!-w>ù‰@≠<µ?…∞ä=tÿ@ö-@kãîƒG√æ¢£Aã1Ad+⁄A∆DKA∫,æB|UwIç[  8B*“J DXù   n?≤NCDì+|@oôø H?ä=q?d=Ó BòóœBMOAá¨@‹ÔI@©ïÅ>◊ök¡‘π$=ïÈ‚=r{≥>õ=?Ï˛?,]d=M@C¡æ@kãîƒG√æ¢£Aá§AMÒA¿'gA≥”iBHëüH
+ØL  :ÃAı Dl∑X   ?ú ?DøL€¡>-å 0?áÆ?]Lò BNıBMÜAÑf2@˙”@µUõ>˝óˆ¡∆£:=˘€#=∂Æ}>âQÉ@Çˇ÷?¥m∆=^“â@ç·±@kãîöVW˚æ¢£AÖoA>_öAæøjA≤"ÿBso:G4ó‹  'ì@íl Cá].    ⁄?ûı•?§ﬁb@¡;ÍA:ÄG=œ#’?˝EÃ=—HAA∫>mÕA¡•>ÎßÇ ¢i375021189929658368               SDSS     @fÚÃ∑‘D¿|ŒX%[>ïÂÛ     Aå[  @éï!>‰’ ?ëÎÖ?»	Å ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BÛÓ™¿=ëà ?s33?¥Çø BNxBNQÏAò…∫@aÕ@$,=>â‘ï¡i2a=ﬁi≠=∏∫«=6E¢>Ç∂Õ>6»¥=YK@ôí:@fÚÃcÒA ¿ÊAò‡mAõÜπA≈:ôAªÌÓA\6EF5+	  'À?ë∞G Cù5B   ?ôD„‹?«≥\ ?Çè\?•¡Ë BpßBM¯lAä¥¢@úöô@É»K>äÕü¡ÄàŒ=ø=
+	=YK>ò‹Å>4¢4<r{≥?ÌÌ)@fÚÃ∑‘D¿ÊGAãÁAt7Aæ∆=A≥Ç8Aﬁ˛ﬂFFQ  .å?àV¥ DhK^   w?º|rDÅ,C@Xç ?}p§?©:ì BqKBN2ˇAÜ/O@îzH@~>ï‹∆¡?¯8=-‡<˘€#=©ì>äp>*d√<be?Ωp§@fÚÃç‚¨2¿ÊAÜÖœAm3≈A∏ÌVA≠Õ	AÕ9<FL_∂  .ú?åPz Dwú   z?«HD≈∏‡AeË‰ ?ä=q?óp& BMƒ3BM»KAÜ~@/[@6‘,>â‘ï¡©%„=¿É=•ÆÊ=ù≤->¥Dä>±N<=3g°@≈˘@fÚÃxÈˆ©¿ÊGAÜ.RAéRAÆäeA§ÃHA8‰.F5Ì≠  'À?íL« Câ°|    ø?∏w?°Œ;@¡<8A:ﬂ@=πÙ@ T=≈àÑA‚ì>béA≠—>∏e' ÿ604663259563321344               SDSS     @k•∫«À)?˛@·qüç>ò&´     AçHy  AçﬂÙø›p ?¢è\?¢I= )∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< CË…º›E ?Ö∏?ìP BOâBMñAõè\@*Qd@Dìu>£‰&B(Í≥=éÛM=m(ç=â‘ï>†"C>Ø∑È=•„@çˇ.@k•∫à&™è?Ú∏Aõ∫NAêπˇA√7·Aπ,¸A=¿/F1=  'ñ?|Öê CC<ﬂ    ∫?Ü[pD<ùJ@çÚä &?Çè\?ÑXy BM‡êBMD∂Aã°-@ô∞@õhs>ßÆBAo<‘˝Ù<ƒõ¶=-´ü> Û¸>|Ñ∂<z¨⁄?€ïÅ@k•∫«À)?Ú∏Aå#£A[¡Aø]∂A≥hAˇõÔF!∫8  'y?ÉC D   &?ÑB.Dü4øPm¸ ?}p§?ÑXy BQ~‡BNT‰AÜ∏@ØÒ	@ß*0>≠VB=<«‚Ç<¨1=0Ú|>Ô1Æ>Äê.<mëh?ƒ(ˆ@k•∫‹	Ä≤?Ú_AÜ≥nAImAº`xA∞BdF(   (E?ÖÄ, DÓ\   ?óÎqDÈeá¿8Dû ?è\)?{¨q  BN˛BM•AÉ—É@£#À@ó7L>Ω»B~]=ÉØ∏=Q∑=˚Ám?ñh·?ù≤=‘,@tµ›@k•∫«À)?ÚdAÑMgAQiµA∑ÎùA¨ÑB˚F%P  '∏?Ö/∫ C0R    ©?ÜF?óXu@¿óHA:Ó≤=´⁄œ@ À=ºe4AÒ≥>ëoA∞$>§n$ √529226589771163648               SDSS     @`˙K∆ßÔûø¡thá®÷>ò3∆     Aç#∞  æÄºVæ‹OÓ ?ó
+=?§„Ω 6∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C™∞?Ú64 "?p£◊?ûa|  BJå≥BIyXAñ}ã@‡‹ó@í6„>où≤?≈%F=È˘=”éÛ>°À?ÿ=]?!∞ä=5sÎ@”‰˜@`˙KôZØæCÅAñÒêAÖ6XA—∂/A∆ZB0HoFÑó  '∏?’•e DÖµ   e?”íîD)∂cæÇ#U (?è\)?àØO B~nÃBIôAã/Ï@ùΩ£@é¶L>ÜßAM§©=eï<Ëß=1[W>¨π><⁄<]/?Ìw2@`˙Lí8æ@·AãûSAj}ﬂAøœ}A¥6?AÒû*Fçx…  1‚?µÇf DÕnL   Ã?ÿk≈DûT?Ñµ ;?Çè\?}h«  BV¥BI≠ëAák@Äk+@É¯°>uˆ˝Af¶µ<Ô4◊<Œp;<ı¬è>f¨ >$%Ø<`u˜@)«@`˙KôZØæ@·Aáw¸Af§¸A∏uA¨—ÂA∑FùÄR  )|?Ú¸& DÍCÂ   ç@ÛçD…–”Aò7£ ?àı√?ÜÉ‰  BJsBI;AÉ “@∂¡@öu˜>ñ»¥Aë=ä=q=jJå=‘`™?çÇè??=eï@É@`˙KôZØæCÅAÉÅÃAR3ÙA∫ìAÆ$êBÜFöN)  '“?¯ ® Dòiﬂ   °@;"÷?§6t@¿óHA:€Ä=©Ì´@ Â≈=∫vêA)>"ÁA°À>£¶w ∆<531486911236171776               SDSS     @aGEMÁÍ`øƒ$≥=Øç¯>õaª     Aç[`  A∑Åº@$H ?ê£◊?•R“ ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C,DÄ>°ù+  ?xQÏ?¶0˝ BJÓcBJYeAá˚JC5¨]Adä€>Çúx¡%x=•„T=î„Ω?0ê.Cê(∆@ãlã=GÀ@ ¨@aGEMÁÍ`æ!-wAâÕÉ?±-B )AÔ¬AEõQ‰D7Â  'œ=ì“∑ A    x=ù·#DY⁄|?Üª˜ ?Çè\?àØO BJYËBJiAäv˝@~◊Ë@¨’–>2∞!BêÔ≈<”ZÜ<„º”=*d√>ÆÁå>ñ°b<ïÈ‚@a+@aGEb‡üËæ!-wAãbADt=AΩ,≈A∞ƒ8AÎÓŸFpX√  'Ω?¡ã/ Dê|ﬁ   _?Ûø¨DÿzÓ?±kv ?ÅGÆ?qBp BJnIBJÎQAà@–u@_ú>X*ôBóP§<Óc =o= 'R>-.>PbN<¨ŸË@d-‡@aGEb‡üËæ!*ÿAà@zAi≥AÆ¨ÎA§ËA2·ãG¥  'Æ@YCÃ DÕq≠   U@01wEIâ¡bâ˜ ?àı√?ã∏Â BJ√∞BJ	AÜ‰√?–©ÿ@F◊s>Qú‡¬§Z«=Gyß=RÛ=O™Œ>*>©˘=≤-@÷@aGEMÁÍ`æ!0AáEAhÆòAßrÑAù[v@Íå√FWxÆ  'œ?≠4µ Cß4ù    ∆?ÿ/V?§- @¿ …A9´(=—4Ú?ı§ã=‹ÌA\>-MÌAv>∆„™ ”y346855539394766848               SDSS     @kõË—Rø„ß⁄§¸§>úûÌ     AéÂò  BAÇK?GËÇ ?áÆ?òNQ  BI!BN-˙A†u˜Azú˚A4n?;/Ï¬ä»Ä>í X>À)?õW?B*øìA§@=ÃcÒ@◊.I@kõ•èq"øáHA°âuA3åA‚Ì"A‘ŒÔC8fFJ/  '“?s'Ï Aaè    
+?¥¶CGuæSÀü *?n{?è1ê BLÌCBKºAôõ	@T‚∞@†¬>¡∞ä¬E5%='Ôû=9ıZ=be>Ω√>ŒHÈ<À)_@1T @kõ¬zcøá?Aö$ÕAdæ≤A∆gzA∫Q»A∂PÄFk‘  '∏?o'Œ CÅ1    ?jènD]‰÷@Lå ?u¬è?ÜÉ‰ BLàKBS—hAãˆ…@ëwÎ@º£◊>∫6„¬XS@<á+<í£<˘	l>ôÄË>u%F</O?à—∑@kõ'ª/Ïøá?Aå´‚A7—AøßA≤N;B«ÖFH±  (ﬁ?lÎ D#s   Â?a∫D«ƒÍ@4» ?ä=q?à@:  BLLÁBL?AáPH@Ö3ñ@∫>∫í£¬QÁ’<z¨⁄<P©<÷°b>p~Ó>PbN<u?mûÑ@kõ'ª/ÏøáÎAàõA-dpA∏÷"A¨ÄBVoF¨_  &Á?v;¸ D/ø‹   ”?xÍÈEò“¿Q≈ö ?áÆ?êª  BLÅBL9AÉ,@®u@⁄ê.>ª=¬IÇ¯<‘˝Ù<´6z=êñº?P/ß?	«z<û	?ÿE@kõ'ª/ÏøáÎAÑ∫AWzAπpA¨˝BJôF t  'ï?s–  CÆKN   O?Ö1$?ØÄ"@¿!A:O#=«V?ˇøC=œˇ%A≠ø>!.œA	N>‡ƒ˜ ≈G529179585649076224               SDSS     @a)÷bwƒ]ø QŒ_p>ùˆU     Aå˝õ  Bö> œ ?GÆ?ù< 2∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C$oﬂ?º¿H ?ú(ˆ?í™; BWSﬁBa	lAî¡ÚA“∏@¡m]>¡◊»=lø±=T,=>~v…@cîá?]cà<˜e˛@Ì'ª@a)÷#ç£¬æRê¨Aï~A_á<A’„êA… ÓBë¸EÌmr  .I?$&? CÚ´   ?ñ·DMƒF=˙∫E '?p£◊?áb BJÉ BMù~AãSè@|yÚ@ìõ=>6îF¡ÅzD<≠´ü<üæw=kQ>{J∞>û<7Ä4@ïÍ@a)÷M‘æRéAã…∆A_”©AΩ+A±mA«∫…E¿ó  'Ω?° Cü∞f   Î?&ÑÿD∑zä@*∂í +?åÃÕ?É9 BJ;BMä#AÖ¡æ@è∞¡@ûZÓ>8†ê¡å.}<Åo <g∞<Ú{≥>fë>è\<IR?˝Å@a)÷bwƒ]æRéAÜHÕANªA∫êAÆ©AÛtqEøä∞  'Ω?> CÀS   ?@Ewæ¿ı ?áÆ?âd BJ¥9BMIlAÑÿ@c2«@ô@>2◊¡œ(ç=!ñ<˝Û∂=ì@O>·Ss>ßE9<ÕûÑ@òZÓ@a)÷M‘æRéAÑÄßAG¸|A¥7SA®R	A∫(≥EªŸ  'Ω?¨A CJß   #?1∂≠?•È–@¿!sA:Ë/=¬ÅŸ?˝˜¥=ŒãjAõñ>!bØA(n>∫™d  ¬C346792867231983616               SDSS     @k…∫^5?}øÍπ8õR ~>†7     AèÄÉ  A÷ëè?ŸDq ?•∏?ú•' ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Cπ›æ+ù )?Üff?ïDª BLÆBKì¯Aúéä@B.¸@≤ÎÓ>π	lA˘ΩŸ=d%Ø=AT =ªÕ6?È’?N_==@q¶µ@k…∫4C‘køU…≈Aù5'ATkgA»vAªËA∫hEE˘ó  'ö?IÆY B„r∏    ©?,D∂D>^t?[k (?áÆ?í;%  BJ„:BL+ÖAè($@!@ç_p>öuA‚ “<ØO<è\)<ØO=›„´>/É{<B¯8?∏G@k…∫s-ıøU…AèîáA[uÏA∑öA¨
+èAtîF<  'ã?Tf¸ C˛ò   R?[r®D£á#¿I¡ı '?ÅGÆ?ìàf  BKÌBLBAâXÆ@Lñ≈@≠s>ñBGE<ùIR<Åo <„º”>?`G>d›/<B¯8?ªCñ@k…∫^5?}øU…Aâ˜A7A”A∂ËÓA™|âAæaFãÂ  '0?V÷ó C““T   ?Ri D‘ÌAM‹ª ?•∏?í™;  BJ‹BL¨ãAá{@'d±@í±ƒ>§µ›A∑ff=u<ˇó$=[ã¨>çîU>≈˝ã< W®@2ﬁ@k…∫s-ıøU»uAáFAGw_A∞~7A§∆⁄AÉ£Fè§  '∆?Rr CrW>   ?qeÿ?âPﬂ@øœÿA: *=´”@ ’≤=∫bA˜5>‚ATΩ>§  ]‡323300707849496576               SDSS     @f¸Æ˚*Æ)?ÚÛWÊp‚¡>†,ë     Aåÿ  A·zá@Ω‰ 	?è\)?òNQ %∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C |Œ@Ä 	?ä=q?ï≥– BL#nBL·|AóY@«ü@å⁄>
+⁄∫Bò=∑¥¢=º£=£◊?ß:z?’–=6Æ}A3u@f¸Ø%;?óöAópæAá–ÅA— A≈z'BÎ˘F!õ  'Æ?Å€ CWÎ⁄    ﬂ?wﬂ∞D#!Tøf  ?ÅGÆ?°k BLêBi+AãÀ@¨&*@ß‹∆>Yôö¬±9<˝!ˇ=Œp=I>€Ø]>\‡v<éär@7ä	@f¸Ø#c≤?óökAã¶ìATpÓA¬x'A∂/5BßëF?µµ  -
+?à5r Dè   P?zÍ|Då]˛@øI ?ê£◊?Õ≠ó BL‹)BiR:AÖ¸@øóäA'>B>/ÏWB¨@ <∆?<«À=è'ª?é˜?e˝ã<æﬂ§@ã’g@f¸Æ˚*Æ)?óökAád4?˛”ÔA¬ü.A≥fsB»XıF6À  -?ÅøË DvíÂ   ¶?∫4D´*ø&⁄D ?ëÎÖ?ﬂÁ  BL©≠BMé•AÑ$t@å$•@ƒg8>tºjB°«=Ç@∏=âk∫=ÿ‚?~aö?[x=(Xy@ª/Ï@f¸Ø#c≤?óöøAÑ‰ËA!3vA∏W4A´c¸BŒëF"ú   '√?Çﬁò C¿iÌ   ?µf?£Ë@ø–A:2=∆H¶?˘	=÷…%AX3>)óõAüû>¥€ ÁÚ373873300696229888               SDSS     @fµ7u∏¿xl"h	’>¢\>     Aé5¥  ¡Åø¨© ?ãÖ?ú6 ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C-??Ûº #?s33?î’¶ BM‘{BNAì°ñAπ„Aué>éæ‡¬=ØO=êñº=ëhs>Ø˘rAà/I@P±=D2 @¡@@fµ7!’<ﬁ¿#√µAî‘çA$âAÂ€ËA◊RÏCö±jF˝»  '?|,^ CÖ·2     ?©´VD/øo@$8ú "?Ö∏?ÜÉ‰ BL¿iBNdZAå_@ùí@®πı>ãjË¬.∆<‚e<≠´ü=<£>ËhU>èAÚ<ãCñ@˚@fµ7`ø]y¿#√ãAåˆ#AQñØA¡ÉAµ4ìBÃ¯F£t  &[?ÉÑô Dg   ?ÇÙ◊D¨Vﬂø?ï '?Ö∏?wUõ B][BRz^AáÍË@á£‡@´k∫>ï®X¬5;d<¶L0<ë—N=LÃÕ>’Ï->ñlÙ<y	l?Î◊
+@fµ7K∆ß¿#√ãAàÜ$A@RâA∫WcA≠˜ºA˘æF56  +&?ÜöN D_ﬂó   k?π,ΩD“jËA»ü ?àı√?|äú BMÉñBO&ÅAÇ¢—@ﬁÄì@«&>Fß¬>—∑=Q∑=<j>*d√@øb?nV=>ﬂ§A_p@fµ76ÕÚg¿#√aAÉg;A,boAøl5A≤iÁBoÓ¬F#∞Æ  'a?Öy CJ˛k    µ?èçº?ãÜ∆@ø–èA:‹ﬁ=∫r?˚›I=Ã›AuÚ>Z‡AU©>•‘D 7gÜG09_Y1_GS2_142                   GAMA     @a)ò5ãÇøÔ´…GNœ>•ù‹ ?Ä  Aèø§  Aî˜˜øA™ 
+?´Ö?∑? ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BœSa=lÒ. ?kÖ?¢∏R BKgBIÒAAö¶L@∂Ûﬁ@®Ta>±&È@∑cà=·∞ä=≈8Ô>RΩ?÷»?l≤ñ==•@ú-@a)ò5ãÇø}_öAõ<ÃArfA—ÇMA≈6YB$‘ F;   '»?sLü C%“ñ    √?Y≤ DDe@'Ø∂ ?xQÏ?ú•' BSBJˇ}Aè1ƒ@<˘¸@äø>ú(ˆAâˇc        9Q∑9üı‘9—∑9—∑:IR@a)òJAø}^JAèòÏAddA∫DëAÆŒãAåbiF)‹  )\?Ç√“ D2çè   X?ò]~DÖP{?XÅ -?Çè\?ùÚg BR˛´BKc£Aà@∞sè@Ì`B>ÄAâA∫ä<ŸË><ªò»=^ “?/>1>ˆ8Ü<â†'@nò@a)òJAø}]¢Aâ…A˜[A¿ˆ™A≥5(Bië?F)Ÿå  (È?Ñ€Y DADQ   ?ö⁄ˇDƒAì@#√e ?Üff?¢∏R BKBJ¥ºAÖ ê@Õ£	A&Å>Ä[¿AÒã=V8Ü=5‹∆>:˚@9÷K?Ó≈m=5‹∆@øo@a)òJAø}^JAÜi%@{FçA¡∑ÛA≤ÊÊBºÂF0<J  '£?éG‘ CzŸç    ‡?èWæ?ñRv@øêÇA9ù¢=∂ÎH?ˇ‡†=»îA≠F>âyA¡Z>´¨≠ 5≥G15_Y4_210_187                   GAMA     @juÃÃÃÃÕ@øP3:>ß|F ?Ä  Aûì  A˚©¿[Å˚ 
+?ùp§?ú6 ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B>ˆ@/∞ ?ä=q?•¡Ë BOX¸BHà1A®j≥?œ\òA,=?¸B)Ì9Q∑9Q∑;Q∑<QÚ¶=Cñ:ùIR=‹(ˆ@juÃ¢€aª@˜˘A©ñ@Œ5˚A«≈æAπVKA®
+E‰»Œ  %À?A∑H AIÖ    >Ó÷àCUA/‹ %?Çè\?ÜÚ˙ BMâlBIÒ˘Aüí◊?å◊}@π \>éär¬≈=ÙSè=ﬂ§@>mëh?sS@Vß>'RTAüÍ@juÃˆæ7ﬂ@¯°A†BΩA2„\Aª3AÆ].A3˙Fü I  &,@e« B˙£¸    L?”‘C¨ü◊Bü0 "?Ö∏?ÄﬂŒ B§‹]BpWsA†Á8>¥@?üÏW>¡ ¡¬È¸=åÁ=y€#=kÌ˙=-9?Aƒ3=¡â7A.V@juÃˆæ7ﬂ@˜˘A†ÁRAì)“A¶Aüü…?ö"˝DJ&ó  g?m© B–Úπ    Z?îïŸCùTUAåÏΩ ?ÅGÆ?Ç- BM’–BEnAúK«;Å˜ºAùú¨?5…¡√»È?∏‚@√aAÃ•z>∆≈$D⁄*@mŒC![@juÃˆæ7ﬂ@ˆ”Aûã¡ˇ¯⁄A&∆5A·F>IUàF&±|  'a?áu: An“    @?j>∆˘$@øS/A:¡Z=»»Ò@¬´=ÕtiAu>˜fAXa?
+ãÅ  ˚∆345715345853540352               SDSS     @kg"˙÷ÀSøœÒËÊ5>¨A›     AéÔˇ  ¿≠à¿@k ?ëÎÖ?ãIœ  BC´üBÄNŸA°K˚@«På?Jë?d–A ó$?†˘	>Stº=µsÎ?M»@>we˛<á+?úÍ@kg$≥=Øéæ~D˙A°K˚A∑SÎA¬GAΩé˜ARcπF*,°  '“?à¿˘ Ayü~    ?µãDB÷n>ê§á ?xQÏ?éSe BLd©BKbNAú(X@Uˆ∫@M∑= W®BcB=Õj=‹(ˆ=’2a?Í®>÷îF=]/A†£:@kg"˙÷ÀSæèGAúYØAïq∞A jFA¿/AwËF*|  '∂?âap CM\    ◊?tÖvD'Û?√ãH ?áÆ?Ö•π Bä&BwîFAåÕ@ñøŒ@èC>˛]B Ov<Óc <’œ´=EÅ>“5M>pé<ùIR@≠Ÿ@kg#œÄ‹æå®Aç<"Anì#A¬%A∂}nAÁú6FèS  A=?å∆ D=÷á   Ü?ñu∏Dö+U@æ‘ .?É◊
+?]Lò BP5BK†ﬂAÜµ?@æ·]@™ö‘=ù≤-BRvF<µ<∫«=LcÒ?0[>r∞!<]/@ÁéÛ@kg#œÄ‹æå®AáO<AO;äA¡ZÇAµ B.[¡F,˛i  'Í?ä±h DQu#   _?∞≠D»T}A¿Z ?áÆ?e˙D BLö†BK7LAÇøA„Y@À0æ=û	B=ö‘=Fß=9#£>B¯8@Pp?ZW®=1ƒ3AôÉ‰@kg"˙÷ÀSæèGAÇÿÛA3@ÉA≈ŸA∑Ù¥B£óF&Îâ  'ƒ?ÜRµ Cà6    Ú?êH?ø¡(@øîA:û=ø?˚‡/=œ‰AR^> ¯Aˇi>¨Û· 4527398650842185728              SDSS     @kk4÷°aÂ@Ω˛2†f<>∞’¶     AèS?  Ak;¡¿_„a ?Çè\?±Ë> ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< C‰@øéBµ ?xQÏ?ãIœ BL√{BNÑAõ©ì@R)@f~˙>¶¬'¬ñÇ—=û	=πıZ=ÃcÒ?ò•? é=3–}@•å~@kk5 íÃ˜@AõÌ2AãﬁNA«êAº€†AÖ ˚F Ëô  'ë?Ç#: C¢ƒ    §?dÂD=ÂÈ@=M #?åÃÕ?ÜÉ‰ BLÏqBQkAç»@Õı@ûQ>™Jå¬ßÖ<Ùÿ=
+qﬁ=8QÏ>†dÍ>ÄÎÓ<â†'?⁄=q@kk4Îön@ÔÚAçü»AU,ñAΩß®A±ûAÿßF1i  (W?ån„ D ¶   —?öJ}DôÛœ@8kj "?ÅGÆ?ÜÚ˙ BL†vBRÁAäÑM@º@RRΩ>ï?}¬ú=Á<ŸË><˜e˛=+6z>á√>'†˘<É‰&@+k@kk5 íÃ˜@Aä∏ÒAu⁄A±%§A¶“ÍA5‘F3“V  (y?é-b D-8¯   ‡?∏≈LDÔë@´„m ?ÅGÆ?~FÒ BM£ÒBNOBAÜ(X@E|U@Ñ X>öí£¬±HÄ=§›/=¥m∆=˝Û∂?5ı√?.æ‡=\]d@œ€ı@kk4÷°aÂ@EAÜá3AYP£A±ﬂA¶í„AçìãF[#∂  'ƒ?∞XG Cóòe    à@≠ç?¢=·@æŸhA:Ä¸=…òV?ˆ€e=ŸKáAæ>,+›AKv>≥> 5345804956051204096               SDSS     @kÉæÙúıo?»ò$ pπ>∞˜∫     AëKb  ?®∞Ë?ôñx ?îz·?ÜÚ˙ *∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B–æµb2 ?Ä  ?Ñ«è BMÅæBI‰©A°=Ÿ?ÛÈ(@Dõ¶>4Sè¬4iy=û	=õö=øÂ…>üÕ◊?Èy=ÖoAT˜œ@kÉæ ´ä]>D¬¯A°h—AíD/AƒƒJA∫π9A„$F0„Á  'À?é?ö BŒc<    q?i»√D3—@€K ?Ä  ?Ä£ BLíÚBIıéAë)*@+yn@•Å>*~˙¬>µ<¬&Å<√…Ô=àö>£a+>∏‚<∂Æ}@ù4◊@kÉæÙúıo>D¬¯AëªPAK÷„Aº„pA∞©ÃAóÿ.F%Ì·  'ì?Ü+È C´Ì8   8?çiDã*ø?O˛ ?Çè\?yÒ BL]BJ}VAçä@Ù@î≥h>Gìﬁ¬sÎ‘<ßÔû<µ‹∆=wö>	Ä%>iì<•zx@YrG@kÉø	ï™¯>D≈óAçózAL-^A≥Ô˚A®)˘AW	%Fµ◊  'õ?~Ÿ£ C≤t›   o?xˆæDœøó@MV 	?ãÖ?e BM¸BK
+¶Aãc ?Œ`o@Ä•z=í£¬Õ=á+=x7µ=›Ãd>ßãí?:å=í:*Bÿ»@kÉæﬂ§?Ê>D»6AãªxAVh
+AÆ+A£ ÁAÀ√F1uÍ  'ƒ?éŒ% C#Øa    k?√œh?Åß`@æ⁄≥A9≤=¿„÷?¸ÓÅ=◊OAg‡>Ô`A÷Ω>ßŒ≠ /317654434639276032               SDSS     @eÃ}‘A5T?≈˛⁄fÉê>±˚@     Aíf  A ±@2M AóÖ@ ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bm(r@+® ?ä=q?ˆ[  BL·ñBJàA†Ft@=ﬁ@=S&>±∑B-çP>%zx>:*=Û∂F?^?7e˛=óçP@ˇX‚@eÃ}È9Í›>/ÒïA†lÅAò∑4A…=àAøZzAL®QF$O±  '“?Ñ
+– C@íÎ    ã?±UêCêuø≤ír ?ëÎÖ?Œ˙◊ BiW$BITïAêY¥@ÜQ@ÖÖ>õÕ6ø˜Uõ=ä=q=i˘=^ “>›6a>∞ñº<»¥9@2˚@eÃ}‘A5T>/ÓˆAêπ¥AwïµA¡f˛A∂ÊA¡äãF>ƒ  -?ÜÍÖ C˛ØN   ≈?èÌÜD8Qø2Àv ?ãÖ?œŸ Bl◊®BJÅÚAä…Ô@ä„@ú¿É>èO?}5®:IR9—∑=RÛ>·π¶>π#£;åÁ=ùIR@eÃ}È9Í›>/Ù4AãN~AV'AΩKÅA±LòAÁöF?ãÂ  -“?Ö≈µ D
+=^   
+?áóiD^v»¿ÿıÊ ?è\)?¿:   BL˝ãBJ≈mAÉ4A~7A°À>ﬂ§@¡M≥>#àf>ˆî>‰˜fAÇt@Xï=Ü¬'@¥cÒ@eÃ}È9Í›>/ˆ”AÑb«@€òÁAÃ¥Aæ9+CP·AF/‚ü  '“?çW÷ B¨Â§    o?G`s?ù¶Ï@æ›ﬁA9®=ª°‘?˛îe=ÕLA|›>pµAñV>≥°∏ à;318693753055373312               SDSS     @e˚|ÿò≤Íø›Fàzçdÿ>≥g°     AèÀ¡  ATˆ(¿ëŒ• 	?µ¬è?≥5~ .∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B 0~?’ua ?Ä  ?ä⁄∫  BL€åBK$˜AúRâ@é≥¬@sÀ>tÍ¬K=ø±[=¨•z>T ?~“Ë?Í=^ “A ¡@e˚|ÌëhsæÍ4DAúüÃAè∂¸AŒ—«A√‰ïAΩ,F.∂°  '“?åf√ C;=e    §?í#nD	’H?Ùnâ !?Çè\?ÜÉ‰  BLﬂBKp;AéK^@ólC@ìY>ñ°b¬9‘˛<˘	l<Á∞=Ca>›°>à¥9<ïÈ‚@;d@e˚}Ç”ÑæÍ2ÙAé¿≈Ai¯≠A¡ıˇA∂;πAÓ∆ÿF,\  '“?äDÈ DKˆ   ƒ?ûÎëDj§Ö@TΩ  ?É◊
+?ÅN‰  BLvBKZAäµ@ç¨~@åë>óçP¬)Ûú<‰éä<æﬂ§=,ŸË>≥5~>cº”<á+@ ˙≠@e˚}ä¸æÍ2ÙAäÄAfj(Aº]ÙA∞ÿnA’R6F-“ò  'æ?ãıœ Dkq   ‡?ûPyD≠~Aù^T ?áÆ?Ñ«è  BLz*BK+QAÑÕ@Ì◊`@¿ÍK>ô€#¬´∫=Ñì=`u˜>)^û@—ñ?n!ñ=2ïÍ@£ˆ+@e˚}ä¸æÍ2ÙAÖàbA7ÕA¡a3A¥ÅrBwö^F2¶  '“?èê\ Ce~î    ∫?ùÓÅ?£/E@æ‰÷A::d=…±“?˙FS=ÿ8A)]>'â≠AW‚>⁄,K )ñ318684956962351104               SDSS     @e˝ˆË)I•ø$_ZŸjj>∂'|     AèÙ⁄  ?âKD@c&„  ∆< ?¨ÃÕ :∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B”.oª2¿÷ ?é{?ä⁄∫ BM•`BKô1AõÒA@lôf@Nnò>Ï¿¬(x’=…ÓÃ=ﬂ˜=…?+˙>Œ.≤={µAaáî@e˝˜¥∑øÅ"ßAú#Añ<AÀfcA¡'áAàÙF#0[  'ë?É˚Y CΩÍ    Ä?ÇΩÍDj@S\‘ ?z·H?ãIœ BUärBKc◊AçrG@•ëï@êM”>ü|Ó¬äå=‡v=%=IÓÃ>Ÿ>Äﬁ”<ç∏ª@õ¶@e˝˜¥∑øÅ"ßAç„JAmœ¡A¬^JA∂∏°B 0£F1ƒ  (ı?ä[ñ D
+è`   Ë?ë_ﬁDk¢ó@∑ I ?Üff?¥Çø BM2ˇBLß’AâÂ…@Lå≈@¶ÜY>û	¡”∆?    8—∑;e`B<©g<–Â`:o=ë—N@e˝˜'j@øÅ!´AäyÇA?!ˇA∑‘A™÷äA∂DÊF-ïƒ  'B?ç~N Dm∆E   Î?˜ÒØD¢÷N@{º ?®ı√?ú•' BMZkBK'Aà®ˆ@/Ø@NB[>ß∞¬ ı=}Û∂=V°b=Ü$›>†Ó®>®¡U=∏ª@~!ñ@e˝˜'j@øÅ"˚Aà⁄ØAw∏FA∞˙ÄA¶ºâAK@πF*Å  '{?âÕÕ CxŒ»    Õ?õZg?∞'˛@æ±‘A:ÿ—=√∏&?˘øÖ=Ã¬AY”>.AØZ>◊uæ  ˜342309607680534528               SDSS     @jÂå®èøŸ’ê¿≠⁄>∑	     Aê´¸  @X⁄}¿ÜÖZ  ∆< ?¨ÃÕ ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bûç«@IVá 
+?Üff?¥© BL©BI˘Aú-w@Ã{G@ìÀ?Ü¬B>]>x=‡™e>(ˆ?Ùeí?m5®=‡v@4Åo@jÂå˚¸eAæŒØ%Aú¢‘AÉWûA–MπAƒì¢B!2 F4{†  'î?ëÏÂ Có±    ù?e?CÊ#Tø
+ ?Ä  ?è1ê BL$©BJ)*Aêõq@eúı@Åä	>Œp;B	1v:kÌ˙:7Ä4<ãCñ=‹nn=∂Æ}:kÌ˙>YK@jÂçı æŒ¨ÜAêı0AtcAΩyHA≤G±A†˙F1LÑ  &˘?ëìˇ D˚   ÷?íhDF—˘>JD1 ?}p§?è†• BSˇóBIÍËAãÎQ@_‚@h≠¨>Ë	’A„ß=ø<‚Î=ªô>nÀ|>LÃÕ<mëh?¶ªô@jÂçı æŒ¨ÜAå0ôAu≥ëA∑#A¨dùAéÙF7üy  (å?êÍ» DFô   √?ôíèDvå¡SØ ?è\)?£ñ} BLºBHJıAá6F@ì4@ì±[> ÙÒAˇö7=≠Bƒ=ã¨q=ˇó$?åﬂD?>É‰=.{@Çû@jÂçı æŒ±ƒAá¨üAWvãAπÑA≠IÿAË€±F-"˝  'v?åf√ Cfüz    ø?öçπ?}˘≤@ææÉA:îp=—ç?˘?G=ËÑˆA˙¿>(ﬂAê)>™¥· L⁄322140447801632768               SDSS     @f∞1¯†ê.?‚¨GGÑ#>∑+     Aê≤á  AÇ¬ƒ?¥Éê @ÏÃÕ@õ ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B}=?Z›∏ ?É◊
+?Í¿/ BJUõBJ-AîÉA÷⁄@ı‰&>‘…Üø˙àŒ>\∆?>3¸>ı‹∆A‘√r@-fœ=r‰è@™á+@f∞1„ß⁄•?]¢AïÜ‰AHåÚAÊ‡æAÿ¯∆CîÅˆF+Ùò  'œ?ä9Œ C%Y    ù?ÜŒICóE@6; ?åÃÕ@ıÑ Bg1ABMqêAé33@ÆØ@°—N>±4¡2™Œ=ãx=e…=â‘ï?<Á>˜È<¬&Å@ x@f∞1π∂oì?b·Aéø•A^4AƒÃA∑ÑB¯FD¸ı  -U?ãÒ C∆®—   π?f§¶Déæ:a ?àı√?ÁGÑ BbÏ⁄BMÊÅAäÃò@àEÄ@ûÒ™>ÀÌ˙¡ùv…=AΩ•=0â†=wŒŸ?RQ>Ê‹]<´6z@
+¶@f∞1ŒØ%?càAãTìAPU[Aªì0AØÖFAÁºæF=«Ê  ,Ä?àx¿ D
+“?   ›?ï‡Dsc$@t˙ù ?ê£◊?“l BJ…†BN´AÜﬂ@§°Ï@…*0>Áª0¡~1ê= W®=ûÉ‰>+C?Ï6â?∞€å=/∑È@iÃd@f∞1ŒØ%?dÿAá¶VA!êØAªwAÆ6B3äéF,˘F  'À?ãP Câ∫    œ?™T1?ªö@ææÉA:∞ì=ƒv?˝Ì«=Ã÷¸AZÎ>\ÇA—Î>ı` ^@G09_Y1_AX1_111                   GAMA     @`7∞ ƒõ¶@&Qm∞›É>∏ﬂz ?Ä  Aí˘  @˜°H@ oh ?∆ff?ƒˇÎ F∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BâëO?√¥ª #?p£◊?¥© BJâ†BKjŒA°ë—@†;@eè≈<]/Beî{=ÎÖ=·∞ä=Ê1˘>”Æ¸?ﬁj=ßª0CDJ‘@`7∞5ΩQ/@	2aA°‘ªAè<A ÅAø–˛A9!Fsê  'z?zf# BÕË>    ì?3KC«ß@ìﬂG $?u¬è?ùÉQ BK3BKá˝Aí“â@5›S@ÖY>MqBh ™<Ô4◊<˛≈m=•„>VI|>Özx<µ‹∆@x™e@`7∞ ƒõ¶@	2aAì1›Aq’†AæKaA≤¸ΩAÇ•0Fl4  '?vÄw Cú√é   /?ÑráD1‰NAË⁄ (?ÅGÆ?õWÊ BKtBO∑fAç◊‹@.˝@~∏R=CaB™Ò[=
+⁄∫=¸π=•„>L˚>=Ÿ<æﬂ§Aw<ü@`7∞ÀÊ@	2ãAé.1Al""A∏UgA≠6A[⁄«FC?  (?xX˜ DDv
+   ù?ñ[D{‘#@ˇ‚ ?Çè\?ß( BKÙ¢BKπåAä*0@0∑‡@ú¿É=Ùá˝B°µÅ:—∑:7Ä4=ø>MK÷>o∑È;y	l>Âm]@`7Øˆ”0î@	2ãAäÆ¿AH„˜A∂©ÌA™´Aî5F$_  'ö?w~ Cmèñ    Æ?Æ¡Á?_ç™@æë)A9≤?=Àh?ÙJ=‘ÄAU>€{A=q?Ä‚ E§5396481778964234240              SDSS     @`E»K]Ãd?„ÜDR?gı>∏Û#     AêøÛ  ?^’£¿zI ?ÀÖ?√≤´ N∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bπ f?2ˇÖ ?¥z·?•R“ BL…lBLW
+Aû∞@Gaƒ@]≈÷>|PHAÁ8R=Œ;Õ=π¿Ï=ªò»?è>¸ûÌ=Np;@ÈiD@`E»6e€?0”Aû@æAêz5A…Œ	AøB‘Atú¨Fc  '®?Äùs C≠T    ù?u∞§D	™?øvYç ?ä=q?§í  BLdBLàfAçŸË@ûÖñ@≤1˘>®ŒpAÏG„=o<÷°b=Dõ¶>˝î>ØiD<Ñµ›?‰tT@`E»`VÅÌ?1{AémAI¢˜A¬¨ÁA∂#CBÖúF$ZL  'N?ÖŒ· D!h≈   G?ç¿ëDf"“¿P^3 5?¢è\?í;% BKˇ}BLS√Aäø±@RÙ]@|ñº>ô¶µAÛs<ﬁ“â<Ω<6<Ô4◊>8õ_>/4◊<mëh?Ê≈m@`E»`VÅÌ?0”Aã\AkvÊA∑køA¨U_Aêô´FI’  'R?|¡ü DÆπ    ?å‡ÆD†kë@≠±µ ?îz·?ûa| BL+BL/ AÖ≠@¢À4@®i≠>éÊ2B~]=m(ç=H¥9=€¿?âﬁë?&L0=Å@ì"—@`E»`VÅÌ?0”AÜCØAEù£AªZ˚AØ~BΩïF“  '©?"¢ Cl¡    Ì?ª˘?¥¿]@æë)A:L=œ£í?˜‘r=·Aﬂó>/)±AÍπ>ªï˜ ÊÌ605819945829296128               SDSS     @k»	,œk„?˚¥Ã% Ü>æ≈m     Aí”´  @˝7p@.} ?îz·?¢I= ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BöiI@>éŸ ?Çè\?õWÊ BOı®BJõ¶A¢ “@"Í@F⁄∫> ≥h¿EN<>;ò»>H>ÑM?ÿ@??˜=ñá+@´lã@k»ÌÂKI?›•A¢-VAî∑&A«”BAΩº#A6<ËF2Ey  '¢?è= C÷    Y?¿{ CÔÉ~@ÑY≤ (?ÅGÆ?Äpπ BMtBK•`AëÂ`@P‰∏@°ZÜ=2-¬≥›/=<£=C…Ô=êÀ)>‡?˜>ÿ~=ñºB0;@k»	kπå~?›¶AíqAZŸåA¬$A∂ÈA¥MÀF.≠  '?é∆z CÕCµ   !?µ”sDm	?∆'ô #?è\)?wUõ BMNøBL:˚AçøÊ@+";@´(=∂E¢BXsÎ<÷°b<–Â`=õ⁄Q>ΩXh>…x’<∫«AVK^@k»	kπå~?›¶aAéZîA@Ω¡A∫Z¿A≠˝cAú¿F-§Õ  '@?çë≈ Câä   :?ƒXD°’±B48É ?ê£◊?uôF BN1vBKâlAç=?–`á@ê.≤=ä	¬≤Ù=®ı√=´jË>}Û∂?.≠»?îãD= ¿ÉBLÜ@k»	A»!l?›¶Aç≠ŸAJùˆA∞¥A•øA!4òF-ÓÙ  'î?å°@ B˜J‘    O?»Vå?~›h@Ω⁄‡A:ûÕ=ƒXd?˘0‰=œ4?AÆ>$]@Aw[>˝≈! èt4523958828748242944              SDSS     @k¬¬è\(ˆ?Ù‘Ûw[Å0>æÁÇ     AóÄ–  ?±Ú∏@öy3 ?ì33?∞+È 5∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BOT}ºu~î "?É◊
+?¶0˝ BL6…BKu®A•©«@.Òã@Á’?UõBô~ë>Næ‡>ù≤->1©¸?M	/?`u˜=óˆ+@´€#@k¬¬zcsm?¶¶†A•Ω¶AüáA«ÕJAæ¢€A&≈qF>W  'œ?ôm BF≥e    %?´ŸlC D6@ W (?åÃÕ?s‹ BK‘ BLÑ∂Aó \?ÏÁ@Ñ ≈>b∑Bí¯_=5=H¥9=í£>ÑÊ©?x=*Õü@Ω∑È@k¬¬è\(ˆ?¶ßHAó~,AlºA∫‹ùAØï«A+BF"9&  'æ?Çû‹ CCi    ú?\T^D:Ã„A
+ ?åÃÕ?fÿo BLBL·bAëp@\@è∑>ù•BOäı=:*=\)=ê-‡>•∆Y>ÒÎÖ=ìﬁ@xÎÓ@k¬¬è\(ˆ?¶ßúAë‡A[#A∏¨,A≠
+ÎAgÓêF@"‘  '¡?ö© C™©{    ⁄?»iDd≈ÉA>∞Q 
+?É◊
+?ëÃ BK’µBLÊ2Aè-¨?ˇ˙d@ÑM>¡Ω•Bñ∞À=≈÷9=Îπå>9å~?33F?ÆlÙ=øÂ…AÄù@k¬¬è\(ˆ?¶ßúAèãiAZ˛|A≤SƒAßKA6†F?ÿ  'œ?ôò BÔ¬–    E?ﬁc?y¡∆@Ω⁄ÂA9…∫=˜Üì?˜≠•>•
+A¶å>At§Añ†>ªSX £Ñ375067094540118016               SDSS     @g‡Lí¿~iÉQY>øÚÂ     AêçÍ  B9uî¿)NN ?ëÎÖ?ö
+¶ $∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B“@ó• '?Çè\?êÌÂ BLÛúBM£Aü∏R@2Äm@âÕ6=ﬁi≠Bì‰Í=Ùºj=ˆîF>?|Ó?PƒÅ?o;d=¥m∆A‹Ã0@g‡7‹á¿ôA†AÑÒAÀÙÔA¿ÄËAÑ`9F$∞ˇ  'À?ÑpC BÚ4    p?äL∞CÁÎQøÂ±9 %?áÆ?ú•' BLAUBM ÏAêmë@Qò@í3ú>'†˘¬±X»=/O=>ﬂ§=Ä  >∫·s>π0æ<ƒõ¶@Ω—N@g‡`˛Gô¿√Aê·íAe:uAøJA≥gçA£ÊÖFv}  '†?~S* C–h&   °?‚∑DÆÊ>Ø÷Ë 1?àı√?ÜÚ˙ BLÖBMwÈAâ:*@£4.@ O>¡æ¬úf®<ˇó$=¬'=≤-?^‡>¸6< W®@∂≤ñ@g‡Lí¿ôAä◊A,©A¡,1A¥ÃB2ÓPFù  '§?-~ DG   
+?ÖtDøô:@∞X ?åÃÕ?x3∆ BLwöBMyıAÜÔi@¢«ﬂ@¬Ï¿>¥Sè¬â!={Ám=ûOv>|π$@ù?≤¯8=j≥h@ºóç@g‡`˛Gô¿ôAá≠∑A*ªoAºM¬AØb¿B+gÊF"E"  'À?Ç}Ã B¿jº    c?x»?é4]@øW§A;&=¡◊ê?˙•= wTAB°>›AVT>˘W 7π600237449829967872               SDSS     @j∫£¬áË@ƒ¿Y!Ü>¿ñº     AêÖ<  AàYπøÓXo ?ì33?ü?ß &∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B¿`¿+^ ?Ä  ?õ∆¸  BLÕjBK/A†#n?ı˜±@Gqv=zC˛¬Myr>@∏=ıˆ˝=Ê1˘>¿Ùü?%õ==≤˛≈B@4Ò@j∫£≠“_@&-A†P[AëªÒA≈ ÚA∫ÊÆA
+ë"F-!˝  '“?ã!õ BKë    `?†2aD∂∆ø¸cg (?Ä  ?ÜÚ˙ BKÄùBJ(‹Aêu˜@Jrí@î∂Æ>§¬¯¬ õ=›ò<˝Û∂=V8Ü>®3>¥Sè<ºj@$¸P@j∫£ÏÚ˙@%ŸAêÌÏA]Û)Aº‘®A±éA°M–F,Áì  'À?ã Cæsﬁ   Q?ê≠Dê∫t@"®Ä )?áÆ?Ä£ BL<6BJMAàt@≠¢†@«ïÅ>ô¶µ¬'<œAÚ<±ƒ3=ó$?6&§>ÿQÏ<úwö@Ÿ@j∫£¬áË@%ŸAâ9*A,ÑAø∑8A≤≤ãB;±ƒF&Ÿh  'À?Ü,Ä CÈÓp   ü?êMˇDÀK©B)L ?åÃÕ?%  BLñBIÉ A~4nA¡ÀÍAFt>çûÑ¬9‹¨=ô0æ=ä¶L>€"—A∏3_@/¥¢=Å◊‹@˜
+=@j∫£◊
+=q@%ØAÄm»@™÷?A“ïA√ü≤Cπó¸F-¸›  '“?ã—x C,v    Ç?©œB?ïà¬@øp≥A;.=¿Dó?˘zÂ=À‰!A"»>æxA u>—JW 	,í531564151928023040               SDSS     @a^æﬂ§?Ê?÷ ƒõ•„T>ƒ3     AíeY  @À⁄¥@‚*% ?¢è\?≤WT 5∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B–$˘øÙS- %?}p§?≤∆i BK<ÖBLè´Aü5®@·ﬁ@º≥h>ù<6BS™≥=ªÕ6=Ω<6>9#£?k’Â?˛!ñ=∏ÜYA"@a^ø	ï™¯>± ÁAüÍŸAGøêA«n˘A∫ß4AóLÊFg@  '¬?}a" C*ñH    u?∫†	D§o@'Ê ?Ä  ?ë\˚ BLPBM#◊Aêh
+@+.s@¶¿É>g’gB#õı<˝!ˇ<ﬂ§@=Ca>á˘">ÀjË<∆?@lﬁ”@a^æﬂ§?Ê>±6Aê¸AGØ4Aª} AØ;=AòøOF"‚F  'ó?É®7 C«ÑN   a?ê±,Dí„ºø›=Û 2?Ä  ?êÌÂ BKõ⁄BM33AãË>@∑ü@»V÷>ú˙≠Bô1<ºj<§®¡=GÀ>äﬂ+? Aâ<∞Ú|@^û@a^æÙúıo>±ÜAåÆ_Ax]AµúñA®ìÕA≠aPF[5  'ñ?wÔƒ Cªëª   Z?ä«íD∂>G¡uŒ ?}p§?¢I= BK›dBM1[AâÄù@«è@òRΩ>u%FBpÿ=®åÁ=î„Ω>ÑM?ﬂ?ö)«=†[¿A4ã¨@a^æÙúıo>±ÜAâ˛>A?ßäAØ§^A£ƒeAXå¿F%‡  '¡?ÑÍ C
+L    ~?å=A?°x@ø‡‰A9†j=€vh?ıî7=Ïò#Aw‘>8{‘Alç>¿$1 œa5396645056440958976              SDSS     @`=ú#∑ï?¸c«OµI˘>∆˙É     Aí¨  A^πø”/ë ?®ı√?±y) 4∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BÇ‚æOì\ ?Ö∏?û–ë  BL¡âBIõWA§e?Ùâ@AÚ>ﬁÏ¿¬ ]/>∏=Œ_=ÆÊ2>áÁ\>‚@∏=ix’@≠£n@`=á+?„ìA§$<A†A¬¯_A∫W»@’j◊F#ä  '“?ÉkÙ B‰ß&    l?áCπ@øÜäŒ /?ÅGÆ?êª  BLESBJ◊YAêDú@√¥U@Øì>⁄Q¬8’=Kí:=É‰=®ı√?ÇÂt?Y¥<∏QÏ@ Ú|@`=ú#∑ï?„éAêÊ*AUÕÂA«V5A∫‹üB8,∆F.–  '∂?åCW C†Q/   <?Å‡éD<6w>5` $?É◊
+?ÉÈd BLë4BI◊®Aç8Ô@X•»@z@∏>¡£n¬‰è=u<Ïø±=?HÄ>ï◊\>ÑtT<†ê.?˝S&@`=á+?„ÁAçã«ApxßAπJ[AÆ=ÚAìJ˜F3±Ê  '∂?êÕl D‰ó   S?ÀªkD\æIAdwº ?Ö∏?öË—  BL®‹BJËAä@e6@l£◊>ƒµ›¡ªõ⁄>Jı=Â+‘>&ff?Ö?á?V¬=ÑÅo@“d√@`=á+?„:AäIVAr∫¨A∂πŒA´ÈIAîhF;µ•  '“?ñÿf C8≠    a?πœ?æÍ@¿:A:¥Ô=√‚È?˚:"=”ßÚAV>¡%AËn>œ4 	vUG15_Y3_021_023                   GAMA     @kÎøé`Ä?ÿEMÁÍ_Ö>«âa ?Ä  Aù“Ω  AŒfóø X® ?°GÆ?§tß ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bg)à@:H» ?z·H?¢∏R B7êbBVm‡AvIRD9lñ@Ö=Ÿ?hËß¡XD–@“ ?ë ?™3úDéAQ?¡∞ä<<j?Ä—∑@kÎ√0j+>¬K4AwrAÆﬂÇAÙT¯AÈEÖV¬F®∫â  &·@
+‡ C‚8Á    V@®Y˘C4@∑Éë ?Çè\?†“ BK$èBKÊfAô@@©õ==Â+‘¬;>ªÙà>±Œ>˚~ë@U@Ü≈m>ûOvB≤∏R@kÎøHÀí>¬*oAô™{ASjJA¬Á(A∂ìAÜoôHïi∫  'AÙöA C©2*    Å@'‚eCü@‡@ÙÔ &?}p§?ë\˚ BJƒMBKﬂäAê0Ú@‰º@•S>%F¬h…>M;>=»?ê‘˛ATﬂZ@Å¿>üæB¨•@kÎø]xÅ>¬*oAê¬ZAlôVAÕÜA¿ÀBIÛ1G…Ø  %*A-)  C!\ó    ¶?xÿ–C`wj@§4§ ?ùp§?é¬z ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< ?p.@¿-ZA9¥◊= q?∂ä=“"OA*D>ìA6≈>„ô∫  }m323168766454163456               SDSS     @fÏCÈc‹øÚ∏œø∆T> üæ     AèΩ!  BZ:@∏wÓ @◊
+?ƒˇÎ '∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B»Ãzøﬁ6 ?Ö∏?∫&’  BIﬂ§BJÑÍAú_@u˛Í@•Ä4>ΩIR¬ëNc=„ä>
+¶L>6+k?≥>a?Æ;Õ=à1'@”«z@fÏÇ”ÑwøóÜ¬Aú™ÑAie<AÀ™+AøpçAŸ‘£F"   '“?Ç/b C(œq    ä?úì„C”_.@"ƒ‚ ?Üff?«+V  BIà1BK´AçT @§ÿ@ª≥>Ü¬¬rñ=	=1[W=ã¨q?=èÚ?1'<À)_@Pı√@fÏóÃ: øóÖ∆AéäABDWA√ÀÌA∑±B%*∞F-^€  '“?ãR~ D
+`   ‰?í5D9¨Vº“ç: ?è\)?«+V  BH rBLx°Aâ‘a@Ä0@±è≈>üb∑¬l/<÷°b<Ùÿ=Dõ¶>–	‚>À‡ﬂ<û	@6z@fÏ¡Ω•øóÖAäxÒA;WéAª/(AÆ©aAÙ#F≠©  '“?[¨ C˙≤¥   ?xFDùäh@∆NF ?àı√?¨D(  BIâÜBLÜéAáÈ‚@GÊ@¢5?>]≤-¬&ˆ„=uY¥=`u˜=ÿb?*Ü?HK^=IÓÃ@ˆóç@fÏóÃ: øóÖAàvÔA@‹+AµúA©x:A¨πJF$Ÿƒ  '“?Ñyƒ CJ'^    ´?óQﬁ?®≈U@¿qlA9À|> A?Á^‚>¢æAM.>a∞\Ad›>‰ æ#527041585003653120               SDSS     @`†∞tßq…?ıŸâﬂrÔ>À≤ˇ     Aî3Á  ¿œIˇæÊ∂¢ ?ö·H?Æﬁ© ?∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BÅèı>\3C ?Ä  ?ûa| BMá˝BJküAñ`BA‰f@¸|Ö>ÄBüàÈ>-˙D><Ìë?≈mA˛£@2^5=©˚ÁA3§©@`†∞5ΩQ/?ÆÀSAólfAKÃÂAÏ4AﬁVC£/ËF¥ò  'œ?Ä`Ó BË]»    b?óø‹CŒö»?â‚ë ?xQÏ?àØO BK¸PBK‹CAîóˆ@"[@É◊
+>™W®BSƒ3=!ñ=)˚Á=ëhs>ùŒ€>¿h‹<”ZÜ@N+k@`†∞â†'R?ÆÃOAîıRAoë•Aº{èA±7AgFŸFÈ˛  '\?}Ö÷ Cº´õ   #?•˙`D7ﬂê@" $?ÅGÆ?çu: BKø±BJnòAê[¿?ÓRg@1Ë>>ß†˘Bå÷Æ:˘	l;#◊
+<æﬂ§=ÑeŒ=¿∑Ä;ÜYK>Â`@`†∞â†'R?ÆÀSAêz}AÉ‡≠A±N*Aß¨‡@ˆAØF+Úa  't?ãv’ D˘˚   @DÄ‹A¡ç¸N 
+?É◊
+?Ñ«è BKØÉBIgmAéﬁ?À•?∏D–>…ÓÃBû?c=∂‚Î=Êö‘=RàŒ=ˇV>A£n=/O@ë@`†∞â†'R?Æ XAéjAíìA®≠æA°≥Ö@ãÑYF#ˆ  'ø?Ñ¥ CEL    l?È’u?ÑAõ@¿°UA:®∞=∫Ó∏?˛—;= Ü;AD#>ø≈A˘≠>‘y ç>G15_Y6_094_176                   GAMA     @ki≈Ckèõ?ˆ®‡…Ÿ”F>Œp; ?æwAò÷Ç  B?£πA@qo ?û∏R?∑åT ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bj˛sæ=`Ê ?áÆ?Æ ~ Bd¬¯BWNŸAó@÷@¡lã>‚∂Æ¡B%Ø=XD–=6E¢=ò*ô>¡π?eÅ=◊‹@+Æ@ki¿D(M˝?µN<Aó…:A.?&AΩ?A∞\uAôNOF0à¥  'ª?é/s CÃZÑ    ˘?“4C´Ä?@z}v ?Ä  ?ÅΩ˘ BJ/ÉBN∫*Aú≥h?á≥&@á>»åÁ¬®û]=e`B=óˆ+=Œp;>Q´è?ãã¨=zC˛@œÆ@ki≈XdE$?µGÆAùŒA\ñ&A¥∫÷A©\ç@≈ê±F(Å•  '≠?áË BF9    *?óÁD1@y=◊ ?Üff?s‹ BIÍ0BNG»AòËß?1÷x@ã“Ú>z«¬°ç”=kC=kC=‘…Ü> ˛È?ß>´=û∏RADîØ@ki≈m\˙≠?µGZAôRòAE,†A´ûJA†ñ@Ö≠#F$"  'ì?ÄÆ… A•?Ö     ?%?ÖDpÜ√øØP\ 	?Çè\?Ö•π BI}øBNAñr? Ø@põ¶? “¬^¯l=Ô“ =…Ö>3–}> ∞s@*ZÓ>-‡AM@ki≈ÇU∞6?µGAñΩpA@ÃJAû÷<AìÛÎ@;ÍnDqyT  ≥?Çç“ B[3     *?ßa>Q¬Y@¿Ã@A9öˆ=∫Á{?·Ñ=¿ä„A‚∆>%ÅÎAgh>Å·v t636205502707034112               SDSS     @`†UqKú∑@«°7Ù>–oi     Aó‰  @Ú›i¿õ« ?‡  ?∆ºA ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bk-W@2*N ?u¬è?±Ë> BJÒ'BIPHA©_?SÌ1@*ô>8GB¯>[ã¨>TFt=‚ÇA>.({?¥PH>E8ÔBN"@`†U\RÁ.@67µA© öAõrrAºx≥A¥Z@2Á}F†é‡  'œ@f Bî4)    A?ëÏwCø∏‡æEGE ?ÅGÆ?åó BJi«BJxªAñœ´?Ô¶Q@™RΩ>LÃÕAìºj∆< ∆< ∆< ∆< ∆< ∆< ∆< @`†UqKú∑@68	Aói9AD¸óAºÁAØª5AZà√F&‡   %Ï?å–› Cmâé    Õ?îPÂD5#Ø@é•> )?åÃÕ?ê~– BJ¨ãBJâÜAêœ´@_@º6>=VmA|∏='Á=‘,=ßRT>∞Î?4,==	†'@–¬@`†UqKú∑@68	AëÑ#A)ÔjA∏BﬁA´}ÍAÖ!#F/t  'ß?çHM CôàØ    Î?ßADgy¡egÉ 	?Çè\?ï≥– BJˆ„BJ·bAçÚÂ?˝\é@ü⁄Q>M“Úæ(€å=œv`=ªdZ>$˜f?&¢K?µóˆ=∏∫«Ay@`†U\RÁ.@682Aé|IA@ ¬A≥Á*Aß”AXßWF/g  ',?è BË∂ƒ    [?£™Ω?fl®@¡1A: U=º¡ñ?˙Ÿ=…†NA {>~:Ae">⁄â eù340162262796888064               SDSS     @jê~œÈ∑ø?‡>-b8⁄>ÿåÁ     Aï˚ç  A√Úí@£Ç ?ä=q?¢∏R >∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BcDpøê›7 ?u¬è?§„Ω BMìBMòyAß›Ã?Å>@K]Ã>!ˇ.B£Ïq>∞Ú>8Ü>;Õ>h¶ä?æ’–=ÛÅÿBºÖ@jê”ÿZ? )ÒA®xAåQÙA¿ßjA∂xv@ìó⁄F!
+  '¢?Ç… B[tŒ    H?CC≠≤B@€ )?Ä  ?ê~– BM+6BK¸πAñ?@
+∑º@ïûÑ=g’g¬5pU=9ıZ=3–}=åÁ>óªØ?œB=2˛≈BU2@jê”ÿZ? '˙Añ∏vAa03AæÒ A≥$ZA^X∏F#2  'ô?Éæò C>ŸE    ≥?àyD8z@_˝ '?Üff?ÜÉ‰ BM:*BLaˇAéÑÅ@aÈ@‹2 =Ÿc¬sºÓ=‡v=•„=·|?5w!?'ª0=çPAGπå@jê”ÿZ? (¢AèfpADA¿  A≥Z_B(¢F%Xÿ  'ü?ÖäÏ C±°k   ?ûq®DÖp≥ASOŸ ?îz·?â¸è BL∆YBKøÊAéÖ?⁄¡•@|åÁ>dtT¬- “=çÑM=f1˘=Ïø±>π}¸?H¸P=|PHA÷°@jê#Ãç„? 'RAé⁄ìA^|A∞∞ﬂA•ö©AÌëF!¨  'π?Ç=í Ca    m?Øj¯?r{@¬3‹A:r–=÷TÕ?˘tN=Á¥Añ$>,dA‡>Ê≈Z ›ÔG15_Y3_037_295                   GAMA     @j§`ïlo?ˇûD˙<>€F5 ?Ä  AùBó  @Kﬂ ø£3 ?è\)?¨≥> ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bg“'@Ñπù ?áÆ?ùÉQ BNKíBKı?A´]/?eΩAü)«>ä¿É¡€Q>¢©ì>ëè≈?Áêó?ÏxB≠W?Â…Bà3M@j§`óÃ:?¸Ò,A≠ü∆¡î¶A¡…õAØÃTAÛÌbF%ìX  #[?ï‹É A∆ƒµ    ?Ù£VCQÀ∂A6W ,?Üff?Äpπ BLZÓBMÖAú=<@h¡@é‰è>…∫^Be∑ö>∏‚>‚u%?I#£@uÈœ@Æ~>¶ÄùA¯33@j§`ÄsWÊ?¸Ú|Aú¨Aq:πA√O¥A∑¥°AtêôHmÁÅ  "ØA€. Bím§    J?}HCÌlA/"œ  ?É◊
+?e˙D BK‰√BMøÃAîU–@91V@ø‰&=ßRT¡MÚ|?,˙≠?´ü@-ŒA{ä%Aã°-?c˛]C∫Ñ–@j§`ïlo?¸Ú|Aï±A;'?A¬ﬁ"A∂)Aø¨I≤ıN  "ùC%ro C1,ÿ    ó?ñ00DÉ˚A…–B ?àı√?ÉÈd BLh$BLhsAô"h?bÆ?œ'ª?∏ªBÜêÂ> É>:·H=∆
+¶>i˛?Ü}V> N•AÈ‚@j§`kz¢^?¸ÒÄAô$AåŸâA¶ √Aû∞p@%˘‚Fáœ  %õ?ÑXﬁ AºX›    ?qñ?ˇ?@¬aıA:∫æ=◊Òh?Ì´◊=·H&Ab>$§VAzì>øòß  ¨371599510700320768               SDSS     @fC√Û‡7¿aõêÍûo>€üV     Aîè™  ¡‹«î¿Øn @p  ?æ}™ @∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B¶GÃ?ì‡˛ ?u¬è?ôõë BLÑMBJrÂAùAÚ@≥Q“@¬’–>sÇ¬ß\)>°À>∏ª>óK«@T}ö?ÊsÇ=Ωp§AªM@fC√Û‡7¿;Aû A_ÌÒA÷⁄êA…B<π´F$Óº  'ƒ?ÑπE B˚	u    h?ö{˘C÷¡¿=§¿ ?Ö∏?ç‰P BLŸBJqêAíÕü@4˙∑@í˜f=¬è\¬á„;e`B;™d√=cº”>÷ÿ>T…Ü<Ïø±?(Œp@fCÿÏï¿¿;AìB”AeåpAøÆäA≥ı.AéìçF)ﬁO  '´?â> C≠"ö   7?éÑ3D\ˇ√¿Mf< ?ÅGÆ?à@: BL:*BJ‡vAçtT@7∞˝@©ú‡>9€#¡ªƒ–=—N=¬'=ò*ô>◊e‹>˜ßá<Á∞@¶Ï¿@fCÿÏï¿¿;›AéÀAB?ÿA∫R“A≠˛¶A¶…¶F*J  'ô?âyl C„A7   l?ü”ÿDØM7Aë–Ë 
+?É◊
+?y BM>≈BJ£Aãz≠@ π{@n∂Æ>ÅñS¬¢—∆< ∆< ∆< ∆< ∆< ∆< ∆< @fCöu%¿;›AãƒîAcÚÌAØÂ˜A•A(IF+m  'ƒ?âÚÌ BŒNé    c?Ö^æ?ô\¬@¬aıA:–ç=øMc?ıﬂM=«·íAœ•> A€>Ú,‘ ;O~4256080956173582336              SDSS     @a´`k{ø˜Ë3∆ )Ò>€∏=     Aî^Ç  @—<À¿UÊ≥ ?•∏?Í¿/  ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B!¨XøËk¿ ?Ä  ?ÀÒA BIÑ3BJÄ4A†àö@óJa@7)_>Ø™ŒBÕP>ÅÚ>usÎ>u%F?≈ÍN?(«„=π¿ÏA'_Ÿ@a’Q÷åøøBöA†™§A¢ªA—ïtA«’jAüªÈF4-¯  'ƒ?ê˛H Bí æ    K?zÜcCÖ˙¿	
+M ?Çè\?±Ë> BJ‰BL*0Aì…Ô@éˆi@ö)«>‡B*◊Y=Å%=pÿE>!aÂ?ìeˆ?%ù<·GÆ@ò»@añgµÚøøAJAîJrAgºâAƒÆÑA∏¡ñAÎÁYF+|è  'ß?äd^ C¨ó   ?û\∑C˜nä@ı÷ ?àı√?≤WT BJœBBK≥MAéW‹@wç&@ïŒŸ>ú”[BI™Œ=Ft=$?Ê>,ãD?ã%'?3Í≥<Èx’@Px@añgµÚøøAûAé—âA_¯"Aæo3A≤°0A∆£=F$ä  'w?Öj• C»Ü    f?èdDêÒ@âWò 	?ï¬è?≈o  BKIBMW¬Aé_;@HfB@[ä?&»¥B74º>Jı>Ëß>Uœ´?é∞¥?ù„T=Üˆî@ëMj@añgµÚøø@OAéöQAu…nA≥ÄÖA©!AsqRF4+H  'ƒ?ê¸ Bívn    B?é<?ïﬁ@¬{∏A:áø=ƒVD?ı+Ä=œ°8A√ä>1AÌ4>‰ñB Ñæ4540993557531983872              SDSS     @jz]ˆU\S@zmÔ«£ò>›lµ     AìËÖ  AÌ~?üú ?è\)?ùÉQ ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bö§4øt©! ?Ä  ?ìàf BPú¨BK— A°m∆@/„&@Ä{≥>cS¯BäÜ=Ò≥> ÎÓ>J¶L?ÇME?ò1'=÷°bAÇi≠@jz]xÅ@3”√A°≈›AâùAÀÓ˛A¿∆0At”ªF%Ûv  '∞?ÖŒd BÎ‹Ì    W?≠Ç'Cœwr@Nì %?É◊
+?ìàf BM}"BK7LAì_@F≥Ï@ûr∞>BJ¬≠Çú=K˚=Ufœ=ûÉ‰>ıˇx?ˆ+=Å@–£◊@jz^N‹@3”ôAìéîA[ÄGA¿„ªA¥Ÿ2A®m◊F)T  'Ø?bﬁ CoYŸ    ‡?à≈°D@Æä¿:•∑ $?Ö∏?ñ"Ê BM£:BKÌAâµAÎ-Aè\>8Ô5B`V÷=!ñ=Oﬂ>-w2@}Ù/?øßá=‘,@◊≤ˇ@jz^N‹@3”oAã@ú„ AŒQ¶AøaLCi∏F&î}  'π?Ü1∆ CæB   ?©…DõÔZ@ó5f ?É◊
+?É9 BN|BLT,Aã?@'≈@´,•>%ù¬h∑µ=Äh‹=q©¸>"∂Æ?O∑Æ?ôâ7=ù≤-A{º”@jz]·\¶ @3”ÌAãŸA7®Aµ‡ZA©ÇBAë·SF'±t  '¬?Ü¯∆ Cîú    t?°æw?úË=@¬ YA:wp=ÿ_=?ÛèF=Âb¸A>ª>0˜»Aùæ>⁄Ùˇ  Ÿ|G12_Y1_GND1_075                  GAMA     @fﬂ€ ñëßøÿ°µ«Õâã>ﬂ@£ ?Ä  AïÕk  Ac‘¸?"
+è ?•∏@±Ÿ ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B$B@Z€ ?Ä  ?≠ëh  BOBKa|A°Z∫@´πï@9È‚?•„¡‘tà>íàŒ>*≥h>1≥?«¯◊?:Õü=AΩ•@nz@fﬂ€ã¨qæ≈ùA°~äA†ï[A–.ÃA∆^˝A∑XêF(.  '“?á&¶ BËuL    T?±jC.B†@l# ?ãÖ?±
+ BR$©BMó
+Aô2a@U‚.@ò™e>ßÜ¬A——N=‘,==œÑ>ïÈ‚?∞t?usÎ=2ïÍA6@fﬂ‹áTÛwæ≈Aô∞åAmóA∆è˜A∫≠íAÆ ﬁF1Uº  )=?âõ¢ Cúj    •?qnÕC•çf@n˘ ?É◊
+?®\h BclqBLŸAìÇ™@¶È?ò:˚?
+«¡A[¿=·GÆ=V8Ü<Ÿá=¿>q=Æ±ƒ<á¸π?÷À˚@fﬂ€v≥ªÑæ≈˛AìÇ∑A†Ÿ{A≤≤°A¨u≈@∆ÖmFBÄ¯  +•?éú C‰{q   I?±…D¬@;’º ?òQÏ?£'g BH…†BKêóAìö?≤Ö˚@E¬è>N§©¡Æ”¯>8∫«>s>˝•?mj=@e˛>ïÅAÏ‘a@fﬂ‹∆?æ≈ùAì4\A|%êA∞‚„A¶—ü@«“(Då’0  ¨?ôj˘ B˚U    O?Àg(?=2Ê@¬æ'A:9i=»B–?˘iV=ÿUAæ∆>[ûAÂí>¡$ ÿ601322667856914432               SDSS     @jÿ;Õ5®X@Ú†f<t˚>·0     Aóõ3  ?Î-è¿@]ç 	?ëÎÖ?í;% %∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BLÃ°øÎ!H ?Üff?ú6  BJvFBL$tAúàöAÑ∞@˙Ã>ñ˝"ALªô>Ç√ >e„T?;Ì˙AÃ;Æ@ä¬¯>√ Aq¬¯@jÿ;Õ5®X@7î[AùíAAFD2AË<µA⁄@xC;ªjF!í  '“?Åf Bàs¬    5?§≈æCöHX>„( %?Ö∏?äk• BJOBBKΩ•Aóµt@Í|@Üˆî>°£nB3=Ws=9ıZ=•ù>Ω'á?	∫^=ˆ+@âÌ˙@jÿ;Õ5®X@7î1Aò∫AqiÕAøåA≥ªÊAakFmà  '™?~ñ CwD    ™?SÜmD¯lø·π !?ä=q?ÅN‰ BJr BL33Aê.≤@Uæ¢@èyß>®€åB	çÑ<•„<—N<Á=*Ó=¨•z<|PH>ÖÅ@jÿ;Õ5®X@7î[AêûfAdu*AΩ=◊A±ûcA§óüF&Ùá  'µ?Üåµ Ciú    Ì?|V|Dan¿A~´• ?ä=q?Çú$ BJ?BLá„Aç⁄@Ío@íùI>ÕOﬂB
+u%=æﬂ§=¶L0>??aß‡?ßlã=õ⁄Q@‚D–@jÿ;‚.]·@7îÖAéNƒAO6'A¥R}A®õ∑AqÙˇF Û‡  'ƒ?ÅÖb BÔ¨2    E?ﬁN?{Hœ@√)A:ì≤=πïd?¸"§=«ª≈A˚h>¢íA/^>ΩﬁÌ nF346917112045922304               SDSS     @k≈±Ÿ+Ä?€–˙X˜>‚M”     Aó∆.  @”ÉõΩ¢¸F ?ßÆ?ìP :∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BãÖ?l]À ?ãÖ?àØO BLìBLœBA¶?H?˚%@•ﬂ;>¬rC=ßÁ=üÚÂ>ø?S∆?ùcà=∑Ä4AHéÛ@k≈±Ÿ+Ä>ÿ.àA¶“ Ah¸AÀ©#AømA^’ùE±(  'À?Xº Aÿ!    7>˚~ﬁC•s@;M 6?hı√?ç% BKF%BL=<Aó_@{@¶kQ>%îØ¬ÖZ≠=©ì<ı¬è=o4◊>èbp>˜X‚= ùI@—óˆ@k≈€ ñí>ÿ-8Aó´ÔAQ€€A¿eA¥%{AÑ8›E≥U·  'Ω?iÀ B§pß    µ>ËîD=”}?˘.# >?Üff?ÅΩ˘ BK?cBL”©Aè|P@Qò@‹é>mBƒ¬á˘$<∞Ú|<ø±[=Ä4n>Î˜8?™e<¿É@Zc @k≈€ ñí>ÿ.àAê^A1Aø(A±ππA¸∏îE∏ﬂ€  'Ω?ﬂ¶ C0Î\    Ú?;'ÖDõ2æ¿C+£ ?ú(ˆ?~FÒ BK/BM)DAêì?¢ÙN@âBƒ>jÁ’¬+æ(        ;#◊
+;¬ek<≥g°:ê-‡:ùIR@k≈€ ñí>ÿ/◊Aê~yAKí¯A≠mXA°˝å@—/E¥#Â  'ƒ?ˆ) BŸâ    P>˘\?ë}@√z•A:ë	=¥!¡?˝≠¥=øò˙AU>ÚëAqE>‚M˙ ¡373911783603202048               SDSS     @f ﬂeU≈.ø˚≈b‡üËh>Êïñ     Aî¡õ  A–f;æf<z 
+?àı√?ôõë %∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B´Y√?≥™ ?s33?†åÁ  BMßBKfõAõ*ŒAÑ˙A#HÄ?		l¬òáá=ÓÀ˚>ï?=A∞@óÀí=Ç@∏@ñÓc@f ﬂrÔøﬁ*oAúäﬂ@◊ŸëA‰[¥A’=ACÖ◊?F ÷  '“?Å?‚ BÃr    Z?ë QC‡ƒè?Ø∞Ä ?Üff?å'˙ BL\‡BKQhAìÚ|@à¯@Ç‘,>ó¥¢¬©Ü2=49X=@7=Yc>Ç(ù>µsÎ<Á∞@Yõ=@f ﬂP]¶øﬁ*oAîNAAoütAªı˙A∞π¿Aa∞IFÅ  'À?z˛˘ C±zU    ˇ?≤,ÇDW◊åøó3Í ?}p§?ã∏Â BL‰√BK££Aé˝ã@	I∑@wêó>ùøH¬ëÚ=¬'=›ò=4¢4>7[t>ö6„<À˚@:-@f ﬂ;dZøﬁ*oAèNKAgaØA¥(A©QA8ÎdFN?  'À?~õZ C…D   ?ª—àDébπA©&F ?àı√?ù< BLôKBL8RAâí◊@R∞ö@àåÁ>≤ïÍ¬ë˙=¢úx=ΩŸ>T ?J9]?D„Ω=Yc@≤ô1@f ﬂP]¶øﬁ)«Aâ˜üA]W@AµÏ…A™ÇëAöuF#   'À?É-‰ CƒT    à?çÂÙ?ãˆ@√˜ØA:˚^=Î¡v?w‹=˜ áAùÎ>D„„Açü>” ≈ M£638463625165563904               SDSS     @aE'–(°‡@÷ÀSP	->Ëmr     AñqÃ  ¡æ˙@OL 	?¢è\?üÆº ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bè øbvC ?n{?ú6 BOéäBLZAØ˘>?ò ≈?eœ´?68Ü¡˜≠w                            @aE'ë>ÅE@µ›AØ˘>A∞Ä5AΩP®A∏!å@(¨zFõöﬂ  'Ω?˙õç CMÁï    @@MÁïCâPó@,ÿ $?ùp§?åó BMòBM5˜AîÁm@ÄÏM@£tº>4¢4¬«˝=ôôö=é!ñ=€W??NÊÿ?g8=RÛAC@aE'˙Ú@∂1AïviAchπA«èÀAªcüA·xíFñÌÏ  '{?Ù™2 C‡   ?ÃÊkD
+í#?R$é .?Ä  ?ÄﬂŒ BLÀ)BLÅÿAêj@1„Õ@~˝">Ú¬>Ä49—∑8—∑<√…Ô=˛aö>
+qﬁ;e`B?u°À@aE($x@µ›Aê¡	As~fAº5A∞ı∞AuÎ¢FÇ%Ï  'è?“èÜ D
+∫·   :?‚5ùD^R@§5’ #?Çè\?ÄﬂŒ BLi«BMCaAàIA<P‹Aº>í‰èA0ZÜ>yß=£◊?`™A^∏à@v!ñ=¬√ A7Z@aE(9-å@∂1AâÜf@»HΩAŒ–A¿$îC$E8FslQ  'À?√¿n CA    `?—{?¨Öî@√Ë}A:0=›ÚO?˜6‰=ËœÈAO>9f%A≠î?, ì/324278173300713472               SDSS     @g2äÔ≤™„ø‚õf˘3]>Í∑V     Aó˙  AÆ«§øÇŸ  ?}p§?ûa| ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B)P(>÷5» ?Çè\?ìàf BIâBL–A§‘ï@t?¿K^>‘,¬©Ä™>`ê.>_Uõ=øHÄ>ù~‡>É…Ô=°-wAß)«@g2ãóxW*øﬁ+A§’jA±õA»J–A¡%¿@∆¬∫F"≠à  'ƒ?ÇË… C Z    h?ºO3CÅ'H@yé ?ä=q?êÌÂ BLxBL.òAï\∆@Ü>æ@¢Sè>\˙≠¬°Œ9Q∑9Q∑<¿É>>2!>
+¿É:ƒõ¶>'ª0@g2ã´`kø›ÉAïÍAfA»DâAº›AÈ%IFÜ‘  'Ω?Äv: Cé»ÿ    ‚?°º˛D=”@èÚV ?Ö∏?ÉÈd BMBL≤ AèHK@ÜEh@∏Ta>k6z¬ñÿì=È‚=Uõ=…ÓÃ?Z[?(«„=≈@©?}@g2äÔ≤™„ø‹€Aè˜AB∆	A¬í“Aµ‰{BlF%‰€  'õ?Ü	â Cö~    Ì?¶u1DV ¿¿z®_ ?áÆ?Ö6§ BLjBLáîAê|Ö?Œ˙◊@Dé>Ñ¬¯¬ß∫«=æÌ=…∫^=œÑ>í°X?!@=êˇóA^5@g2ã´`kø›ÉAêßA{¬öA∞8ˆA¶1@ÊáF YΩ  'Ω?Å  B ¿‹    [?éòÑ?¶:Å@ƒkªA:$!=ælí?ˆb]=«#A±|>`wApÈ?µ é…322039567609784320               SDSS     @fΩ»K]Ãdø€—x-8Go>Ì=Ü     Aóá?  Ao @Êˇ; ?®ı√?òΩf ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bqπ>Œå ?s33?ëÃ BLÍBIöA§æB@⁄¢@úB[:ê-‡A X>‚>°À>É‰&?ç&\?¸–>»KEë£e@fΩ»K]ÃdæﬁéaA•BAw›AÕ‚ A¡Ê}Ad÷{F-ı¯  'À?ã‰ä BrW)    -?¨TºC§Âæ¢É ?áÆ?Üœ BLˇcBJi≠AïŒ<@,Ù:@ì,•>Oﬂ;¬®zD∆< ∆< ∆< ∆< ∆< ∆< ∆< @fΩ»K]ÃdæﬁärAñCƒAgéXA¿ÃdAµÇAàp'F'q{  'À?Ü¶  Cƒ√¢    Ô?“¬çD5“ÚøXb† ?é{?|äú BM[¿BI˝øAèñº@(6£@ów2>N_¬ú1ù        :o        9ùIR    @fΩ»6e€æﬁã¡AêAU«ªA∫=NAÆcmAàkkF!Ëí  '»?Ç=. C≤‹]   	?¨…IDåWø…Yò ?Üff?{¨q BM[WBJûûAç·±?È∞@ço=¥ÍA_;Õ=ñªô=çÌ)> N•>·‚?c√a=ôe,A‰¢h@fΩ»6e€æﬁärAéN¯AQÕôA≥ßAßÄ A2#6F*XÎ  'œ?àÓ· C fÓ    [?·ûŸ?∞"@ƒqÉA9úc=…°?Ùæ=’nAc÷>©±Aäë>ØœÛ “k527036087445514240               SDSS     @`°ÇîöVX?˛¨œk„}È>Ó∏R     AóÄÉ  ¡UnÚ@{^ ?¢è\?©©® =∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BA!‹?Ω`C ?É◊
+?î’¶ BMãxBJZA®…∫@∫¥@ Ìë>˘0æ¬PºÓ>=Vm>$®¡>¿Aâ?ÚöÃ@âÍ≥>>´A8	l@`°ÇîöVX?ıf{A©ìèAEfAÕ˚/A¿‰qAù0cF ¨  ')?Ç÷˛ BúIc    +?Ëú€Cão?ßÖû  ?}p§?ÅΩ˘ BMä¶BJ XAñ‘ï@På@Ñ1'>ﬂb∑¡ßÍ=éÛM=\]d=≥–}?	ÊX?=◊‹@6˝"@`°ÇîöVX?ıfœAó2Ay_©A¡ìxA∂LAîêÍF&Ûî  &Ì?â?: CrcÇ    ”?ì
+üDqªøUÍñ $?Ä  ?àØO BMÜ%BK∞AêÛM@O\
+@¶4>ÁÁ¡Ä@O=j≥h==<6=ØO?UŒ?%8Ô<ÛMj@!¯°@`°ÇîöVX?ıg#AëÜRAJ,Aº\AA∞ÚA∏AôF)Á  &˛?äªà Cê‰    Ú?ôEﬁDq	nAÓR ?Üff?àØO BNG»BK◊YAå∆?@bÉD@´ﬂ;>»r∞¡!QÉ>*0U>_p>ò∫«@	:∏@ºj=∆‹]AOﬂ@`°Çj®ÎF?ıgÀAçb+A@≠…A∫√µAÆa5A–~mF2   'ì?è¯n BsÛ    ,?\Kë?è∫‚@ƒ¡[A:WJ=·é6?ÙèH=ÔÁAÒé>6 ∞AÑ˛>—≤_ Üﬂ600244321777641472               SDSS     @jøù^J82@‹áTÛw\>Ú¯8     Aö©c  º‰ı2ø€i ?¶ff?ó 7∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< A›yL?^¯W ?ä=q?éSe BO◊?BJfÈA≤Np?3d>7e˛>ÃV÷@ãs>òy>>gª0=™ô1>zºÄ?ΩLò>IÓÃAπ∆t@jøúÀ}At@&‰èA≤NpA∑bKA∏^SA∑£ô?Ñ˜PF-´Õ  '∫?ã‰§ B3œ*    @ˇ]CÇ(f>Áóß '?ê£◊?ÉÈd BKíTBJ˛Aõƒg?µ7œ@ãLò=#S¬Ctà=Ç©ì=.I=‡ﬁ”>õSu?qué=ßÁBÖâ_@jøùù4XÕ@&‰eAú-ÖAhWAºÍïA±jÓAΩÒF$˝  'Ø?Ö BÁ™ì    n?Ü…•D	¬…?>˝ ,?ö·H?~FÒ BJ¸jBIüpAì´ü?˙J@•·>üæ¬≈=7È=Em]=≈Å>ø˜Y?.	=XD–A>©*@jøù≤-V@&‰;Aî=AFµÜA∫,A≠‹àA] F®U  'ò?Ä:u C∏    ê?à£§D` æ£f≈ 	?àı√?yÒ BLòÆBIΩÙAé≥3@TQπ@¿¿É?/Ï¬Ö~B=ÆÊ2=‹∆?>ÉÒA?Ì™™@â†=îz·@ßøH@jøù^J82@&‰;AènVA'ñAπç+A¨ÆUA‹‘E—ˆ  'ª?(l B•T©    D?õö˙?iL&@≈O\A:íÄ=≥‘?˛Ö;=¡∫A˜f>¥ÃA“>Ωı∆ .341243081502255104               SDSS     @júÜhÕ?∆›Y
+–>>Û”     AôÔ  @≈Âõ@âÉ	 ?ï¬è?∞+È ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< A÷
+N>Ø≥ö ?z·H?üÆº  BMé"BOmA©p§?{ô?ó†=9å~BtÌ¨>â7L>ãCñ=ÏãD>©tV>™≥h>ìB‚Iy@júÖrõ(>6ıEA©pØA∏xA *LA√Ù∂@ï≈F)ÖP  '“?à:Ü AÀI>    ?`P“CDiY@rÔn $?Çè\?í™; BJÕüBMZ∫Aôj@8ë`@Ö&È>Wˆ+@éär=æﬂ§=¶¬=˜e˛?r.?(Ô5=RÛA#u%@júÖoiD>6Ë)Aô…ÎA=àA≈«Aπ∏¶AÑ§eF0âÃ  'ø?é" C≤&    €?–?<C Ö⁄>Ïv, )?É◊
+?Ñ«è BJ±[BNF?Aî2ˇ@÷@iIR=ÕûÑ¬∏ª= 'R=8∫«=∂‚Î>êÿ>ŸrG=!ñAÅëh@júÖoiD>6ÌgAîxæA|πÓA∫–A∞=A+J§F'Æ  'ø?á . Cø€v    ?Ã•”DÆA’„a 
+?É◊
+?âd  BJ*BOŸeAèÿ‚@µ˘@´ü>¨ÃÕBo˘X>&Å> > ùI>€%ü?éÛ=•FA¬'@júÜ`‘V>6˜‰Aè‰±AéÑA≤÷A©k`@ÒMF&∑>  '“?Ö˘{ Bﬁ◊    G?»ﬁ±?ÑiÔ@≈j∑A:©=≤‡[?ı¢É=∫·oAÿÛ>_[AÑ¢>¨`ì _604754244150519808               SDSS     @kΩ£≠“_@A?––gå>¯ı√     Aòûv  ¡I∆‡æ˜∆+ ?∞£◊?óﬂ; 9∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B%/≤>·B ?z·H?êª BOæ≈BL∂zA§Ω•@^V§@ó–}>9ıZA◊ê.>uˆ˝>X≠¨>º∆?@5@◊s>&µAıI@kΩ£/Dë*@*$A•:yAÑÎPA‘u7A»ò€A¥∑†F <®  '¡?Ä˚± B)W?    )?Ñ+Cfu?–Êï ?z·H?åó BL|ÓBIÏÙAï·H@õ¿‡@¢/É>ÀÖAﬂ€W=ôôö=s∂F=ıˆ˝?ìàf?7Ôû=&µ@`Á@kΩ£◊
+=q@*
+(AñnLAgœ˘A…ÊAºÔ+B!∆F)Ç  'ƒ?àg◊ CQ^    ¨?õœADG˛@àÅx ?z·H?àØO  BMA BK2Aëæw@7º@}¯°>¢&ÅAù¯l=jJå=H¥9=ú‡v>¥Mm>¯‚=IR@éL0@kΩ£≠“_@*
+¶Aí6AmÂéAπA≠ÊﬂAW2OF63D  'ƒ?íûà C1çh    •?âº”DlÓA•˝£ ?Üff?vwp  BMe,BJy$AáÀ˚A8ÆAì>†[¿A±êó> —∑=›Ãd>˚ã¨AGæÕ@S∑È=ø±[A'M”@kΩ£≠“_@*
+RAàÏÄ@¯6ÆAÕG‰Aæ˝0C3∆F1¨ö  '“?é«„ B„r    A?ﬂÚD? «˜@≈åªA:∆g=æ$¿?¯ûü= .Aãä>˝WAU{>∑;_ !G15_Y4_203_267                   GAMA     @k€˘€"–Â@p©7ü©>˙Ü◊ ?Ä  AóÉ]  ¡>Ké@æu& ?¢è\?òNQ #∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BOøFà” ?àı√?ó  BN·ñBNÁmAòÑÅA◊x@ı'ª>TïB(õ⁄>P|Ö>>≈m?4˝ÙB0I@X>B=Ër∞Aëa±@k€˘ú8∞K@3ÜDAôácAVπgAÌê≤Aﬂ¨ CîawF»–  '“?c‡ˆ BÃ>    '?u“tCÜ{B@r®”  ?É◊
+?è†• BMEmBLBAAóx°@G±1@∫6>;ò»¬≤î=ç∏ª=ë4>)_?e°f?àåÁ=poiA*÷9@k€˘Ün@3ÖAò*#AGÎ∑A∆+Aπq¡A»
+nFVÉ  'æ?uRg C8æ—    Ü?∞y#D-Ç8@^rc ?Üff?ÜÚ˙ BM ùBLíAí”√?¬¶ı@vóç>C-¬7&œ='Ü¬=•„=Å£n>3Î¨>Ôêó=)*0A˙D@k€˙;˜@3ÖIAì#¬Ag§A≥üA®¢qA§ªF&â€  'Ø?ÜK
+ Ctõ8    ∫?®TÀDé¯@çxœ ?åÃÕ?å'˙  BLBL…ÜAÜ¢—AdÍÚA\ÿ=¥ÍB≤a =Îπå=‰¬¯?2◊AŸâ9@˘ˆ+>:ìB0ì@k€˙/ß	@3ÖsAàiz¿Dp8A‘påAƒÿC∏ŸkF$N™  '“?Ñ	ˆ BøÃñ    M?üj·?¢àY@≈˚RA:º…=Ày?Ùè=Ÿ*ÒAMâ>˙gA{Å>≠% ™›G15_Y6_100_007                   GAMA     @j∏j~˘€#ø‡ï˛⁄fÑ?hI ?æwAõŒ√  A∞åã@42≤ ?⁄·H?∫&’ 4∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< B⁄¡?èÿ{ ?Ä  ?ßÌR BN/ BL3∂A®à1?⁄Æ√@Z:*=f1˘¬V7>@ùI>`u˜>ö)«?Oº ?‘ãD>/iDBÓŒ@j∏iÏ,‰eøØ˜A®¬ùAìhîAÀ∆&A¡L!AaØF#<Ù  '∂?Éäá BB˛    1?8ÅLC"%•øßvÄ ?áÆ?´’ BJBBKU2Aô´@I<¶@Ä.≤>…ìA£˘ß=“àŒ=¶Äù>yß?@a˝?F4=<j@íìu@j∏jΩ„˚Ωø±FAö†AÅüoAƒVAπ/ºAã√¥F!À  'ƒ?Ç2 CÇ∂L    º?±˝ÆCÒbq¿r: '?z·H?ñ"Ê BKW$BK_Aê£@\@úU2>CïÅA∞B[=_;d=GÀ=›óˆ?3◊?}V<¸PH@‹ø±@j∏j~˘€#ø±FAë&ÌA\hA¿1∂A¥5±A∏”FŸÈ  'Ø?tÊ- C]˛Ç    ˜?fADHîJA,ô! ?Ö∏?ñ"Ê BL.ÊBJæ‡Aéy	@èÛ@ufœ>ï®XB÷=µ?}=°ñS>B©ì?O¯?ÑFt=ôôöAsÇ@j∏jUpø±ÓAé»AkÙÓAµ∑ÖA™¿ANô‰F(Ç∆  '∂?á : Bﬂ˝    d?éªÉ?ÑQH@«0ÚA:π=ÍzØ?Ï}=Ù¸gAà3>BA3:>·Ò‡ •’G15_Y2_019_360                   GAMA     @k	RÁ-°#?˘”éÛMj?∞` ?Ä  Aù¡  ?Ô¢Ë?õvF ?îz·?¥Çø $∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Br?ß¢  ?z·H?∂? BLØÏBHxRA©¸Ö?¬©AüêÀ>)x’@.@∏>Õ≈÷>’2a@›/A˙˛B£ ˘?BÁÿ@k	RÁ-°#?Œö,A¨?Ù¡Ö˛~A—õtAøõcBöF!s(  'Ã?Å—≥ Aì¢ó    ?ì¢óClg˚?˘ïù +?Üff?ÜÚ˙ BKˆ˝BK/iAú~?Ÿ–ò@ë2a>ÆÊ2?á†            8/Ÿ        9Q∑@k	R¸&V¨?Œú$AúèÈAb—¿AΩ[TA±ØA)°F∑™  'ò?ÄFÿ BÃL^    e?Åt”D"Ë>Q˙ $?ï¬è?r õ BK”©BK≤|AíuZ@ ±è@øÙà>p:˚A[È:IR9—∑;‘˝Ù=>2=>Ì:ÎÌ˙>ÿÆ@k	S5?ŒúÀAì/SA/=;AºÚA∞ØA¶`[F~÷  'ì?{x1 Ck∏    •?∂‹\D:vˆAO¶u ?ä=q?ñ"Ê BKXyBKçÑAî$?Öﬁ`@:*>ΩIRAL‡:™d√8—∑<‚e=-m‹>pÚ|;ÿD–=ñRΩ@k	S&¡æ?ŒúxAî&∑AÉ÷¿A©¬ÅA†“ﬁ@u¢∂F$O  'Æ?ÑÇ BE‰Ì    /?Üºã?ä®F@«MHA;=®
+†?˚∏o=µâxAÓ$=˘ ^A
+¢Ê>öÓ ®4530672172272189440              SDSS     @kK”ÿY…?¯ BÆ—9C?‡µ     Aöu™  AP6tA7 ` ?ö·H?Ω0j )∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Aˇ˘™>QÄ %?Ä  ?≠ëh  BN`˘BFÍA¶@2oƒ?i˚Á>˘	lB§‘>ôôö>¸PH=Æ{>¥…÷>l1=cº”@¬°b@kKAc?∆N'A¶A∫7≥A«PA¬
+@«DÄF#ı   '“?É¡ BÉVâ    -?∫ ∏CGw5¿:„Ä 0?Üff?Üœ BLBIdAòaÂ@á∏¥@ÇÍK?<6¬§)=Æ{=ÎÌ˙>ìﬁ?Ö‡ô?6ö‘=+@5N<@kK©ÊÓ∑?∆PAòΩÕAÅÑ‡A≈∑ A∫z2A¿KF#—Ö  '∫?ÉÙı CÛM    p?™:¢D∫;@ÅÁi -?z·H?lÎö BKë—BJÛhAì©_@∆@w˜>ø!-¬ïSè;*d√:ùIR=Çu%>]úì>ì¸;öu>W$t@kKæﬂ§@?∆QnAì˘¥Ao%÷A∑¿‰A¨¬bA7‡ØF,Ç˙  '≥?ã CwÚæ    ä?Â˚D]ïæA); ?è\)?á—$  BK•BJÁ8Aà
+¶A<ÿAÀ>Àí:B≠Ov>q>ÚÂ?
+¨⁄AhÜ@ÄÃ=π¿ÏAy>@kK”ÿY…?∆QnAâ<∂@÷PΩAÃnAæjyCÆpF^  '“?~áÛ Bö‰ü    >?ü„º?ßJ@«‹’A:–-=Ÿ(8?ÔÚ†=„⁄ÇA•±>/iïA>∂OL  ¡ 4528407723142283264              SDSS     @k∑¸¯√7øÍÕJ°!?˜‰     Aõ¿≥  A¡[M¿äæü ?Ö∏?°k ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< BìD&?$4	 &?xQÏ?ì˜{ BÖÃÙBçÒ—AÉ-wC∏X√A
+«>PÀ)¬P§=ÊœB>m]@ÛD¢yû@©ïÅ=á_pA/¬'@k∑¸è27ãøViAÑWÍAdÎ]B A˜”¡Eî”ÏD;—n  U?axE C¶ƒﬁ   ?ïÃÆClª©@ïÛ *?é{?êÌÂ BÖŸB[êHAïP±@†Ÿç@¶.≤>xQÏ¡§≤=åM=we˛=À∆®?|Pÿ?b=Ft@¶•z@k∑¸ŒX%øVi≠Aï„„Ag•BAÀ(‚AæÍ“BFÜ⁄
+  8l?òˆæ Cƒ‚ƒ   0?•ÃoD¯Ç¿— *?ì33?ì˜{ B^°±BK—∑Aè´‘@‰°°AD2a>¡@¬5=["—=)ì>ÿÔ5@˙¬@ìp§=hs@ÑÛM@k∑¸π#¢úøVi≠AëIÙøMNAÕñŒAΩÆøC9∆Fpòü  +Ç?∞ı^ Cï>˙   D?kÿuDeˆ√A[år ?ó
+=?ö
+¶ BK±BK∏8Aç*Œ@®˛@C∂F>[=¬HëN∆< ∆< ∆< ∆< ∆< ∆< ∆< @k∑¸è27ãøVi≠AçU(AÇ>∏A¥ÄôA™zaA,‘†F<∂4  'l?ô.Ò EIÖ=   ó@˝ÇÄ?™8@«Ω∂A:Eæ=äÒç?Á©4=çRfA X=Ì¶÷Aä¶>iÄe û2G15_Y3_002_037                   GAMA     @j wó|?ÌgÙ€ﬂèG?, ?Ä  AùôQ  ¿Ç¬M@3˝ ?”33?ª„* %∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< A¿Zô>∆Ì #?u¬è?±y) BJ°ÀBLB[AØÆ?ë[ﬁ?˝‹∆>µµtAp4<F?;IR<Á=6¥<?±[<ìtº@E‘ï@j wFàzç?kCñAØ¥¢A¶±,A∆L*Aæü@oUnFƒ  'Ω?q| BJ‘≥    @àC%}?Ô= +?‹(ˆ?ßÌR BJ>‡BJùAòo@ùœi@Æ{≥>!aÂB(P.=º6=¨ŸË>%îØ?ÃÕ3?ÖÊõ=@ÎÓAR@@j wFàzç?k@ˆAò°UAeúBAŒ•ƒA¬2Bå†FVæ  '¡?V©Æ C(’    ≠?x∑=CπÜµ¿D™∫ ?ï¬è?ó BJ^OBL(ßAñ2-?·a‰@'†>≥éÛAç/O=où≤=?±[=Bè\=Ûûª>j<‰éä@0r∞@j wFàzç?kCñAñJÉAãäAµõÏA¨<¶@ﬁí¯E˙î4  'Æ?J’ C\6E    Ã?ä,Cˆ>A‘sq ?∑
+=?¨≥> BJjBLnòAí:«@K@‚>ﬂ§@AØ`B>s=›cà=†ƒú>äò>‹∆?=s∂F@≥¯°@j w[Å0?kCñAíMõAäÒìA≤´_A©é^@ˆ:(Fí±  'Ω?Xº" C7Ûâ    i?‡>”?—é@@«€ÉA:~=„*ê?ÒŸÎ=ÒôÔA∫ø>.»[A≠À>πa´ “ÏG15_Y5_032_272                   GAMA     @kz!’<›◊øÛ†{5*Ñ?!- ?Ä  Aù∫/  A2˘~?±~‚ ?áÆ?¢I= 2∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ∆< ∆< ∆< ≈S⁄ì∆< ∆< ∆< ¿√áÄ    ∆< ∆< ∆< ∆< ∆< ∆< ∆< ˇˇÿÒ∆<   ∆< ÿÒˇˇÿÒ∆< Bnpøf‰∏ (?p£◊?åó BL‹xBLPÀA´Ì?¸°@õö>Wˆ+¬ö„‰>T>fL0>∫«?∫^_@E¯°>OÑB„:@kz!Í5ì`øò≠XA´†ÕA –A–…óAƒ÷ïAQñßF#  'À?o‹R B:◊E    ?«LCi≥‡@Û› ?xQÏ?ÅN‰ BLÌ‡BL÷Aùq?¶U@éÿ<∞Ú|¬Æt{:ùIR9ùIR<Dõ¶<Î?=€"—;∫«>œO@kz!Í5ì`øò≠¨AùﬂÈAe;◊AΩVÔA±ª@˛≈YFfÇ  'Ø?züá Cÿ    ê?ç1„D°‹@	∏ ?ê£◊?â¸è BMDÅBL¥◊Aì©?Úî"@≤nò=ŸáA—Á°=ˆ+=¨q=B&Å>3Î¨>÷’–=MA*n/@kz!Í5ì`øò≠AìπâA7vAπ∑TA≠,@Ah1F	E  'ù?gï COó|    ˇ?Pg‰D^s—@?vO ?É◊
+?îfê BN# BLâlAëb∑?¶‰Ú@ìhs>å<üA©k=çOﬂ=yrG=»>≥L?à¸P=Ü$›AœB@kz!´Kr≈øò≠XAëÿûACâ,AÆÍCA£-´A€ÉFÕp  'õ?kõù C-’œ    v?ºë&?É∑7@«€ÉA;√=∞‡?˙9∫=æø/A∞‡>¿˘A
+˜@>û1.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                

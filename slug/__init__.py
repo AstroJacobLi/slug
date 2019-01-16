@@ -326,9 +326,9 @@ def gen_url_decals_tractor(brickname):
         + brickname[:3] + '/tractor-' + brickname + '.fits'
     ]
 
-# Generate DECaLS image url
-def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
-    '''Generate image url of given position.
+# Generate DECaLS jpeg cutout url
+def gen_url_decals_jpeg(ra_cen, dec_cen, size, bands, layer='decals-dr7', pixel_unit=False):
+    '''Generate jpeg image url of given position.
     
     Parameters:
     -----------
@@ -336,7 +336,53 @@ def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
     dec: float, DEC (degrees)
     size: float, image size (pixel)
     bands: string, such as 'r' or 'gri'
+    layer: string, edition of data release
+    pixel_unit: boolean. If true, size will be in pixel unit.
+
+    Returns:
+    -----------
+    url: list of str, url of S18A image.  
+    '''
+    if pixel_unit:
+        return ['http://legacysurvey.org/viewer/jpeg-cutout?ra=' 
+                + str(ra_cen) 
+                + '&dec=' 
+                + str(dec_cen) 
+                + '&layer=' 
+                + layer 
+                + '&size=' 
+                + str(size) 
+                + '&pixscale=' 
+                + str(DECaLS_pixel_scale) 
+                + '&bands=' 
+                + bands]
+    else:
+        return ['http://legacysurvey.org/viewer/jpeg-cutout?ra=' 
+                + str(ra_cen) 
+                + '&dec=' 
+                + str(dec_cen) 
+                + '&layer=' 
+                + layer 
+                + '&size=' 
+                + str(int(size/DECaLS_pixel_scale))
+                + '&pixscale=' 
+                + str(DECaLS_pixel_scale) 
+                + '&bands=' 
+                + bands]
+
+# Generate DECaLS image url
+def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
+    '''Generate fits image url of given position.
     
+    Parameters:
+    -----------
+    ra: float, RA (degrees)
+    dec: float, DEC (degrees)
+    size: float, image size (pixel)
+    bands: string, such as 'r' or 'gri'
+    layer: string, edition of data release
+    pixel_unit: boolean. If true, size will be in pixel unit.
+
     Returns:
     -----------
     url: list of str, url of S18A image.  
@@ -944,7 +990,7 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
 
 
 # Evaluate the mean sky value
-def evaluate_sky(img, sigma=1.5, radius=15, threshold=0.005, clean_param=1.0, show_fig=True, show_hist=True):
+def evaluate_sky(img, sigma=1.5, radius=15, threshold=0.005, deblend_cont=0.001, deblend_nthresh=20, clean_param=1.0, show_fig=True, show_hist=True):
     '''Evaluate the mean sky value.
     Parameters:
     ----------
@@ -964,7 +1010,7 @@ def evaluate_sky(img, sigma=1.5, radius=15, threshold=0.005, clean_param=1.0, sh
     obj_lthre, seg_lthre = sep.extract(img, sigma,
                                        err=bkg.globalrms, 
                                        minarea=20, 
-                                       deblend_nthresh=20, deblend_cont=0.001,
+                                       deblend_nthresh=deblend_nthresh, deblend_cont=deblend_cont,
                                        clean=True, clean_param=clean_param,
                                        segmentation_map=True)
 
@@ -1018,7 +1064,7 @@ def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius=3, aperture='84',
     -----------
     path: string, the path of catalog.
     cen_ra, cen_dec: float, RA and DEC of the given object.
-    matching_radius: float, in arcmin. We match sky objects around the given object within this radius.
+    matching_radius: float or list, in arcmin. We match sky objects around the given object within this radius/range.
     aperture: string, must be in the `SkyObj_aperture_dic`.
     print_number: boolean. If true, it will print the number of nearby sky objects.
     sigma_upper, sigma_lower: float, threshold for sigma_clipping of nearby sky objects.
@@ -1037,17 +1083,27 @@ def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius=3, aperture='84',
     ra, dec = cen_ra, cen_dec
     bkg_pos = SkyCoord(ra=ra * u.degree, dec=dec * u.degree, frame='icrs')
     catalog = SkyCoord(ra=sky_cat['i_ra'] * u.degree, dec=sky_cat['i_dec'] * u.degree)
-    obj_inx = np.where(catalog.separation(bkg_pos) < matching_radius * u.arcmin)[0]
+    if type(matching_radius) == list:
+        if len(matching_radius) != 2:
+            raise SyntaxError('The length of matching_radius list must be 2!')
+        else:
+            obj_inx1 = np.where(catalog.separation(bkg_pos) < matching_radius[1] * u.arcmin)[0]
+            obj_inx2 = np.where(catalog.separation(bkg_pos) > matching_radius[0] * u.arcmin)[0]
+            obj_inx = np.intersect1d(obj_inx1, obj_inx2)
+    else:
+        obj_inx = np.where(catalog.separation(bkg_pos) < matching_radius * u.arcmin)[0]
     if print_number:
         print('Sky objects number around' + str(matching_radius) + 'arcmin: ', len(obj_inx))
 
 
     x = sky_cat[obj_inx]['r_apertureflux_' + aperture +'_flux'] * 1.7378e30 / (np.pi * SkyObj_aperture_dic[aperture]**2)
     x = sigma_clip(x, sigma_lower=sigma_lower, sigma_upper=sigma_upper, iters=iters)
+    x = x.data[~x.mask]
+
     if showmedian:
-        return np.median(x)
+        return np.nanmedian(x)
     else:
-        return np.mean(x)
+        return np.nanmean(x)
 
 # Evaluate the mean sky value for Dragonfly
 def evaluate_sky_dragonfly(img, b=15, f=3, sigma=1.5, radius=1.0, threshold=0.05, show_fig=True, show_hist=True):
@@ -1106,7 +1162,7 @@ def evaluate_sky_dragonfly(img, b=15, f=3, sigma=1.5, radius=1.0, threshold=0.05
 
 # Run surface brightness profile for the given image and mask
 def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, 
-    sma_ini=10.0, sma_max=900.0, n_clip=3, low_clip=3.0, upp_clip=2.5, force_e=None, r_interval=(20, 50), outPre=None):
+    sma_ini=10.0, sma_max=900.0, n_clip=3, maxTry=5, low_clip=3.0, upp_clip=2.5, force_e=None, r_interval=(20, 50), outPre=None):
     # Centeral coordinate 
     img_data = fits.open(img_path)[0].data
     x_cen, y_cen = int(img_data.shape[1]/2), int(img_data.shape[0]/2)
@@ -1168,7 +1224,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
                                  xttools=TBL, 
                                  uppClip=upp_clip, lowClip=low_clip, 
                                  nClip=n_clip, 
-                                 maxTry=5,
+                                 maxTry=maxTry,
                                  fracBad=0.8,
                                  maxIt=300,
                                  harmonics="none",
@@ -1325,7 +1381,7 @@ def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50,
 def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0, 
     x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
     show_banner=True, vertical_line=None, linecolor='firebrick', linestyle='-', 
-    linewidth=3, label='SBP'):
+    linewidth=3, labelsize=25, ticksize=30, label='SBP', labelloc='lower left'):
 
     """Display the 1-D profiles, without showing PA and ellipticity.
     
@@ -1399,7 +1455,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
     if label is not None:
         ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle,
              label=r'$\mathrm{' + label + '}$', alpha=alpha)
-        leg = ax1.legend(fontsize=25, frameon=False, loc='lower left')
+        leg = ax1.legend(fontsize=labelsize, frameon=False, loc=labelloc)
         for l in leg.legendHandles:
             l.set_alpha(1)
     else:
@@ -1407,13 +1463,13 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
     ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha)
     
     for tick in ax1.xaxis.get_major_ticks():
-        tick.label.set_fontsize(25)
+        tick.label.set_fontsize(ticksize)
     for tick in ax1.yaxis.get_major_ticks():
-        tick.label.set_fontsize(25)
+        tick.label.set_fontsize(ticksize)
 
     ax1.set_xlim(x_min, x_max)
-    ax1.set_xlabel(xlabel, fontsize=30)
-    ax1.set_ylabel(ylabel, fontsize=30)
+    ax1.set_xlabel(xlabel, fontsize=ticksize)
+    ax1.set_ylabel(ylabel, fontsize=ticksize)
     ax1.invert_yaxis()
 
     # Twin axis with linear scale
@@ -1424,12 +1480,12 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
         lin_pos = [i**0.25 for i in lin_label]
         ax4.set_xticks(lin_pos)
         ax4.set_xlim(ax1.get_xlim())
-        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=30)
-        ax4.xaxis.set_label_coords(1, 1.05)
+        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=ticksize)
+        ax4.xaxis.set_label_coords(1, 1.025)
 
-        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=25)
+        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
         for tick in ax4.xaxis.get_major_ticks():
-            tick.label.set_fontsize(25)
+            tick.label.set_fontsize(ticksize)
 
     # Vertical line
     if vertical_line is not None:
@@ -1452,7 +1508,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
 def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
     x_min=1.0, x_max=4.0, alpha=1.0, r_interval=(20, 50), physical_unit=False, show_pa=True, show_banner=True,
     show_dots=False, show_grid=False, show_hline=True, vertical_line=None, linecolor='firebrick', linestyle='-', 
-    linewidth=3, label=None):
+    linewidth=3, label=None, labelloc='lower left'):
     """
     Display the 1-D profiles, containing SBP, PA and eccentricity.
     
@@ -1551,7 +1607,7 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, offs
     if label is not None:
         ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle,
              label=r'$\mathrm{' + label + '}$', alpha=alpha)
-        leg = ax1.legend(fontsize=25, frameon=False, loc='lower left')
+        leg = ax1.legend(fontsize=25, frameon=False, loc=labelloc)
         for l in leg.legendHandles:
             l.set_alpha(1)
     else:
@@ -1899,7 +1955,8 @@ def SBP_shape_abspa(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None
 def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physical_unit=False, 
     sky_cat=None, matching_radius=3, aperture='84', x_min=1.0, x_max=4.0, show_single=True, 
     vertical_line=None, ismedian=True, linecolor='brown', fillcolor='orange', linewidth=5,
-    single_alpha=0.3, single_color='firebrick', single_style='-', single_width=1, label=None):
+    single_alpha=0.3, single_color='firebrick', single_style='-', single_width=1, label=None, 
+    single_label="S18A\ sky\ objects"):
     """
     Plot SBP together, along with median profile
     
@@ -1952,8 +2009,6 @@ def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physica
         info = slug.str2dic(f['info'].value)
         redshift = info['redshift']
         ra, dec = info['ra'], info['dec']
-        img = f['Image'][band]['image'].value
-        mask = f['Mask'][band].value
         ell_free = f['ell_free'][band].value
         ell_fix = f['ell_fix'][band].value
         if sky_cat is None:
@@ -1967,9 +2022,9 @@ def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physica
                                         iters=5,
                                         showmedian=False)
         if k == 0:
-            label = "S18A\ sky\ objects"
+            single_label = single_label
         else:
-            label = None
+            single_label = None
         if show_single:
             slug.SBP_single(
                 ell_fix,
@@ -1987,10 +2042,10 @@ def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physica
                 linestyle=single_style,
                 linewidth=single_width,
                 alpha=single_alpha,
-                label=label)
+                label=single_label)
 
         x = ell_fix['sma'] * pixel_scale * slug.phys_size(redshift, is_print=False)
-        func = interpolate.interp1d(x**0.25, ell_fix['intens'], kind='cubic', fill_value='extrapolate')
+        func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
         x_input = np.linspace(x_min, x_max, 60)
         if k == 0:
             y_stack = func(x_input)
@@ -2149,6 +2204,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
                 x_min=x_min,
                 x_max=x_max,
                 parange=parange,
+                offset=-off_set,
                 show_pa=show_pa,
                 show_banner=(k==0),
                 show_hline=False,
@@ -2163,7 +2219,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
 
         # Interpolate for surface brightness
         x = ell_fix['sma'] * pixel_scale * slug.phys_size(redshift, is_print=False)
-        func = interpolate.interp1d(x**0.25, ell_fix['intens'], kind='cubic', fill_value='extrapolate')
+        func = interpolate.interp1d(x**0.25, ell_fix['intens']-off_set, kind='cubic', fill_value='extrapolate')
         if k == 0:
             SB_stack = func(x_input)
         else:
