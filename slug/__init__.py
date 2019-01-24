@@ -385,7 +385,7 @@ def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
 
     Returns:
     -----------
-    url: list of str, url of S18A image.  
+    url: list of str, url of DECaLS image.  
     '''
 
     if pixel_unit:
