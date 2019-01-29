@@ -884,10 +884,10 @@ def tractor_iteration(obj_cat, w, img_data, invvar, psf_obj, pixel_scale, kfold=
     for i in range(kfold):
         if i == 0:
             obj_small_cat = obj_cat[:50]
-            sources = slug.tractor.add_tractor_sources(obj_small_cat, None, w, shape_method='manual')
+            sources = slug.add_tractor_sources(obj_small_cat, None, w, shape_method='manual')
         else:
             obj_small_cat = obj_cat[50 + step*(i-1) : 50 + step*(i)]
-            sources = slug.tractor.add_tractor_sources(obj_small_cat, sources, w, shape_method='manual')
+            sources = slug.add_tractor_sources(obj_small_cat, sources, w, shape_method='manual')
 
         tim = Image(data=img_data,
                     invvar=invvar,
@@ -920,7 +920,7 @@ def tractor_iteration(obj_cat, w, img_data, invvar, psf_obj, pixel_scale, kfold=
         #ax4.set_title('remain central galaxy')
         if i == (kfold-1):
             if fig_name is not None:
-                plt.savefig('./Figures/' + fig_name, dpi=200, bbox_inches='tight')
+                plt.savefig(fig_name, dpi=200, bbox_inches='tight')
         plt.show(block=False)
         print('The chi-square is', np.sqrt(np.mean(np.square((img_data - trac_mod_opt).flatten()))))
 
