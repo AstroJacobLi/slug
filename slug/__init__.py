@@ -855,7 +855,8 @@ def add_tractor_sources(obj_cat, sources, w, shape_method='manual'):
     return sources
 
 # Do tractor iteration
-def tractor_iteration(obj_cat, w, img_data, invvar, psf_obj, pixel_scale, kfold=4, fig_name=None):
+def tractor_iteration(obj_cat, w, img_data, invvar, psf_obj, pixel_scale, shape_method='manual', 
+                      kfold=4, first_num=50, fig_name=None):
     '''
     Run tractor iteratively.
 
@@ -867,7 +868,9 @@ def tractor_iteration(obj_cat, w, img_data, invvar, psf_obj, pixel_scale, kfold=
     invvar: 2-D np.array, inverse variance matrix of the image.
     psf_obj: PSF object, defined by tractor.psf.PixelizedPSF() class.
     pixel_scale: float, pixel scale in unit arcsec/pixel.
+    shape_method: if 'manual', then adopt manually measured shape. If 'decals', then adopt DECaLS shape from tractor files.
     kfold: int, iteration time.
+    first_num: how many objects will be fit in the first run.
     fig_name: string, if not None, it will save the tractor subtracted image to the given path.
 
     Returns:
@@ -880,13 +883,13 @@ def tractor_iteration(obj_cat, w, img_data, invvar, psf_obj, pixel_scale, kfold=
     from tractor.psf import Flux, PixPos, PointSource, PixelizedPSF, Image, Tractor
     from tractor.ellipses import EllipseE
 
-    step = int((len(obj_cat) - 50)/(kfold-1))
+    step = int((len(obj_cat) - first_num)/(kfold-1))
     for i in range(kfold):
         if i == 0:
-            obj_small_cat = obj_cat[:50]
+            obj_small_cat = obj_cat[:first_num]
             sources = slug.add_tractor_sources(obj_small_cat, None, w, shape_method='manual')
         else:
-            obj_small_cat = obj_cat[50 + step*(i-1) : 50 + step*(i)]
+            obj_small_cat = obj_cat[first_num + step*(i-1) : first_num + step*(i)]
             sources = slug.add_tractor_sources(obj_small_cat, sources, w, shape_method='manual')
 
         tim = Image(data=img_data,
