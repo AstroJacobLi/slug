@@ -415,6 +415,54 @@ def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
             + '&bands='
             + bands]
 
+
+# Login NAOJ server
+def login_naoj_server_3(config_path):
+    ''' Runs well under python 2. In python 3, there's a widget 
+    to enter username and password directly in Jupyter Notebook.
+    In the configuration file, I wrote username in the first line, 
+    and password in the second line.
+    '''
+    import urllib
+    # Import HSC username and password
+    config = Table.read(config_path, format='ascii.no_header')['col1']
+    username = config[0]
+    password = config[1]
+    # Create a password manager
+    password_mgr = urllib.request.HTTPPasswordMgrWithDefaultRealm()
+
+    ###### For downloading images ######
+    # Add the username and password.
+    top_level_url = 'https://hscdata.mtk.nao.ac.jp/das_quarry/dr2.1/'
+    password_mgr.add_password(None, top_level_url, username, password)
+    handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
+
+    # create "opener" (OpenerDirector instance)
+    opener = urllib.request.build_opener(handler)
+
+    # use the opener to fetch a URL
+    opener.open(top_level_url)
+
+    # Install the opener.
+    # Now all calls to urllib2.urlopen use our opener.
+    urllib.request.install_opener(opener)
+
+    ###### For downloading PSFs ######
+    # Add the username and password.
+    top_level_url = 'https://hscdata.mtk.nao.ac.jp/psf/6/'
+    password_mgr.add_password(None, top_level_url, username, password)
+    handler = urllib.request.HTTPBasicAuthHandler(password_mgr)
+
+    # create "opener" (OpenerDirector instance)
+    opener = urllib.request.build_opener(handler)
+
+    # use the opener to fetch a URL
+    opener.open(top_level_url)
+
+    # Install the opener.
+    # Now all calls to urllib2.urlopen use our opener.
+    urllib.request.install_opener(opener)
+
 # Login NAOJ server
 def login_naoj_server(config_path):
     ''' Runs well under python 2. In python 3, there's a widget 
