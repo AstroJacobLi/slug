@@ -1168,7 +1168,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
     sma_ini=10.0, sma_max=900.0, n_clip=3, maxTry=5, low_clip=3.0, upp_clip=2.5, force_e=None, r_interval=(20, 50), outPre=None):
     # Centeral coordinate 
     img_data = fits.open(img_path)[0].data
-    x_cen, y_cen = int(img_data.shape[1]/2), int(img_data.shape[0]/2)
+    x_cen, y_cen = int(img_data.shape[0]/2), int(img_data.shape[1]/2)
 
     # Initial guess of axis ratio and position angle 
     ba_ini, pa_ini = 0.5, 90.0
@@ -1328,7 +1328,7 @@ def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50,
     ax1.yaxis.set_major_formatter(NullFormatter())
     ax1.xaxis.set_major_formatter(NullFormatter())
 
-    cen = int(img.shape[0]/2),
+    cen_x, cen_y = int(img.shape[0]/2), int(img.shape[1]/2)
 
     if contrast is not None:
         ax1 = display_single(img, pixel_scale=pixel_scale, ax=ax1, scale_bar=scale_bar, 
@@ -1341,7 +1341,7 @@ def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50,
     
     for k, iso in enumerate(ell):
         if k % 2 == 0:
-            e = Ellipse(xy=(iso['x0'], iso['y0']),
+            e = Ellipse(xy=(iso['y0'], iso['x0']),
                         height=iso['sma'] * 2.0,
                         width=iso['sma'] * 2.0 * (1.0 - iso['ell']),
                         angle=iso['pa'])
