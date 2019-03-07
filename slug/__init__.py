@@ -144,7 +144,7 @@ def h5_rewrite_dataset(mother_group, key, new_data):
     key: string, the name of the dataset to be writen into.
     new_data: The data to be written into.
     '''
-    if np.any(np.array(mother_group.keys())==key):
+    if np.any(np.array(list(mother_group.keys()))==key):
         mother_group.__delitem__(key)
         mother_group.create_dataset(key, data=new_data)
     else:
@@ -228,6 +228,7 @@ def make_HSC_bright_obj_mask(bin_msk, objects, segmap, r=10.0, radius=1.5, thres
                     cen_obj['theta'], r=r)
     from astropy.convolution import convolve, Gaussian2DKernel
     HSC_mask = (TDmask[:, :, 9]).astype(bool)*(~cen_mask)
+    
     # Convolve the image with a Gaussian kernel with the width of 1.5 pixel
     cvl = convolve(HSC_mask.astype('float'), Gaussian2DKernel(radius))
     HSC_detect_mask = cvl >= threshold
