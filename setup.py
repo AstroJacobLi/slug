@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='slug', 
-	version='0.1',
+	version='0.2',
 	description='Integrated tool for calculating 1-D surface brightness profile of massive galaxies',
 	url='https://github.com/AstroJacobLi/slug',
 	author='Jiaxuan Li',
