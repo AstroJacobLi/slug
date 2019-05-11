@@ -138,7 +138,7 @@ def rebin_img(array, dimensions=None, scale=None):
     dY, dX = map(divmod, map(float, array.shape), dimensions)
 
     result = np.zeros(dimensions)
-    for j, i in itertools.product(*map(xrange, array.shape)):
+    for j, i in itertools.product(*map(range, array.shape)):
         (J, dj), (I, di) = divmod(j*dimensions[0], array.shape[0]), divmod(i*dimensions[1], array.shape[1])
         (J1, dj1), (I1, di1) = divmod(j+1, array.shape[0]/float(dimensions[0])), divmod(i+1, array.shape[1]/float(dimensions[1]))
     
@@ -160,8 +160,8 @@ def rebin_img(array, dimensions=None, scale=None):
         result[J_, I] += array[j,i]*(1-dy)*dx
         result[J, I_] += array[j,i]*dy*(1-dx)
         result[J_, I_] += array[j,i]*(1-dx)*(1-dy)
-    allowError = 0.1
-    assert (array.sum() < result.sum() * (1+allowError)) & (array.sum() >result.sum() * (1-allowError))
+    #allowError = 0.5
+    #assert (array.sum() < result.sum() * (1+allowError)) & (array.sum() >result.sum() * (1-allowError))
     return result
 
 #########################################################################
@@ -190,7 +190,7 @@ def add_tractor_sources(obj_cat, sources, w, shape_method='manual'):
     from tractor.galaxy import GalaxyShape, DevGalaxy, ExpGalaxy, CompositeGalaxy
     from tractor.psf import Flux, PixPos, PointSource, PixelizedPSF, Image, Tractor
     from tractor.ellipses import EllipseE
-    obj_type = np.array(map(lambda st: st.rstrip(' '), obj_cat['type']))
+    obj_type = np.array(list(map(lambda st: st.rstrip(' '), obj_cat['type'])))
     comp_galaxy = obj_cat[obj_type == 'COMP']
     dev_galaxy = obj_cat[obj_type == 'DEV']
     exp_galaxy = obj_cat[obj_type == 'EXP']
@@ -337,25 +337,31 @@ def tractor_iteration(obj_cat, w, img_data, invvar, psf_obj, pixel_scale, shape_
         trac_obj.freezeParam('images')
         trac_obj.optimize_loop()
         ########################
-        plt.clf()
         plt.rc('font', size=20)
-        fig, [ax1, ax2, ax3] = plt.subplots(1, 3, figsize=(18,8))
+        if i % 2 == 1 or i == (kfold-1) :
+            fig, [ax1, ax2, ax3] = plt.subplots(1, 3, figsize=(18,8))
 
-        trac_mod_opt = trac_obj.getModelImage(0, minsb=0., srcs=sources[:])
+            trac_mod_opt = trac_obj.getModelImage(0, minsb=0., srcs=sources[:])
 
-        ax1 = display_single(img_data, ax=ax1, scale_bar=False)
-        ax1.set_title('raw image')
-        ax2 = display_single(trac_mod_opt, ax=ax2, scale_bar=False, contrast=0.02)
-        ax2.set_title('tractor model')
-        ax3 = display_single(abs(img_data - trac_mod_opt), ax=ax3, scale_bar=False, color_bar=True, contrast=0.05)
-        ax3.set_title('residual')
+            ax1 = display_single(img_data, ax=ax1, scale_bar=False)
+            ax1.set_title('raw image')
+            ax2 = display_single(trac_mod_opt, ax=ax2, scale_bar=False, contrast=0.02)
+            ax2.set_title('tractor model')
+            ax3 = display_single(abs(img_data - trac_mod_opt), ax=ax3, scale_bar=False, color_bar=True, contrast=0.05)
+            ax3.set_title('residual')
+
+            if i == (kfold-1):
+                if fig_name is not None:
+                    plt.savefig(fig_name, dpi=200, bbox_inches='tight')
+                    plt.show()
+                    print('The chi-square is', np.sqrt(np.mean(np.square((img_data - trac_mod_opt).flatten()))))
+            else:
+                plt.show()
+                print('The chi-square is', np.sqrt(np.mean(np.square((img_data - trac_mod_opt).flatten()))) / np.sum(img_data)) 
+
         #trac_mod_opt = trac_obj.getModelImage(0, minsb=0., srcs=sources[1:])
         #ax4 = display_single(img_data - trac_mod_opt, ax=ax4, scale_bar=False, color_bar=True, contrast=0.05)
         #ax4.set_title('remain central galaxy')
-        if i == (kfold-1):
-            if fig_name is not None:
-                plt.savefig(fig_name, dpi=200, bbox_inches='tight')
-        plt.show(block=False)
-        print('The chi-square is', np.sqrt(np.mean(np.square((img_data - trac_mod_opt).flatten()))))
 
-    return sources, trac_obj
+
+    return sources, trac_obj, fig

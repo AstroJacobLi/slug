@@ -35,11 +35,29 @@ def h5_rewrite_dataset(mother_group, key, new_data):
     key: string, the name of the dataset to be writen into.
     new_data: The data to be written into.
     '''
-    if np.any(np.array(list(mother_group.keys()))==key):
+    if any([keys == key for keys in mother_group.keys()]):
         mother_group.__delitem__(key)
-        mother_group.create_dataset(key, data=new_data)
+        dt = mother_group.create_dataset(key, data=new_data)
     else:
-        mother_group.create_dataset(key, data=new_data)
+        dt = mother_group.create_dataset(key, data=new_data)
+    return dt
+
+# Create New group
+def h5_new_group(mother_group, key):
+    '''
+    Create a new data_group
+
+    Parameters:
+    ----------
+    mother_group: HDF5 group class.
+    key: string, the name of the dataset to be writen into.
+    new_data: The data to be written into.
+    '''
+    if not any([keys == key for keys in mother_group.keys()]):
+        new_grp = mother_group.create_group(key)
+    else:
+        new_grp = mother_group[key]
+    return new_grp
 
 # String to dictionary
 def str2dic(string):

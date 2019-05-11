@@ -1,7 +1,7 @@
 # Import packages
 from __future__ import division, print_function
 import copy
-
+import slug
 import numpy as np
 
 from astropy.io import fits
@@ -60,6 +60,59 @@ def phys_size(redshift, is_print=True, H0=70, Omegam=0.3, Omegal=0.7):
         print ('At redshift', redshift, ', 1 arcsec =', physical_size, 'kpc')
     return physical_size
 
+def img_cutout(img, wcs, coord_1, coord_2, size=60.0, pix=0.168,
+               prefix='img_cutout', pixel_unit=False, img_header=None, 
+               out_dir=None, save=True):
+    """(From kungpao) Generate image cutout with updated WCS information.
+
+    ----------
+    Parameters:
+        pixel_unit: boolen, optional
+                    When True, coord_1, cooord_2 becomes X, Y pixel coordinates.
+                    Size will also be treated as in pixels.
+        img: 2d array.
+        wcs: astropy wcs object of the input image.
+        coord_1: ra of the center.
+        coord_2: dec of the center.
+        size: image size.
+        pix: pixel size.
+        img_header: the astropy header object of the input image. 
+                    In case you can save the infomation in this header to the new header.
+    """
+    from astropy.nddata import Cutout2D
+    if not pixel_unit:
+        # imgsize in unit of arcsec
+        cutout_size = np.asarray(size) / pix
+        cen_x, cen_y = wcs.wcs_world2pix(coord_1, coord_2, 0)
+    else:
+        cutout_size = np.asarray(size)
+        cen_x, cen_y = coord_1, coord_2
+
+    cen_pos = (int(cen_x), int(cen_y))
+
+    # Generate cutout
+    cutout = Cutout2D(img, cen_pos, cutout_size, wcs=wcs)
+
+    # Update the header
+    cutout_header = cutout.wcs.to_header()
+    if img_header is not None:
+        intersect = [k for k in img_header if k not in cutout_header]
+        for keyword in intersect:
+            cutout_header.set(keyword, img_header[keyword], img_header.comments[keyword])
+    
+    # Build a HDU
+    hdu = fits.PrimaryHDU(header=cutout_header)
+    hdu.data = cutout.data
+
+    # Save FITS image
+    if save:
+        fits_file = prefix + '.fits'
+        if out_dir is not None:
+            fits_file = os.path.join(out_dir, fits_file)
+
+        hdu.writeto(fits_file, overwrite=True)
+
+    return cutout
 
 #########################################################################
 ########################## Mask related #################################
@@ -177,7 +230,9 @@ def print_HSC_binary_mask(TDmsk, path):
         plt.savefig(path + 'HSC-bin-mask-' + HSC_binray_mask_dict[i] + '.png')
 
 # Make binary mask
-def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, gaia=True, factor_b=1.2, show_fig=True):
+def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, 
+    gaia=True, factor_b=1.2, sep_objcat=None, sep_mag=18.0, sep_zp=27.5, sep_blowup=15, 
+    show_fig=True):
     '''Make binary mask for a given segmentation map. 
     We convolve the segmentation map using a Gaussian kernal to expand the size of mask.
 
@@ -204,6 +259,19 @@ def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, gaia=True, fac
     seg_conv = convolve(seg_conv.astype('float'), Gaussian2DKernel(radius))
     seg_mask = seg_conv >= threshold
 
+    if sep_objcat is not None:
+        t = Table(sep_objcat)
+        cen_inx = segmap[int(img.shape[0] / 2.), int(img.shape[1] / 2.)] - 1
+        cen_obj = sep_objcat[cen_inx]
+        t.remove_row(cen_inx)
+        t.sort('flux')
+        t.reverse()
+        bright_objs = t[sep_zp - 2.5*np.log10(t['flux']) < sep_mag]
+        print('The number of bright objects: ', len(bright_objs))
+        for skyobj in bright_objs:
+            sep.mask_ellipse(seg_mask, skyobj['x'], skyobj['y'], 
+                             skyobj['a'], skyobj['b'], skyobj['theta'], 
+                             r=sep_blowup)
     if gaia is False:
         if show_fig:
             display_single(seg_mask.astype(int), cmap=SEG_CMAP)
@@ -217,7 +285,7 @@ def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, gaia=True, fac
         binary_mask = seg_mask + gaia_mask
         return binary_mask
 
-# Extract objects for a given image
+# evaluate_sky objects for a given image
 def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minarea=5, 
     deblend_nthresh=32, deblend_cont=0.005, clean_param=1.0):
     '''Extract objects for a given image, using `sep`.
@@ -277,6 +345,22 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
 #########################################################################
 ########################## URL related #################################
 #########################################################################
+from tqdm import tqdm
+
+class TqdmUpTo(tqdm):
+    """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
+    def update_to(self, b=1, bsize=1, tsize=None):
+        """
+        b  : int, optional
+            Number of blocks transferred so far [default: 1].
+        bsize  : int, optional
+            Size of each block (in tqdm units) [default: 1].
+        tsize  : int, optional
+            Total size (in tqdm units). If [default: None] remains unchanged.
+        """
+        if tsize is not None:
+            self.total = tsize
+        self.update(b * bsize - self.n)  # will also set self.n = b * bsize
 
 # Generate DECaLS tractor url, given brickname
 def gen_url_decals_tractor(brickname):
@@ -315,7 +399,7 @@ def gen_url_decals_jpeg(ra_cen, dec_cen, size, bands, layer='decals-dr7', pixel_
                 + '&size=' 
                 + str(size) 
                 + '&pixscale=' 
-                + str(DECaLS_pixel_scale) 
+                + str(0.262) 
                 + '&bands=' 
                 + bands]
     else:
@@ -326,9 +410,9 @@ def gen_url_decals_jpeg(ra_cen, dec_cen, size, bands, layer='decals-dr7', pixel_
                 + '&layer=' 
                 + layer 
                 + '&size=' 
-                + str(int(size/DECaLS_pixel_scale))
+                + str(int(size/0.262))
                 + '&pixscale=' 
-                + str(DECaLS_pixel_scale) 
+                + str(0.262) 
                 + '&bands=' 
                 + bands]
 
@@ -356,7 +440,7 @@ def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
             + '&dec='
             + str(dec)
             + '&pixscale='
-            + str(DECaLS_pixel_scale)
+            + str(slug.DECaLS_pixel_scale)
             + '&layer='
             + layer
             + '&size='
@@ -369,11 +453,11 @@ def gen_url_decals(ra, dec, size, bands, layer='decals-dr7', pixel_unit=False):
             + '&dec='
             + str(dec)
             + '&pixscale='
-            + str(DECaLS_pixel_scale)
+            + str(slug.DECaLS_pixel_scale)
             + '&layer='
             + layer
             + '&size='
-            + str(size/DECaLS_pixel_scale)
+            + str(size / slug.DECaLS_pixel_scale)
             + '&bands='
             + bands]
 

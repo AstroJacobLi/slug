@@ -17,9 +17,9 @@ from matplotlib.patches import Ellipse
 
 import sep
 
-from .imutils import phys_size
 from .h5file import str2dic
 from .profile import skyobj_value
+from slug import imutils
 
 from kungpao import imtools
 from kungpao import io
@@ -47,7 +47,7 @@ def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50,
     physical_scale: float. If not None, the scale bar will be shown in physical scale.
     text: string. If not None, the string will be shown in the upper left corner.
     contrast: float. Default contrast is 0.15.
-    circle: list of floats. Maximun length is 3.
+    circle: **list** of floats. Maximun length is 3.
 
     Returns:
     --------
@@ -84,7 +84,7 @@ def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50,
             e = Ellipse(xy=(iso['y0'], iso['x0']),
                         height=iso['sma'] * 2.0,
                         width=iso['sma'] * 2.0 * (1.0 - iso['ell']),
-                        angle=iso['pa'])
+                        angle=iso['pa_norm'])
             e.set_facecolor('none')
             e.set_edgecolor('r')
             e.set_alpha(0.4)
@@ -163,7 +163,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
         ax1.tick_params(direction='in')
 
     # Calculate physical size at this redshift
-    phys_size = phys_size(redshift,is_print=False)
+    phys_size = imutils.phys_size(redshift,is_print=False)
 
     # 1-D profile
     if physical_unit is True:
@@ -312,7 +312,7 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, offs
             ax3.tick_params(direction='in')
 
     # Calculate physical size
-    phys_size = phys_size(redshift, is_print=False)
+    phys_size = imutils.phys_size(redshift, is_print=False)
     # Calculate mean ellipticity and pa, which are used for fixed fitting
     interval = np.intersect1d(np.where(ell_free['sma']*pixel_scale*phys_size > r_interval[0]),
                np.where(ell_free['sma']*pixel_scale*phys_size < r_interval[1]))
@@ -534,7 +534,7 @@ def SBP_shape_abspa(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None
             ax3.tick_params(direction='in')
 
     # Calculate physical size
-    phys_size = phys_size(redshift, is_print=False)
+    phys_size = imutils.phys_size(redshift, is_print=False)
     # Calculate mean ellipticity and pa, which are used for fixed fitting
     interval = np.intersect1d(np.where(ell_free['sma']*pixel_scale*phys_size > r_interval[0]),
                np.where(ell_free['sma']*pixel_scale*phys_size < r_interval[1]))
@@ -762,7 +762,7 @@ def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physica
                                         dec,
                                         matching_radius=matching_radius,
                                         aperture=aperture,
-                                        iters=5,
+                                        maxiters=5,
                                         showmedian=False)
         if k == 0:
             single_label = single_label
@@ -787,7 +787,7 @@ def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physica
                 alpha=single_alpha,
                 label=single_label)
 
-        x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
+        x = ell_fix['sma'] * pixel_scale * imutils.phys_size(redshift, is_print=False)
         func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
         x_input = np.linspace(x_min, x_max, 60)
         if k == 0:
@@ -920,7 +920,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
                                         dec,
                                         matching_radius=matching_radius,
                                         aperture=aperture,
-                                        iters=5,
+                                        maxiters=5,
                                         showmedian=False)
         if k == 0:
             single_label = None #"S18A\ sky\ objects"
@@ -961,7 +961,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
         x_input = np.linspace(x_min, x_max, ninterp)
 
         # Interpolate for surface brightness
-        x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
+        x = ell_fix['sma'] * pixel_scale * imutils.phys_size(redshift, is_print=False)
         func = interpolate.interp1d(x**0.25, ell_fix['intens']-off_set, kind='cubic', fill_value='extrapolate')
         if k == 0:
             SB_stack = func(x_input)
@@ -969,7 +969,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
             SB_stack = np.vstack((SB_stack, func(x_input)))
 
         # Interpolate for ellipticity
-        x = ell_free['sma'] * HSC_pixel_scale * phys_size(redshift, is_print=False)
+        x = ell_free['sma'] * HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
         mask = ~np.isnan(ell_free['ell'])
         func = interpolate.interp1d(x[mask]**0.25, ell_free['ell'][mask], kind='cubic', fill_value='extrapolate')
         if k == 0:
@@ -978,7 +978,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
             e_stack = np.vstack((e_stack, func(x_input)))
         
         # Interpolate for position angle
-        x = ell_free['sma'] * HSC_pixel_scale * phys_size(redshift, is_print=False)
+        x = ell_free['sma'] * HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
         mask = ~np.isnan(ell_free['pa_norm'])
 
         func = interpolate.interp1d(x[mask]**0.25, 

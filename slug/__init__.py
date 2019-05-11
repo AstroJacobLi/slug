@@ -1,6 +1,7 @@
 # Import packages
 from __future__ import division, print_function
 
+
 from . import imutils
 from . import mock_test
 from . import display
@@ -31,6 +32,8 @@ from kungpao import io
 from kungpao.display import display_single, IMG_CMAP, SEG_CMAP
 from kungpao.galsbp import galSBP
 
+import warnings
+warnings.simplefilter('ignore')
 
 # Version
 __version__ = "0.1"
