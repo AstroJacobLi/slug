@@ -21,7 +21,6 @@ import sep
 from kungpao import imtools
 from kungpao import io
 from kungpao.display import display_single, IMG_CMAP, SEG_CMAP
-from kungpao.galsbp import galSBP
 
 __all__ = ["phys_size", "convert_HSC_binary_mask", "make_HSC_detect_mask", 
             "make_HSC_bright_obj_mask", "print_HSC_binary_mask", "make_binary_mask",
