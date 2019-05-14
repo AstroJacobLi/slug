@@ -1,7 +1,7 @@
 # Slug
 Integrated tool for calculating 1-D surface brightness profile of massive galaxies.
 
-Author: Jiaxuan Li (UCSC, PKU)
+Contributor: Jiaxuan Li (UCSC, PKU), Song Huang (UCSC)
 
 ![UCSC slug](https://astrojacobli.github.io/astro-ph/ucsc-slug.png)
 
