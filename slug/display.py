@@ -20,6 +20,7 @@ import sep
 from .h5file import str2dic
 from .profile import skyobj_value
 from slug import imutils
+import slug
 
 from kungpao import imtools
 from kungpao import io
@@ -749,21 +750,21 @@ def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physica
         # Load files
         f = h5py.File(filenames[k], 'r')
         # Load info
-        info = str2dic(f['info'].value)
+        info = str2dic(f['header'].value)
         redshift = info['redshift']
         ra, dec = info['ra'], info['dec']
-        ell_free = f['ell_free'][band].value
-        ell_fix = f['ell_fix'][band].value
+        ell_free = f[band]['ell_free'].value
+        ell_fix = f[band]['ell_fix'].value
         if sky_cat is None:
             off_set = 0.0
         else:
             off_set = skyobj_value(sky_cat,
-                                        ra,
-                                        dec,
-                                        matching_radius=matching_radius,
-                                        aperture=aperture,
-                                        maxiters=5,
-                                        showmedian=False)
+                                    ra,
+                                    dec,
+                                    matching_radius=matching_radius,
+                                    aperture=aperture,
+                                    maxiters=5,
+                                    showmedian=False)
         if k == 0:
             single_label = single_label
         else:
@@ -900,28 +901,28 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
         # Load files
         f = h5py.File(filenames[k], 'r')
         # Load info
-        info = str2dic(f['info'].value)
+        info = str2dic(f['header'].value)
         redshift = info['redshift']
         ra, dec = info['ra'], info['dec']
-        img = f['Image'][band]['image'].value
-        mask = f['Mask'][band].value
-        ell_free = f['ell_free'][band].value
-        ell_fix = f['ell_fix'][band].value
+        img = f[band]['image'].value
+        mask = f[band]['mask'].value
+        ell_free = f[band]['ell_free'].value
+        ell_fix = f[band]['ell_fix'].value
 
         # Calculate mean ellipticity and pa, which are used for fixed fitting
-        mean_e = info['mean_e']
-        mean_pa = info['mean_pa']
+        #mean_e = info['mean_e']
+        #mean_pa = info['mean_pa']
         
         if sky_cat is None:
             off_set = 0.0
         else:
             off_set = skyobj_value(sky_cat,
-                                        ra,
-                                        dec,
-                                        matching_radius=matching_radius,
-                                        aperture=aperture,
-                                        maxiters=5,
-                                        showmedian=False)
+                                    ra,
+                                    dec,
+                                    matching_radius=matching_radius,
+                                    aperture=aperture,
+                                    maxiters=5,
+                                    showmedian=False)
         if k == 0:
             single_label = None #"S18A\ sky\ objects"
         else:
@@ -969,7 +970,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
             SB_stack = np.vstack((SB_stack, func(x_input)))
 
         # Interpolate for ellipticity
-        x = ell_free['sma'] * HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
+        x = ell_free['sma'] * slug.HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
         mask = ~np.isnan(ell_free['ell'])
         func = interpolate.interp1d(x[mask]**0.25, ell_free['ell'][mask], kind='cubic', fill_value='extrapolate')
         if k == 0:
@@ -978,7 +979,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
             e_stack = np.vstack((e_stack, func(x_input)))
         
         # Interpolate for position angle
-        x = ell_free['sma'] * HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
+        x = ell_free['sma'] * slug.HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
         mask = ~np.isnan(ell_free['pa_norm'])
 
         func = interpolate.interp1d(x[mask]**0.25, 
@@ -1041,7 +1042,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
     ytick_pos = [0, 0.2, 0.4, 0.6]
     ax2.set_yticks(ytick_pos)
     ax2.set_yticklabels([r'$'+str(round(i,2))+'$' for i in ytick_pos])
-    ax2.set_ylim(ylim)
+    ax2.set_ylim([0, 0.4])
     
     if show_pa:
         # ax3: Position angle
