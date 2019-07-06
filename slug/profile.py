@@ -23,7 +23,7 @@ from .imutils import extract_obj, make_binary_mask
 from kungpao import imtools
 from kungpao import io
 from kungpao.display import display_single, IMG_CMAP, SEG_CMAP
-from kungpao.galsbp import galsbp
+from kungpao.galsbp import galSBP
 
 
 # Define pixel scale of different surveys, unit = arcsec / pixel
