@@ -9,29 +9,401 @@ from astropy.io import fits
 from astropy import wcs
 from astropy.table import Table
 
+from astropy.visualization import (ZScaleInterval,
+                                   AsymmetricPercentileInterval)
+from astropy.visualization import make_lupton_rgb
+
+from matplotlib import colors
+from matplotlib import rcParams
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
-from matplotlib import rcParams
-from matplotlib.ticker import NullFormatter, MaxNLocator, FormatStrFormatter
-from matplotlib.patches import Ellipse
+from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.ticker import NullFormatter, MaxNLocator, FormatStrFormatter, AutoMinorLocator
+from matplotlib.patches import Ellipse, Rectangle
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
+from palettable.colorbrewer.sequential import (Greys_9,
+                                               OrRd_9,
+                                               Blues_9,
+                                               Purples_9,
+                                               YlGn_9)
 
 import sep
 
 from .h5file import str2dic
-from .profile import skyobj_value
-from slug import imutils
+from .imutils import phys_size
 import slug
+from slug import imutils
 
 from kungpao import imtools
 from kungpao import io
-from kungpao.display import display_single, IMG_CMAP, SEG_CMAP
-from kungpao.galsbp import galSBP
+from kungpao.display import IMG_CMAP, SEG_CMAP
 
-__all__ = ["display_isophote", "SBP_single"]
+__all__ = ["display_single", "display_isophote", "SBP_single"]
 
 #########################################################################
 ############################ Display related ###########################
 #########################################################################
+
+def display_single(img,
+                   pixel_scale=0.168,
+                   physical_scale=None,
+                   xsize=8,
+                   ysize=8,
+                   ax=None,
+                   stretch='arcsinh',
+                   scale='zscale',
+                   contrast=0.25,
+                   no_negative=False,
+                   lower_percentile=1.0,
+                   upper_percentile=99.0,
+                   cmap=IMG_CMAP,
+                   scale_bar=True,
+                   scale_bar_length=5.0,
+                   scale_bar_fontsize=20,
+                   scale_bar_y_offset=0.5,
+                   scale_bar_color='w',
+                   scale_bar_loc='left',
+                   color_bar=False,
+                   color_bar_loc=1,
+                   color_bar_width='75%',
+                   color_bar_height='5%',
+                   color_bar_fontsize=18,
+                   color_bar_color='w',
+                   add_text=None,
+                   text_fontsize=30,
+                   text_y_offset=0.80,
+                   text_color='w'):
+    """Display single image. From `kungpao`.
+
+    Parameters
+    ----------
+        img: np 2-D array for image
+
+        xsize: int, default = 8
+            Width of the image.
+
+        ysize: int, default = 8
+            Height of the image.
+
+    """
+    if ax is None:
+        fig = plt.figure(figsize=(xsize, ysize))
+        ax1 = fig.add_subplot(111)
+    else:
+        ax1 = ax
+
+    # Stretch option
+    if stretch.strip() == 'arcsinh':
+        img_scale = np.arcsinh(img)
+    elif stretch.strip() == 'log':
+        if no_negative:
+            img[img <= 0.0] = 1.0E-10
+        img_scale = np.log(img)
+    elif stretch.strip() == 'log10':
+        if no_negative:
+            img[img <= 0.0] = 1.0E-10
+        img_scale = np.log10(img)
+    elif stretch.strip() == 'linear':
+        img_scale = img
+    else:
+        raise Exception("# Wrong stretch option.")
+
+    # Scale option
+    if scale.strip() == 'zscale':
+        try:
+            zmin, zmax = ZScaleInterval(contrast=contrast).get_limits(img_scale)
+        except IndexError:
+            # TODO: Deal with problematic image
+            zmin, zmax = -1.0, 1.0
+    elif scale.strip() == 'percentile':
+        try:
+            zmin, zmax = AsymmetricPercentileInterval(
+                lower_percentile=lower_percentile,
+                upper_percentile=upper_percentile).get_limits(img_scale)
+        except IndexError:
+            # TODO: Deal with problematic image
+            zmin, zmax = -1.0, 1.0
+    else:
+        zmin, zmax = np.nanmin(img_scale), np.nanmax(img_scale)
+    
+    show = ax1.imshow(img_scale, origin='lower', cmap=cmap,
+                      vmin=zmin, vmax=zmax)
+
+    # Hide ticks and tick labels
+    ax1.tick_params(
+        labelbottom=False,
+        labelleft=False,
+        axis=u'both',
+        which=u'both',
+        length=0)
+    #ax1.axis('off')
+
+    # Put scale bar on the image
+    (img_size_x, img_size_y) = img.shape
+    if physical_scale is not None:
+        pixel_scale *= physical_scale
+    if scale_bar:
+        if scale_bar_loc == 'left':
+            scale_bar_x_0 = int(img_size_x * 0.04)
+            scale_bar_x_1 = int(img_size_x * 0.04 +
+                                (scale_bar_length / pixel_scale))
+        else:
+            scale_bar_x_0 = int(img_size_x * 0.95 -
+                                (scale_bar_length / pixel_scale))
+            scale_bar_x_1 = int(img_size_x * 0.95)
+
+        scale_bar_y = int(img_size_y * 0.10)
+        scale_bar_text_x = (scale_bar_x_0 + scale_bar_x_1) / 2
+        scale_bar_text_y = (scale_bar_y * scale_bar_y_offset)
+        if physical_scale is not None:
+            if scale_bar_length > 1000:
+                scale_bar_text = r'$%d\ \mathrm{Mpc}$' % int(scale_bar_length / 1000)
+            else:
+                scale_bar_text = r'$%d\ \mathrm{kpc}$' % int(scale_bar_length)
+        else:
+            if scale_bar_length < 60:
+                scale_bar_text = r'$%d^{\prime\prime}$' % int(scale_bar_length)
+            elif 60 < scale_bar_length < 3600:
+                scale_bar_text = r'$%d^{\prime}$' % int(scale_bar_length / 60)
+            else: 
+                scale_bar_text = r'$%d^{\circ}$' % int(scale_bar_length / 3600)
+        scale_bar_text_size = scale_bar_fontsize
+
+        ax1.plot(
+            [scale_bar_x_0, scale_bar_x_1], [scale_bar_y, scale_bar_y],
+            linewidth=3,
+            c=scale_bar_color,
+            alpha=1.0)
+        ax1.text(
+            scale_bar_text_x,
+            scale_bar_text_y,
+            scale_bar_text,
+            fontsize=scale_bar_text_size,
+            horizontalalignment='center',
+            color=scale_bar_color)
+    if add_text is not None:
+        text_x_0 = int(img_size_x*0.08)
+        text_y_0 = int(img_size_y*text_y_offset)
+        ax1.text(text_x_0, text_y_0, r'$\mathrm{'+add_text+'}$', fontsize=text_fontsize, color=text_color)
+
+    # Put a color bar on the image
+    if color_bar:
+        ax_cbar = inset_axes(ax1,
+                             width=color_bar_width,
+                             height=color_bar_height,
+                             loc=color_bar_loc)
+        if ax is None:
+            cbar = plt.colorbar(show, ax=ax1, cax=ax_cbar,
+                                orientation='horizontal')
+        else:
+            cbar = plt.colorbar(show, ax=ax, cax=ax_cbar,
+                                orientation='horizontal')
+
+        cbar.ax.xaxis.set_tick_params(color=color_bar_color)
+        cbar.ax.yaxis.set_tick_params(color=color_bar_color)
+        cbar.outline.set_edgecolor(color_bar_color)
+        plt.setp(plt.getp(cbar.ax.axes, 'xticklabels'),
+                 color=color_bar_color, fontsize=color_bar_fontsize)
+        plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'),
+                 color=color_bar_color, fontsize=color_bar_fontsize)
+
+    if ax is None:
+        return fig
+    return ax1
+
+def _display_single(img,
+                   pixel_scale=0.168,
+                   physical_scale=None,
+                   xsize=8,
+                   ysize=8,
+                   ax=None,
+                   stretch='arcsinh',
+                   scale='zscale',
+                   scale_manual=None,
+                   contrast=0.25,
+                   no_negative=False,
+                   lower_percentile=1.0,
+                   upper_percentile=99.0,
+                   cmap=IMG_CMAP,
+                   scale_bar=True,
+                   scale_bar_length=5.0,
+                   scale_bar_fontsize=20,
+                   scale_bar_y_offset=0.5,
+                   scale_bar_color='w',
+                   scale_bar_loc='left',
+                   color_bar=False,
+                   color_bar_loc=1,
+                   color_bar_width='75%',
+                   color_bar_height='5%',
+                   color_bar_fontsize=18,
+                   color_bar_color='w',
+                   add_text=None,
+                   text_fontsize=30,
+                   text_y_offset=0.80,
+                   text_color='w'):
+    """Display single image. From `kungpao`.
+
+    Parameters
+    ----------
+        img: np 2-D array for image
+
+        xsize: int, default = 8
+            Width of the image.
+
+        ysize: int, default = 8
+            Height of the image.
+
+    """
+    if ax is None:
+        fig = plt.figure(figsize=(xsize, ysize))
+        ax1 = fig.add_subplot(111)
+    else:
+        ax1 = ax
+
+    # Stretch option
+    if stretch.strip() == 'arcsinh':
+        img_scale = np.arcsinh(img)
+    elif stretch.strip() == 'log':
+        if no_negative:
+            img[img <= 0.0] = 1.0E-10
+        img_scale = np.log(img)
+    elif stretch.strip() == 'log10':
+        if no_negative:
+            img[img <= 0.0] = 1.0E-10
+        img_scale = np.log10(img)
+    elif stretch.strip() == 'linear':
+        img_scale = img
+    else:
+        raise Exception("# Wrong stretch option.")
+
+    # Scale option
+    if scale.strip() == 'zscale':
+        try:
+            zmin, zmax = ZScaleInterval(contrast=contrast).get_limits(img_scale)
+        except IndexError:
+            # TODO: Deal with problematic image
+            zmin, zmax = -1.0, 1.0
+    elif scale.strip() == 'percentile':
+        try:
+            zmin, zmax = AsymmetricPercentileInterval(
+                lower_percentile=lower_percentile,
+                upper_percentile=upper_percentile).get_limits(img_scale)
+        except IndexError:
+            # TODO: Deal with problematic image
+            zmin, zmax = -1.0, 1.0
+    else:
+        zmin, zmax = np.nanmin(img_scale), np.nanmax(img_scale)
+    
+    if scale_manual is not None:
+        assert len(scale_manual) == 2, '# length of manual scale must be two!'
+        zmin, zmax = scale_manual
+
+    show = ax1.imshow(img_scale, origin='lower', cmap=cmap,
+                      vmin=zmin, vmax=zmax)
+
+    # Hide ticks and tick labels
+    ax1.tick_params(
+        labelbottom=False,
+        labelleft=False,
+        axis=u'both',
+        which=u'both',
+        length=0)
+    #ax1.axis('off')
+
+    # Put scale bar on the image
+    (img_size_x, img_size_y) = img.shape
+    if physical_scale is not None:
+        pixel_scale *= physical_scale
+    if scale_bar:
+        if scale_bar_loc == 'left':
+            scale_bar_x_0 = int(img_size_x * 0.04)
+            scale_bar_x_1 = int(img_size_x * 0.04 +
+                                (scale_bar_length / pixel_scale))
+        else:
+            scale_bar_x_0 = int(img_size_x * 0.95 -
+                                (scale_bar_length / pixel_scale))
+            scale_bar_x_1 = int(img_size_x * 0.95)
+
+        scale_bar_y = int(img_size_y * 0.10)
+        scale_bar_text_x = (scale_bar_x_0 + scale_bar_x_1) / 2
+        scale_bar_text_y = (scale_bar_y * scale_bar_y_offset)
+        if physical_scale is not None:
+            if scale_bar_length > 1000:
+                scale_bar_text = r'$%d\ \mathrm{Mpc}$' % int(scale_bar_length / 1000)
+            else:
+                scale_bar_text = r'$%d\ \mathrm{kpc}$' % int(scale_bar_length)
+        else:
+            if scale_bar_length < 60:
+                scale_bar_text = r'$%d^{\prime\prime}$' % int(scale_bar_length)
+            elif 60 < scale_bar_length < 3600:
+                scale_bar_text = r'$%d^{\prime}$' % int(scale_bar_length / 60)
+            else: 
+                scale_bar_text = r'$%d^{\circ}$' % int(scale_bar_length / 3600)
+        scale_bar_text_size = scale_bar_fontsize
+
+        ax1.plot(
+            [scale_bar_x_0, scale_bar_x_1], [scale_bar_y, scale_bar_y],
+            linewidth=3,
+            c=scale_bar_color,
+            alpha=1.0)
+        ax1.text(
+            scale_bar_text_x,
+            scale_bar_text_y,
+            scale_bar_text,
+            fontsize=scale_bar_text_size,
+            horizontalalignment='center',
+            color=scale_bar_color)
+    if add_text is not None:
+        text_x_0 = int(img_size_x*0.08)
+        text_y_0 = int(img_size_y*text_y_offset)
+        ax1.text(text_x_0, text_y_0, r'$\mathrm{'+add_text+'}$', fontsize=text_fontsize, color=text_color)
+
+    # Put a color bar on the image
+    if color_bar:
+        ax_cbar = inset_axes(ax1,
+                             width=color_bar_width,
+                             height=color_bar_height,
+                             loc=color_bar_loc)
+        if ax is None:
+            cbar = plt.colorbar(show, ax=ax1, cax=ax_cbar,
+                                orientation='horizontal')
+        else:
+            cbar = plt.colorbar(show, ax=ax, cax=ax_cbar,
+                                orientation='horizontal')
+
+        cbar.ax.xaxis.set_tick_params(color=color_bar_color)
+        cbar.ax.yaxis.set_tick_params(color=color_bar_color)
+        cbar.outline.set_edgecolor(color_bar_color)
+        plt.setp(plt.getp(cbar.ax.axes, 'xticklabels'),
+                 color=color_bar_color, fontsize=color_bar_fontsize)
+        plt.setp(plt.getp(cbar.ax.axes, 'yticklabels'),
+                 color=color_bar_color, fontsize=color_bar_fontsize)
+
+    if ax is None:
+        return fig, zmin, zmax
+    return ax1, zmin, zmax
+
+def display_multiple(data_array, text=None, ax=None, **kwargs):
+    if ax is None:
+        fig, axes = plt.subplots(1, len(data_array), figsize=(len(data_array) * 4, 8))
+    else:
+        axes = ax
+
+    if text is None:
+        _, zmin, zmax = _display_single(data_array[0], ax=axes[0], **kwargs)
+    else:
+        _, zmin, zmax = _display_single(data_array[0], add_text=text[0], ax=axes[0], **kwargs)
+    for i in range(1, len(data_array)):
+        if text is None:
+            _display_single(data_array[i], ax=axes[i], scale_manual=[zmin, zmax], scale_bar=False, **kwargs)
+        else:
+            _display_single(data_array[i], add_text=text[i], ax=axes[i], scale_manual=[zmin, zmax], scale_bar=False, **kwargs)
+
+    plt.subplots_adjust(wspace=0.0)
+    if ax is None:
+        return fig
+    else:
+        return axes
 
 def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50, 
     physical_scale=None, text=None, ax=None, contrast=None, circle=None):
@@ -167,11 +539,16 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
     phys_size = imutils.phys_size(redshift,is_print=False)
 
     # 1-D profile
+    if 'intens_err' in ell_fix.colnames:
+        intens_err_name = 'intens_err'
+    else:
+        intens_err_name = 'int_err'
+
     if physical_unit is True:
         x = ell_fix['sma'] * pixel_scale * phys_size
-        y = -2.5 * np.log10((ell_fix['intens'] + offset) / (pixel_scale)**2) + zeropoint
-        y_upper = -2.5 * np.log10((ell_fix['intens'] + offset + ell_fix['int_err']) / (pixel_scale)**2) + zeropoint
-        y_lower = -2.5 * np.log10((ell_fix['intens'] + offset - ell_fix['int_err']) / (pixel_scale)**2) + zeropoint
+        y = -2.5 * np.log10((ell_fix['intens'].data + offset) / (pixel_scale)**2) + zeropoint
+        y_upper = -2.5 * np.log10((ell_fix['intens'] + offset + ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint
+        y_lower = -2.5 * np.log10((ell_fix['intens'] + offset - ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint
         upper_yerr = y_lower - y
         lower_yerr = y - y_upper
         asymmetric_error = [lower_yerr, upper_yerr]
@@ -179,14 +556,16 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
     else:
         x = ell_fix['sma'] * pixel_scale
-        y = -2.5 * np.log10((ell_fix['intens'] + offset) / (pixel_scale)**2) + zeropoint
-        y_upper = -2.5 * np.log10((ell_fix['intens'] + offset + ell_fix['int_err']) / (pixel_scale) ** 2) + zeropoint
-        y_lower = -2.5 * np.log10((ell_fix['intens'] + offset - ell_fix['int_err']) / (pixel_scale) ** 2) + zeropoint
+        y = -2.5 * np.log10((ell_fix['intens'].data + offset) / (pixel_scale)**2) + zeropoint
+        y_upper = -2.5 * np.log10((ell_fix['intens'] + offset + ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint
+        y_lower = -2.5 * np.log10((ell_fix['intens'] + offset - ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint
         upper_yerr = y_lower - y
         lower_yerr = y - y_upper
         asymmetric_error = [lower_yerr, upper_yerr]
         xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+    
+    # If `nan` at somewhere, interpolate `nan`.
 
     if show_grid:
         ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
@@ -204,7 +583,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
             l.set_alpha(1)
     else:
         ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle, alpha=alpha)
-    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha)
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha, label=None)
     
     for tick in ax1.xaxis.get_major_ticks():
         tick.label.set_fontsize(ticksize)
@@ -231,6 +610,507 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
         for tick in ax4.xaxis.get_major_ticks():
             tick.label.set_fontsize(ticksize)
 
+    # Vertical line
+    if vertical_line is not None:
+        if len(vertical_line) > 3:
+            raise ValueError('Maximum length of vertical_line is 3.') 
+        ylim = ax1.get_ylim()
+        style_list = ['-', '--', '-.']
+        for k, pos in enumerate(vertical_line):
+            ax1.axvline(x=pos**0.25, ymin=0, ymax=1,
+                        color='gray', linestyle=style_list[k], linewidth=3, alpha=0.75)
+        plt.ylim(ylim)
+
+    # Return
+    if ax is None:
+        return fig
+    return ax1
+
+# You can plot 1-D SBP using this, without plotting the PA and eccentricity.
+def SBP_single_try(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0, 
+    x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
+    show_banner=True, vertical_line=None, linecolor='firebrick', linestyle='-', 
+    linewidth=3, labelsize=25, ticksize=30, label='SBP', labelloc='lower left'):
+
+    """Display the 1-D profiles, without showing PA and ellipticity.
+    
+    Parameters:
+    -----------
+    ell_fix: astropy Table or numpy table, should be the output of ELLIPSE.
+    redshift: float, redshift of the object.
+    pixel_scale: float, pixel scale in arcsec/pixel.
+    zeropoint: float, zeropoint of the photometry system.
+    ax: matplotlib axes class.
+    offset: float.
+    x_min, x_max: float, in ^{1/4} scale.
+    alpha: float, transparency.
+    physical_unit: boolean. If true, the figure will be shown in physical scale.
+    show_dots: boolean. If true, it will show all the data points.
+    show_grid: boolean. If true, it will show a grid.
+    vertical_line: list of floats, positions of vertical lines. Maximum length is three.
+    linecolor, linestyle: string. Color and style of SBP.
+    label: string.
+
+    Returns:
+    --------
+    ax: matplotlib axes class.
+
+    """
+    if ax is None:
+        fig = plt.figure(figsize=(10, 10))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+
+    # Calculate physical size at this redshift
+    phys_size = imutils.phys_size(redshift,is_print=False)
+
+    # 1-D profile
+    if 'intens_err' in ell_fix.colnames:
+        intens_err_name = 'intens_err'
+    else:
+        intens_err_name = 'int_err'
+
+    if physical_unit is True:
+        x = ell_fix['sma'] * pixel_scale * phys_size
+        y = -2.5 * np.log10((ell_fix['intens'].data + offset) / (pixel_scale)**2) + zeropoint
+        y_upper = -2.5 * np.log10((ell_fix['intens'] + offset + ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint
+        y_lower = -2.5 * np.log10((ell_fix['intens'] + offset - ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint
+        upper_yerr = y_lower - y
+        lower_yerr = y - y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+    else:
+        x = ell_fix['sma'] * pixel_scale
+        y = -2.5 * np.log10((ell_fix['intens'].data + offset) / (pixel_scale)**2) + zeropoint
+        y_upper = -2.5 * np.log10((ell_fix['intens'] + offset + ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint
+        y_lower = -2.5 * np.log10((ell_fix['intens'] + offset - ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint
+        upper_yerr = y_lower - y
+        lower_yerr = y - y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+
+    # If `nan` at somewhere, interpolate `nan`.
+    nanidx = np.where(np.isnan(y))[0]
+    if len(nanidx) > 1:
+        from sklearn.cluster import KMeans
+        X = np.array(list(zip(nanidx, np.zeros_like(nanidx))))
+        kmeans = KMeans(n_clusters=2).fit(X)
+        labels = kmeans.predict(X)
+        centroids = kmeans.cluster_centers_
+        if (max(centroids[:, 0]) - min(centroids[:, 0]) < 3) and np.ptp(nanidx[labels==0]) > 2:
+            print('interpolate NaN')
+            from scipy.interpolate import interp1d
+            mask = (~np.isnan(y))
+            func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value='extrapolate')
+            y[nanidx[labels == 0]] = func(x[nanidx[labels == 0]]**0.25)
+        else:
+            y[nanidx[0]:] = np.nan
+            y_upper[nanidx[0]:] = np.nan
+            y_lower[nanidx[0]:] = np.nan
+    elif len(nanidx) == 1:
+        if abs(y[nanidx - 1] - y[nanidx + 1]) < 0.5:
+            print('interpolate NaN')
+            from scipy.interpolate import interp1d
+            mask = (~np.isnan(y))
+            func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value='extrapolate')
+            y[nanidx] = func(x[nanidx]**0.25)
+        else:
+            y[nanidx[0]:] = np.nan
+            y_upper[nanidx[0]:] = np.nan
+            y_lower[nanidx[0]:] = np.nan
+
+    if show_grid:
+        ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
+    if show_dots:
+        ax1.errorbar((x ** 0.25), y,
+                 yerr=asymmetric_error,
+                 color='k', alpha=0.2, fmt='o', 
+                 capsize=4, capthick=1, elinewidth=1)
+
+    if label is not None:
+        ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle,
+             label=r'$\mathrm{' + label + '}$', alpha=alpha)
+        leg = ax1.legend(fontsize=labelsize, frameon=False, loc=labelloc)
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle, alpha=alpha)
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha, label=None)
+    
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=ticksize)
+    ax1.set_ylabel(ylabel, fontsize=ticksize)
+    #ax1.invert_yaxis()
+
+    # Twin axis with linear scale
+    if physical_unit and show_banner is True:
+        ax4 = ax1.twiny() 
+        ax4.tick_params(direction='in')
+        lin_label = [1, 2, 5, 10, 50, 100, 150, 300]
+        lin_pos = [i**0.25 for i in lin_label]
+        ax4.set_xticks(lin_pos)
+        ax4.set_xlim(ax1.get_xlim())
+        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=ticksize)
+        ax4.xaxis.set_label_coords(1, 1.025)
+
+        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
+        for tick in ax4.xaxis.get_major_ticks():
+            tick.label.set_fontsize(ticksize)
+
+    # Vertical line
+    if vertical_line is not None:
+        if len(vertical_line) > 3:
+            raise ValueError('Maximum length of vertical_line is 3.') 
+        ylim = ax1.get_ylim()
+        style_list = ['-', '--', '-.']
+        for k, pos in enumerate(vertical_line):
+            ax1.axvline(x=pos**0.25, ymin=0, ymax=1,
+                        color='gray', linestyle=style_list[k], linewidth=3, alpha=0.75)
+        plt.ylim(ylim)
+
+    # Return
+    if ax is None:
+        return fig
+    return ax1
+
+# You can plot 1-D SBP using this, without plotting the PA and eccentricity.
+def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0, skystd=0.0, 
+    ax=None, x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
+    show_banner=True, vertical_line=None, linecolor='firebrick', linestyle='-', 
+    linewidth=3, labelsize=25, ticksize=30, label='SBP', labelloc='lower left'):
+
+    """Display the 1-D profiles, without showing PA and ellipticity.
+    
+    Parameters:
+    -----------
+    ell_fix: astropy Table or numpy table, should be the output of ELLIPSE.
+    redshift: float, redshift of the object.
+    pixel_scale: float, pixel scale in arcsec/pixel.
+    zeropoint: float, zeropoint of the photometry system.
+    ax: matplotlib axes class.
+    offset: float.
+    x_min, x_max: float, in ^{1/4} scale.
+    alpha: float, transparency.
+    physical_unit: boolean. If true, the figure will be shown in physical scale.
+    show_dots: boolean. If true, it will show all the data points.
+    show_grid: boolean. If true, it will show a grid.
+    vertical_line: list of floats, positions of vertical lines. Maximum length is three.
+    linecolor, linestyle: string. Color and style of SBP.
+    label: string.
+
+    Returns:
+    --------
+    ax: matplotlib axes class.
+
+    """
+    if ax is None:
+        fig = plt.figure(figsize=(10, 10))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax[0]
+        ax1.tick_params(direction='in')
+
+    # Calculate physical size at this redshift
+    phys_size = imutils.phys_size(redshift,is_print=False)
+
+    # 1-D profile
+    if 'intens_err' in ell_fix.colnames:
+        intens_err_name = 'intens_err'
+    else:
+        intens_err_name = 'int_err'
+
+    if physical_unit is True:
+        x = ell_fix['sma'] * pixel_scale * phys_size
+        y = -2.5 * np.log10((ell_fix['intens'].data - skyval) / (pixel_scale)**2) + zeropoint
+        y_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint
+        y_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint
+        y_sky_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2) + zeropoint
+        y_sky_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2) + zeropoint
+        upper_yerr = y_lower - y
+        lower_yerr = y - y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+    else:
+        x = ell_fix['sma'] * pixel_scale
+        y = -2.5 * np.log10((ell_fix['intens'].data - skyval) / (pixel_scale)**2) + zeropoint
+        y_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint
+        y_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint
+        y_sky_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2) + zeropoint
+        y_sky_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2) + zeropoint
+        upper_yerr = y_lower - y
+        lower_yerr = y - y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+    
+    
+    # If `nan` at somewhere, interpolate `nan`.
+    nanidx = np.where(np.isnan(y))[0]
+    if len(nanidx) > 1:
+        from sklearn.cluster import KMeans
+        X = np.array(list(zip(nanidx, np.zeros_like(nanidx))))
+        kmeans = KMeans(n_clusters=2).fit(X)
+        labels = kmeans.predict(X)
+        centroids = kmeans.cluster_centers_
+        if (max(centroids[:, 0]) - min(centroids[:, 0]) < 3) and np.ptp(nanidx[labels==0]) > 2:
+            print('interpolate NaN')
+            from scipy.interpolate import interp1d
+            mask = (~np.isnan(y))
+            func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value='extrapolate')
+            y[nanidx[labels == 0]] = func(x[nanidx[labels == 0]]**0.25)
+        else:
+            y[nanidx[0]:] = np.nan
+            y_upper[nanidx[0]:] = np.nan
+            y_lower[nanidx[0]:] = np.nan
+    elif len(nanidx) == 1:
+        if abs(y[nanidx - 1] - y[nanidx + 1]) < 0.5:
+            print('interpolate NaN')
+            from scipy.interpolate import interp1d
+            mask = (~np.isnan(y))
+            func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value='extrapolate')
+            y[nanidx] = func(x[nanidx]**0.25)
+        else:
+            y[nanidx[0]:] = np.nan
+            y_upper[nanidx[0]:] = np.nan
+            y_lower[nanidx[0]:] = np.nan
+    
+    if show_grid:
+        ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
+    if show_dots:
+        ax1.errorbar((x ** 0.25), y,
+                 yerr=asymmetric_error,
+                 color='k', alpha=0.2, fmt='o', 
+                 capsize=4, capthick=1, elinewidth=1)
+
+    if label is not None:
+        ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle,
+             label=r'$\mathrm{' + label + '}$', alpha=alpha)
+        leg = ax1.legend(fontsize=labelsize, frameon=False, loc=labelloc)
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle, alpha=alpha)
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha, label=None)
+    ylim = ax1.get_ylim()
+    for i in range(len(y_sky_lower)):
+        if np.isnan(y_sky_lower[i]):
+            y_sky_lower[i] = max(ylim)
+    ax1.fill_between(x**0.25, y_sky_upper, y_sky_lower, color=linecolor, alpha=0.1*alpha, label=None)
+
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=ticksize)
+    ax1.set_ylabel(ylabel, fontsize=ticksize)
+    #ax1.invert_yaxis()
+    ax1.set_ylim(max(ylim), min(ylim))
+
+    # Twin axis with linear scale
+    if physical_unit and show_banner is True:
+        ax4 = ax1.twiny() 
+        ax4.tick_params(direction='in')
+        lin_label = [1, 2, 5, 10, 50, 100, 150, 300]
+        lin_pos = [i**0.25 for i in lin_label]
+        ax4.set_xticks(lin_pos)
+        ax4.set_xlim(ax1.get_xlim())
+        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=ticksize)
+        ax4.xaxis.set_label_coords(1, 1.025)
+
+        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
+        for tick in ax4.xaxis.get_major_ticks():
+            tick.label.set_fontsize(ticksize)
+
+    # Vertical line
+    if vertical_line is not None:
+        if len(vertical_line) > 3:
+            raise ValueError('Maximum length of vertical_line is 3.') 
+        ylim = ax1.get_ylim()
+        style_list = ['-', '--', '-.']
+        for k, pos in enumerate(vertical_line):
+            ax1.axvline(x=pos**0.25, ymin=0, ymax=1,
+                        color='gray', linestyle=style_list[k], linewidth=3, alpha=0.75)
+        plt.ylim(ylim)
+
+    # zoom-in linear view
+    
+    ax_ins = ax[1]
+    mask = (x**0.25 > 2.3)
+    flux = 3.631 * (ell_fix['intens'] - skyval) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)  #\muJy/arcsec^2
+    flux_upper = 3.631 * (ell_fix['intens'] - skyval + ell_fix['int_err'] + skystd) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)  #\muJy/arcsec^2
+    flux_lower = 3.631 * (ell_fix['intens'] - skyval - ell_fix['int_err'] - skystd) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)  #\muJy/arcsec^2
+    ax[1].plot(x[mask]**0.25, flux[mask], color=linecolor, linewidth=linewidth, linestyle=linestyle, alpha=alpha)
+    ax[1].fill_between(x[mask]**0.25, flux_upper[mask], flux_lower[mask], color=linecolor, alpha=0.1*alpha, label=None)
+    ax[1].set_xlabel(r'$(R/\mathrm{kpc})^{1/4}$', fontsize=12)
+    ax[1].set_ylabel(r'$\mu\,[\mathrm{\mu Jy/arcsec^2}]$', fontsize=15)
+    #plt.yticks(np.array([0, 0.1, 0.2, 0.3, 0.4]) * sum(n), ['0', '0.1', '0.2', '0.3', '0.4'], fontsize=10)
+    #plt.xticks(np.arange(0,0.18,0.03), fontsize=10)
+    ax[1].tick_params(direction='in', length=1)
+
+    # Return
+    if ax is None:
+        return fig
+    return ax1, ax_ins
+
+
+# You can plot 1-D SBP using this, without plotting the PA and eccentricity.
+def SBP_single_arcsinh(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0, skystd=0.0, 
+    ax=None, offset=0.0, 
+    x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
+    show_banner=True, vertical_line=None, linecolor='firebrick', linestyle='-', 
+    linewidth=3, labelsize=25, ticksize=30, label='SBP', labelloc='lower left'):
+
+    """Display the 1-D profiles, without showing PA and ellipticity.
+    
+    Parameters:
+    -----------
+    ell_fix: astropy Table or numpy table, should be the output of ELLIPSE.
+    redshift: float, redshift of the object.
+    pixel_scale: float, pixel scale in arcsec/pixel.
+    zeropoint: float, zeropoint of the photometry system.
+    skycat: skyobj catalog
+    ax: matplotlib axes class.
+    offset: float.
+    x_min, x_max: float, in ^{1/4} scale.
+    alpha: float, transparency.
+    physical_unit: boolean. If true, the figure will be shown in physical scale.
+    show_dots: boolean. If true, it will show all the data points.
+    show_grid: boolean. If true, it will show a grid.
+    vertical_line: list of floats, positions of vertical lines. Maximum length is three.
+    linecolor, linestyle: string. Color and style of SBP.
+    label: string.
+
+    Returns:
+    --------
+    ax: matplotlib axes class.
+
+    """
+    if ax is None:
+        fig = plt.figure(figsize=(10, 10))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+
+    # Calculate physical size at this redshift
+    phys_size = imutils.phys_size(redshift,is_print=False)
+
+    # 1-D profile
+    if 'intens_err' in ell_fix.colnames:
+        intens_err_name = 'intens_err'
+    else:
+        intens_err_name = 'int_err'
+
+    if physical_unit is True:
+        x = ell_fix['sma'] * pixel_scale * phys_size
+        # y is in the unit of \muJy/arcsec^2
+        y = 3.631 * (ell_fix['intens'] - skyval) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)  #\muJy/arcsec^2
+        y = np.arcsinh(y)
+        y_upper = 3.631 * (ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)
+        y_upper = np.arcsinh(y_upper)
+        y_lower = 3.631 * (ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)
+        y_lower = np.arcsinh(y_lower)
+        upper_yerr = y_lower - y
+        lower_yerr = y - y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
+        ylabel = r'$\mathrm{arcsinh}\,\mu\,[\mathrm{\mu Jy/arcsec^2}]$'
+    else:
+        x = ell_fix['sma'] * pixel_scale
+        y = 3.631 * (ell_fix['intens'] - skyval) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)  #\muJy/arcsec^2
+        y_upper = 3.631 * (ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)
+        y_lower = 3.631 * (ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)
+        upper_yerr = y_lower - y
+        lower_yerr = y - y_upper
+        asymmetric_error = [lower_yerr, upper_yerr]
+        xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
+        ylabel = r'$\mathrm{arcsinh}\,\mu\,[\mathrm{\mu Jy/arcsec^2}]$'
+    
+
+    if show_grid:
+        ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
+    if show_dots:
+        ax1.errorbar((x ** 0.25), y,
+                 yerr=asymmetric_error,
+                 color='k', alpha=0.2, fmt='o', 
+                 capsize=4, capthick=1, elinewidth=1)
+
+    if label is not None:
+        ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle,
+             label=r'$\mathrm{' + label + '}$', alpha=alpha)
+        leg = ax1.legend(fontsize=labelsize, frameon=False, loc=labelloc)
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle, alpha=alpha)
+
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha, label=None)
+    
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=ticksize)
+    ax1.set_ylabel(ylabel, fontsize=ticksize)
+    ax1.set_ylim(-0.18, 0.78)
+
+    # Twin axis with linear scale
+    if physical_unit and show_banner is True:
+        ax4 = ax1.twiny() 
+        ax4.tick_params(direction='in')
+        lin_label = [1, 2, 5, 10, 50, 100, 150, 300]
+        lin_pos = [i**0.25 for i in lin_label]
+        ax4.set_xticks(lin_pos)
+        ax4.set_xlim(ax1.get_xlim())
+        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=ticksize)
+        ax4.xaxis.set_label_coords(1, 1.025)
+
+        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
+        for tick in ax4.xaxis.get_major_ticks():
+            tick.label.set_fontsize(ticksize)
+
+    # show magnitude on the right axis
+    ax5 = ax1.twinx() 
+    ax5.tick_params(direction='in')
+    lin_label = np.arange(25, 33, 1)
+    lin_pos = [np.arcsinh(10**((22.5 - i)/2.5) * 3.631) for i in lin_label]
+    ax5.set_yticks(lin_pos)
+    ax5.set_ylim(ax1.get_ylim())
+    ax5.set_ylabel(r'$\mu\,[\mathrm{mag/arcsec^2}]$', fontsize=ticksize)
+    ax5.yaxis.set_label_coords(1.07, 0.5)
+    ax5.set_yticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
+    for tick in ax5.xaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    
     # Vertical line
     if vertical_line is not None:
         if len(vertical_line) > 3:
@@ -313,7 +1193,7 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, offs
             ax3.tick_params(direction='in')
 
     # Calculate physical size
-    phys_size = imutils.phys_size(redshift, is_print=False)
+    phys_size = phys_size(redshift, is_print=False)
     # Calculate mean ellipticity and pa, which are used for fixed fitting
     interval = np.intersect1d(np.where(ell_free['sma']*pixel_scale*phys_size > r_interval[0]),
                np.where(ell_free['sma']*pixel_scale*phys_size < r_interval[1]))
@@ -535,7 +1415,7 @@ def SBP_shape_abspa(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None
             ax3.tick_params(direction='in')
 
     # Calculate physical size
-    phys_size = imutils.phys_size(redshift, is_print=False)
+    phys_size = phys_size(redshift, is_print=False)
     # Calculate mean ellipticity and pa, which are used for fixed fitting
     interval = np.intersect1d(np.where(ell_free['sma']*pixel_scale*phys_size > r_interval[0]),
                np.where(ell_free['sma']*pixel_scale*phys_size < r_interval[1]))
@@ -729,6 +1609,7 @@ def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physica
     y_stack: stacked profile ndarray.
     """
     import h5py
+    from .profile import skyobj_value
     from scipy import interpolate
     from astropy.stats import bootstrap
     from astropy.utils import NumpyRNGContext
@@ -788,7 +1669,7 @@ def SBP_stack(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, physica
                 alpha=single_alpha,
                 label=single_label)
 
-        x = ell_fix['sma'] * pixel_scale * imutils.phys_size(redshift, is_print=False)
+        x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
         func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
         x_input = np.linspace(x_min, x_max, 60)
         if k == 0:
@@ -864,6 +1745,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
 
     
     import h5py
+    from .profile import skyobj_value
     from scipy import interpolate
     from astropy.stats import bootstrap
     from astropy.utils import NumpyRNGContext
@@ -962,7 +1844,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
         x_input = np.linspace(x_min, x_max, ninterp)
 
         # Interpolate for surface brightness
-        x = ell_fix['sma'] * pixel_scale * imutils.phys_size(redshift, is_print=False)
+        x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
         func = interpolate.interp1d(x**0.25, ell_fix['intens']-off_set, kind='cubic', fill_value='extrapolate')
         if k == 0:
             SB_stack = func(x_input)
@@ -970,7 +1852,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
             SB_stack = np.vstack((SB_stack, func(x_input)))
 
         # Interpolate for ellipticity
-        x = ell_free['sma'] * slug.HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
+        x = ell_free['sma'] * slug.HSC_pixel_scale * phys_size(redshift, is_print=False)
         mask = ~np.isnan(ell_free['ell'])
         func = interpolate.interp1d(x[mask]**0.25, ell_free['ell'][mask], kind='cubic', fill_value='extrapolate')
         if k == 0:
@@ -979,7 +1861,7 @@ def SBP_stack_shape(obj_cat, band, filenames, pixel_scale, zeropoint, ax=None, p
             e_stack = np.vstack((e_stack, func(x_input)))
         
         # Interpolate for position angle
-        x = ell_free['sma'] * slug.HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
+        x = ell_free['sma'] * slug.HSC_pixel_scale * phys_size(redshift, is_print=False)
         mask = ~np.isnan(ell_free['pa_norm'])
 
         func = interpolate.interp1d(x[mask]**0.25, 
@@ -1197,4 +2079,429 @@ def SBP_thick_line(stack_set, pixel_scale, zeropoint, ax=None,
     else:
         return [ax1, ax2]
 
+# Plot SBP together, and also plot median profile
+def mu_diff_stack(obj_cat, band, ax=None, 
+              sky_cat=None, matching_radius=3, aperture='84', x_min=1.0, x_max=4.0, 
+              vertical_line=None, show_banner=True, ismedian=True, linecolor='brown', 
+              fillcolor=['#fdcc8a','#fc8d59','#d7301f'], linewidth=5, single_alpha=0.3, single_color='firebrick', 
+              single_style='-', single_width=1, label=None, ticksize=20, labelsize=20, 
+              single_label="S18A\ sky\ objects"):
+    import slug
+    from slug import imutils
+    import h5py
+    import pickle
+    from scipy import interpolate
+    from astropy.stats import bootstrap
+    from astropy.utils import NumpyRNGContext
+
+    if ax is None:
+        fig = plt.figure(figsize=(7, 6))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+
+
+    for k, obj in enumerate(obj_cat):
+        # Load HSC files
+        filename = os.path.abspath(os.path.join(
+            '/Users/jiaxuanli/Research/HSC_Dragonfly_DECaLS/IntermediateZ/', 
+            obj['new_dir']))
+        f = h5py.File(filename, 'r')
+        # Load info
+        info = slug.h5file.str2dic(f['header'].value)
+        redshift = info['redshift']
+        ra, dec = info['ra'], info['dec']
+        ell_fix_HSC = Table(f[band]['ell_fix'].value)
+        f.close()
         
+        if sky_cat is None:
+            off_set = 0.0
+        else:
+            off_set = imutils.skyobj_value(sky_cat,
+                                        ra,
+                                        dec,
+                                        matching_radius=matching_radius,
+                                        aperture=aperture,
+                                        maxiters=5,
+                                        showmedian=False)
+        ell_fix_HSC['intens'] -= off_set
+        
+        # Load DECaLS files
+        with open(obj['decals_dir'], 'rb') as f:
+            ellipsefit = pickle.load(f)
+        # Change the unit of 'intens' to count/pixel
+        for filt in ellipsefit['bands']:
+            ellipsefit[filt]['intens'] *= (slug.DECaLS_pixel_scale)**2
+            ellipsefit[filt]['intens_err'] *= (slug.DECaLS_pixel_scale)**2
+        ell_fix_DECaLS = Table(ellipsefit[band[0]]) # r-band ellipse result
+        
+        # Label
+        if k == 0:
+            single_label = single_label
+        else:
+            single_label = None
+
+        ## Interpolate the two ell_fix to the same "x" first ##
+        # HSC side
+        x = ell_fix_HSC['sma'] * slug.HSC_pixel_scale * imutils.phys_size(redshift, is_print=False)
+        mu_HSC = -2.5 * np.log10((ell_fix_HSC['intens']) / (slug.HSC_pixel_scale)**2) + slug.HSC_zeropoint
+        mask = np.isnan(mu_HSC)
+        func = interpolate.interp1d(x[~mask]**0.25, mu_HSC[~mask], 
+                                    kind='cubic', fill_value=np.nan, bounds_error=False)
+        x_input = np.linspace(x_min, x_max, 100)
+        y_HSC = func(x_input)
+
+        # DECaLS side.
+        x = ell_fix_DECaLS['sma'] * slug.DECaLS_pixel_scale * imutils.phys_size(redshift, is_print=False)
+        mu_DECaLS = -2.5*np.log10((ell_fix_DECaLS['intens'])/(slug.DECaLS_pixel_scale)**2) + slug.DECaLS_zeropoint
+        mask = np.isnan(mu_DECaLS)
+        func = interpolate.interp1d(x[~mask]**0.25, mu_DECaLS[~mask], 
+                                    kind='cubic', fill_value=np.nan, bounds_error=False)
+        x_input = np.linspace(x_min, x_max, 100)
+        y_DECaLS = func(x_input)
+
+        mu_diff = y_HSC - y_DECaLS
+        
+        if k == 0:
+            mu_stack = mu_diff
+        else:
+            mu_stack = np.vstack((mu_stack, mu_diff))
+    
+    
+    with NumpyRNGContext(np.random.randint(10000)):
+        if ismedian:
+            btfunc = np.nanmedian
+        else:
+            btfunc = np.nanmean
+        yerr_set = np.array([np.std(bootstrap(bootarr, 100, bootfunc=btfunc)) for bootarr in mu_stack.T])
+
+    y = np.nanmedian(mu_stack, axis=0)
+    ## Fix the bug that some "y" is derived from mu_stack which only has one non-nan value
+    y[np.isnan(yerr_set)] = np.nan
+    
+    if label is not None:
+        ax1.plot(x_input, y, color=linecolor, linewidth=linewidth, linestyle='-',
+             label=r'$\mathrm{' + label + '}$', alpha=1)
+        leg = ax1.legend(fontsize=25, frameon=False, loc='lower left')
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x_input, y, color=linecolor, linewidth=linewidth, linestyle='-', alpha=1)
+        
+    ax1.fill_between(x_input, y + 1 * yerr_set, y - 1 * yerr_set, color=fillcolor[0], alpha=0.8)
+    ax1.fill_between(x_input, y + 2 * yerr_set, y - 2 * yerr_set, color=fillcolor[1], alpha=0.6)
+    ax1.fill_between(x_input, y + 3 * yerr_set, y - 3 * yerr_set, color=fillcolor[2], alpha=0.4)
+    
+    # Set ticks
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
+    ylabel = r'$\mu_{\mathrm{HSC}} - \mu_{\mathrm{DECaLS}}$' + '\n' + '$[\mathrm{mag/arcsec^2}]$'
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=ticksize)
+    ax1.set_ylabel(ylabel, fontsize=ticksize)
+    
+    # Twin axis with linear scale
+    if show_banner is True:
+        ax4 = ax1.twiny() 
+        ax4.tick_params(direction='in')
+        lin_label = [1, 2, 5, 10, 50, 100, 150, 300]
+        lin_pos = [i**0.25 for i in lin_label]
+        ax4.set_xticks(lin_pos)
+        ax4.set_xlim(ax1.get_xlim())
+        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=ticksize)
+        ax4.xaxis.set_label_coords(1, 1.025)
+
+        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
+        for tick in ax4.xaxis.get_major_ticks():
+            tick.label.set_fontsize(ticksize)
+    
+    # Vertical line
+    if vertical_line is not None:
+        if len(vertical_line) > 3:
+            raise ValueError('Maximum length of vertical_line is 3.') 
+        ylim = ax1.get_ylim()
+        style_list = ['-', '--', '-.']
+        for k, pos in enumerate(vertical_line):
+            ax1.axvline(x=pos**0.25, ymin=0, ymax=1,
+                        color='gray', linestyle=style_list[k], linewidth=3, alpha=0.75)
+        plt.ylim(ylim)
+
+    
+    # Return
+    if ax is None:
+        return fig, mu_stack
+    return ax1, mu_stack
+        
+
+# Plot SBP together, and also plot median profile
+def SBP_stack_new_hsc(obj_cat, band, pixel_scale, zeropoint, ax=None, physical_unit=False, 
+    sky_cat=None, matching_radius=3, aperture='84', x_min=1.0, x_max=4.0, ninterp=60, show_single=True, 
+    vertical_line=None, ismedian=True, linecolor='brown', fillcolor='orange', linewidth=5,
+    single_alpha=0.3, single_color='firebrick', single_style='-', single_width=1, label=None, 
+    single_label="S18A\ sky\ objects"):
+    """
+    Plot SBP together, along with median profile
+    
+    Parameters:
+    -----------
+    obj_cat: object catalog.
+    band: string, such as 'r-band'.
+    filenames: list containing corresponding filenames in the obj_cat.
+    pixel_scale: float, pixel scale in arcsec/pixel.
+    zeropoint: float, zeropoint of the photometry system.
+    ax: matplotlib axes class.
+    physical_unit: boolean. If true, the figure will be shown in physical scale.
+    sky_cat: SkyObject catalog.
+    matching_radius: float, in arcmin. We match sky objects around the given object within this radius.
+    aperture: string, must be in the `SkyObj_aperture_dic`.
+    x_min, x_max: float, in ^{1/4} scale.
+    show_single: boolean. If yes, it will show every single profile.
+    vertical_line: list of positions. Maximum length is three.
+    linecolor, fillcolor, linewidth: arguments for the median profile.
+    sing_alpha, single_color, single_style, single_width: arguments for single profiles.
+    label: string.
+
+    Returns:
+    --------
+    ax: matplotlib axes class.
+    y_stack: stacked profile ndarray.
+    x_input: corresponding x array.
+    """
+    import h5py
+    from .imutils import skyobj_value
+    from scipy import interpolate
+    from astropy.stats import bootstrap
+    from astropy.utils import NumpyRNGContext
+
+    if ax is None:
+        fig = plt.figure(figsize=(7, 6))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+
+
+    for k, obj in enumerate(obj_cat):
+        # Load files
+        filename = os.path.abspath(os.path.join(
+            '/Users/jiaxuanli/Research/HSC_Dragonfly_DECaLS/IntermediateZ/', 
+            obj['new_dir']))
+        f = h5py.File(filename, 'r')
+        info = slug.h5file.str2dic(f['header'].value)
+        redshift = info['redshift']
+        ra, dec = info['ra'], info['dec']
+        ell_fix = Table(f[band]['ell_fix'].value)
+        f.close()
+        # skyobj
+        if sky_cat is None:
+            off_set = 0.0
+        else:
+            off_set = skyobj_value(sky_cat,
+                                    ra,
+                                    dec,
+                                    matching_radius=matching_radius,
+                                    aperture=aperture,
+                                    maxiters=5,
+                                    showmedian=False)
+        if k == 0:
+            single_label = single_label
+        else:
+            single_label = None
+        if show_single:
+            SBP_single(
+                ell_fix,
+                redshift,
+                pixel_scale,
+                zeropoint,
+                ax=ax1,
+                offset=-off_set,
+                physical_unit=physical_unit,
+                x_min=x_min,
+                x_max=x_max,
+                show_banner=(k==0),
+                vertical_line=vertical_line,
+                linecolor=single_color,
+                linestyle=single_style,
+                linewidth=single_width,
+                alpha=single_alpha,
+                label=single_label)
+
+        x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
+        func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
+        x_input = np.linspace(x_min, x_max, ninterp)
+        if k == 0:
+            y_stack = func(x_input)
+        else:
+            y_stack = np.vstack((y_stack, func(x_input)))
+        f.close()
+
+    with NumpyRNGContext(2333):
+        if ismedian:
+            btfunc = np.nanmedian
+        else:
+            btfunc = np.nanmean
+        yerr_set = np.array([np.std(bootstrap(bootarr, 100, bootfunc=btfunc)) for bootarr in y_stack.T])
+
+    y = -2.5 * np.log10(np.nanmedian(y_stack, axis=0)/(pixel_scale)**2) + zeropoint
+    y_upper = -2.5 * np.log10((np.nanmedian(y_stack, axis=0) + yerr_set)/(pixel_scale)**2) + zeropoint
+    y_lower = -2.5 * np.log10((np.nanmedian(y_stack, axis=0) - yerr_set)/(pixel_scale)**2) + zeropoint
+    upper_yerr = y_lower - y
+    lower_yerr = y - y_upper
+    asymmetric_error = [lower_yerr, upper_yerr]
+    
+    if label is not None:
+        ax1.plot(x_input, y, color=linecolor, linewidth=linewidth, linestyle='-',
+             label=r'$\mathrm{' + label + '}$', alpha=1)
+        leg = ax1.legend(fontsize=25, frameon=False, loc='lower left')
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x_input, y, color=linecolor, linewidth=linewidth, linestyle='-', alpha=1)
+    ax1.fill_between(x_input, y_upper, y_lower, color=fillcolor, alpha=0.4)
+
+    # Return
+    if ax is None:
+        return fig, y_stack, x_input
+    return ax1, y_stack, x_input
+
+# Plot SBP together, and also plot median profile
+def SBP_stack_new_decals(obj_cat, band, pixel_scale, zeropoint, ax=None, physical_unit=False, 
+    sky_cat=None, matching_radius=3, aperture='84', x_min=1.0, x_max=4.0, ninterp=60, show_single=True, 
+    vertical_line=None, ismedian=True, linecolor='brown', fillcolor='orange', linewidth=5,
+    single_alpha=0.3, single_color='firebrick', single_style='-', single_width=1, label=None, 
+    single_label="S18A\ sky\ objects"):
+    """
+    Plot SBP together, along with median profile
+    
+    Parameters:
+    -----------
+    obj_cat: object catalog.
+    band: string, such as 'r-band'.
+    filenames: list containing corresponding filenames in the obj_cat.
+    pixel_scale: float, pixel scale in arcsec/pixel.
+    zeropoint: float, zeropoint of the photometry system.
+    ax: matplotlib axes class.
+    physical_unit: boolean. If true, the figure will be shown in physical scale.
+    sky_cat: SkyObject catalog.
+    matching_radius: float, in arcmin. We match sky objects around the given object within this radius.
+    aperture: string, must be in the `SkyObj_aperture_dic`.
+    x_min, x_max: float, in ^{1/4} scale.
+    show_single: boolean. If yes, it will show every single profile.
+    vertical_line: list of positions. Maximum length is three.
+    linecolor, fillcolor, linewidth: arguments for the median profile.
+    sing_alpha, single_color, single_style, single_width: arguments for single profiles.
+    label: string.
+
+    Returns:
+    --------
+    ax: matplotlib axes class.
+    y_stack: stacked profile ndarray.
+    x_input: corresponding x array.
+    """
+    import h5py
+    import pickle
+    from .imutils import skyobj_value
+    from scipy import interpolate
+    from astropy.stats import bootstrap
+    from astropy.utils import NumpyRNGContext
+
+    if ax is None:
+        fig = plt.figure(figsize=(7, 6))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+
+
+    for k, obj in enumerate(obj_cat):
+        # Load files
+        with open(obj['decals_dir'], 'rb') as f:
+            ellipsefit = pickle.load(f)
+        # Change the unit of 'intens' to count/pixel
+        for filt in ellipsefit['bands']:
+            ellipsefit[filt]['intens'] *= (slug.DECaLS_pixel_scale)**2
+            ellipsefit[filt]['intens_err'] *= (slug.DECaLS_pixel_scale)**2
+        ell_fix = Table(ellipsefit[band[0]]) # r-band ellipse result
+        redshift = obj['z_best']
+        # skyobj
+        off_set = 0.0
+
+        if k == 0:
+            single_label = single_label
+        else:
+            single_label = None
+        if show_single:
+            SBP_single(
+                ell_fix,
+                redshift,
+                pixel_scale,
+                zeropoint,
+                ax=ax1,
+                offset=-off_set,
+                physical_unit=physical_unit,
+                x_min=x_min,
+                x_max=x_max,
+                show_banner=(k==0),
+                vertical_line=vertical_line,
+                linecolor=single_color,
+                linestyle=single_style,
+                linewidth=single_width,
+                alpha=single_alpha,
+                label=single_label)
+
+        x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
+        func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
+        x_input = np.linspace(x_min, x_max, ninterp)
+        if k == 0:
+            y_stack = func(x_input)
+        else:
+            y_stack = np.vstack((y_stack, func(x_input)))
+        f.close()
+
+    with NumpyRNGContext(2333):
+        if ismedian:
+            btfunc = np.nanmedian
+        else:
+            btfunc = np.nanmean
+        yerr_set = np.array([np.std(bootstrap(bootarr, 100, bootfunc=btfunc)) for bootarr in y_stack.T])
+
+    y = -2.5 * np.log10(np.nanmedian(y_stack, axis=0)/(pixel_scale)**2) + zeropoint
+    y_upper = -2.5 * np.log10((np.nanmedian(y_stack, axis=0) + yerr_set)/(pixel_scale)**2) + zeropoint
+    y_lower = -2.5 * np.log10((np.nanmedian(y_stack, axis=0) - yerr_set)/(pixel_scale)**2) + zeropoint
+    upper_yerr = y_lower - y
+    lower_yerr = y - y_upper
+    asymmetric_error = [lower_yerr, upper_yerr]
+    
+    if label is not None:
+        ax1.plot(x_input, y, color=linecolor, linewidth=linewidth, linestyle='-',
+             label=r'$\mathrm{' + label + '}$', alpha=1)
+        leg = ax1.legend(fontsize=25, frameon=False, loc='lower left')
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x_input, y, color=linecolor, linewidth=linewidth, linestyle='-', alpha=1)
+    ax1.fill_between(x_input, y_upper, y_lower, color=fillcolor, alpha=0.4)
+
+    # Return
+    if ax is None:
+        return fig, y_stack, x_input
+    return ax1, y_stack, x_input

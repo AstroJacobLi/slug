@@ -1,5 +1,6 @@
 # Import packages
 from __future__ import division, print_function
+import os
 import copy
 import slug
 import numpy as np
@@ -20,7 +21,8 @@ import sep
 
 from kungpao import imtools
 from kungpao import io
-from kungpao.display import display_single, IMG_CMAP, SEG_CMAP
+
+from .__init__ import SkyObj_aperture_dic
 
 __all__ = ["phys_size", "convert_HSC_binary_mask", "make_HSC_detect_mask", 
             "make_HSC_bright_obj_mask", "print_HSC_binary_mask", "make_binary_mask",
@@ -112,6 +114,108 @@ def img_cutout(img, wcs, coord_1, coord_2, size=60.0, pix=0.168,
         hdu.writeto(fits_file, overwrite=True)
 
     return cutout
+
+# Calculate mean/median value of nearby sky objects
+def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius=[1, 3], aperture='84', 
+    print_number=False, sigma_upper=3., sigma_lower=3., maxiters=5, showmedian=False, verbose=False):
+    '''Calculate the mean/median value of nearby SKY OBJECTS around a given RA and DEC.
+    Importing sky objects catalog can be really slow.
+
+    Parameters:
+    -----------
+    path: string, the path of catalog.
+    cen_ra, cen_dec: float, RA and DEC of the given object.
+    matching_radius: float or list, in arcmin. We match sky objects around the given object within this radius/range.
+    aperture: string, must be in the `SkyObj_aperture_dic`.
+    print_number: boolean. If true, it will print the number of nearby sky objects.
+    sigma_upper, sigma_lower: float, threshold for sigma_clipping of nearby sky objects.
+    maxiters: positive int, time of iterations.
+    showmedian: boolean. If true, the median of sky objects values will be returned instead of the average.
+
+    Returns:
+    -----------
+    mean/median value of nearby sky objects.
+    '''
+    from astropy.coordinates import match_coordinates_sky
+    from astropy import units as u
+    from astropy.coordinates import SkyCoord
+    from astropy.stats import sigma_clip
+
+    ra, dec = cen_ra, cen_dec
+    bkg_pos = SkyCoord(ra=ra * u.degree, dec=dec * u.degree, frame='icrs')
+    catalog = SkyCoord(ra=sky_cat['i_ra'] * u.degree, dec=sky_cat['i_dec'] * u.degree)
+    if type(matching_radius) == list:
+        if len(matching_radius) != 2:
+            raise SyntaxError('The length of matching_radius list must be 2!')
+        else:
+            obj_inx1 = np.where(catalog.separation(bkg_pos) < matching_radius[1] * u.arcmin)[0]
+            obj_inx2 = np.where(catalog.separation(bkg_pos) > matching_radius[0] * u.arcmin)[0]
+            obj_inx = np.intersect1d(obj_inx1, obj_inx2)
+    else:
+        obj_inx = np.where(catalog.separation(bkg_pos) < matching_radius * u.arcmin)[0]
+    if print_number:
+        print('Sky objects number around' + str(matching_radius) + 'arcmin: ', len(obj_inx))
+
+
+    x = sky_cat[obj_inx]['r_apertureflux_' + aperture +'_flux'] * 1.7378e30 / (np.pi * SkyObj_aperture_dic[aperture]**2)
+    x = sigma_clip(x, sigma_lower=sigma_lower, sigma_upper=sigma_upper, maxiters=maxiters)
+    x = x.data[~x.mask]
+    if verbose:
+        print('{} sky objects got matched!'.format(len(x)))
+    if showmedian:
+        return np.nanmedian(x)
+    else:
+        return np.nanmean(x)
+
+# Calculate mean/median value of nearby sky objects
+def skyobj_std(sky_cat, cen_ra, cen_dec, matching_radius=[1, 3], aperture='84', 
+    print_number=False, sigma_upper=3., sigma_lower=3., maxiters=5, showmedian=False, verbose=False):
+    '''Calculate the mean/median value of nearby SKY OBJECTS around a given RA and DEC.
+    Importing sky objects catalog can be really slow.
+
+    Parameters:
+    -----------
+    path: string, the path of catalog.
+    cen_ra, cen_dec: float, RA and DEC of the given object.
+    matching_radius: float or list, in arcmin. We match sky objects around the given object within this radius/range.
+    aperture: string, must be in the `SkyObj_aperture_dic`.
+    print_number: boolean. If true, it will print the number of nearby sky objects.
+    sigma_upper, sigma_lower: float, threshold for sigma_clipping of nearby sky objects.
+    maxiters: positive int, time of iterations.
+    showmedian: boolean. If true, the median of sky objects values will be returned instead of the average.
+
+    Returns:
+    -----------
+    mean/median value of nearby sky objects.
+    '''
+    from astropy.coordinates import match_coordinates_sky
+    from astropy import units as u
+    from astropy.coordinates import SkyCoord
+    from astropy.stats import sigma_clip
+
+    ra, dec = cen_ra, cen_dec
+    bkg_pos = SkyCoord(ra=ra * u.degree, dec=dec * u.degree, frame='icrs')
+    catalog = SkyCoord(ra=sky_cat['i_ra'] * u.degree, dec=sky_cat['i_dec'] * u.degree)
+    if type(matching_radius) == list:
+        if len(matching_radius) != 2:
+            raise SyntaxError('The length of matching_radius list must be 2!')
+        else:
+            obj_inx1 = np.where(catalog.separation(bkg_pos) < matching_radius[1] * u.arcmin)[0]
+            obj_inx2 = np.where(catalog.separation(bkg_pos) > matching_radius[0] * u.arcmin)[0]
+            obj_inx = np.intersect1d(obj_inx1, obj_inx2)
+    else:
+        obj_inx = np.where(catalog.separation(bkg_pos) < matching_radius * u.arcmin)[0]
+    if print_number:
+        print('Sky objects number around' + str(matching_radius) + 'arcmin: ', len(obj_inx))
+
+
+    x = sky_cat[obj_inx]['r_apertureflux_' + aperture +'_flux'] * 1.7378e30 / (np.pi * SkyObj_aperture_dic[aperture]**2)
+    x = sigma_clip(x, sigma_lower=sigma_lower, sigma_upper=sigma_upper, maxiters=maxiters)
+    x = x.data[~x.mask]
+    if verbose:
+        print('{} sky objects got matched!'.format(len(x)))
+    return np.std(x)
+
 
 #########################################################################
 ########################## Mask related #################################
@@ -224,6 +328,7 @@ def print_HSC_binary_mask(TDmsk, path):
     TDmsk: np.array, three dimensional (width, height, 16) mask array
     path: string, path of saving figures
     '''
+    from .display import display_single, IMG_CMAP, SEG_CMAP
     for i in range(16):
         _ = display_single(TDmsk[:,:,i].astype(float), cmap=SEG_CMAP, scale='linear')
         plt.savefig(path + 'HSC-bin-mask-' + HSC_binray_mask_dict[i] + '.png')
@@ -273,12 +378,14 @@ def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01,
                              r=sep_blowup)
     if gaia is False:
         if show_fig:
+            from .display import display_single, IMG_CMAP, SEG_CMAP
             display_single(seg_mask.astype(int), cmap=SEG_CMAP)
         return seg_mask
     else:
         # Combine this mask with Gaia star mask
         gaia_mask = imtools.gaia_star_mask(img, w, gaia_bright=16, factor_f=10000, factor_b=factor_b)[1].astype('bool')
         if show_fig:
+            from .display import display_single, IMG_CMAP, SEG_CMAP
             display_single((seg_mask + gaia_mask).astype(int), cmap=SEG_CMAP)
 
         binary_mask = seg_mask + gaia_mask
@@ -325,8 +432,8 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
 
     # plot background-subtracted image
     if show_fig:
+        from .display import display_single, IMG_CMAP, SEG_CMAP
         fig, ax = plt.subplots(1,2, figsize=(12,6))
-
         ax[0] = display_single(data_sub, ax=ax[0], scale_bar_length=60, pixel_scale=pixel_scale)
 
         # plot an ellipse for each object
@@ -672,3 +779,69 @@ def gen_url_hsc_s16a(ra, dec, w, h, band, pixel_unit=False):
            + 'asec&type=coadd&image=on&mask=on&variance=on&filter=HSC-'
            + str(band.upper())
            + '&tract=&rerun=s16a_wide2']
+
+
+#########################################################################
+########################## healpix related ##############################
+#########################################################################
+# I steal these functions from John Moustakas: https://github.com/moustakas/legacyhalos/blob/master/py/legacyhalos/misc.py
+def radec2pix(nside, ra, dec):
+    '''Convert `ra`, `dec` to nested pixel number.
+    Args:
+        nside (int): HEALPix `nside`, ``2**k`` where 0 < k < 30.
+        ra (float or array): Right Accention in degrees.
+        dec (float or array): Declination in degrees.
+    Returns:
+        Array of integer pixel numbers using nested numbering scheme.
+    Notes:
+        This is syntactic sugar around::
+            hp.ang2pix(nside, ra, dec, lonlat=True, nest=True)
+        but also works with older versions of healpy that didn't have
+        `lonlat` yet.
+    '''
+    import healpy as hp
+    theta, phi = np.radians(90-dec), np.radians(ra)
+    if np.isnan(np.sum(theta)) :
+        raise ValueError("some NaN theta values")
+
+    if np.sum((theta < 0)|(theta > np.pi))>0 :
+        raise ValueError("some theta values are outside [0,pi]: {}".format(theta[(theta < 0)|(theta > np.pi)]))
+
+    return hp.ang2pix(nside, theta, phi, nest=True)
+
+def pix2radec(nside, pix):
+    '''Convert nested pixel number to `ra`, `dec`.
+    Args:
+        nside (int): HEALPix `nside`, ``2**k`` where 0 < k < 30.
+        ra (float or array): Right Accention in degrees.
+        dec (float or array): Declination in degrees.
+    Returns:
+        Array of RA, Dec coorindates using nested numbering scheme. 
+    Notes:
+        This is syntactic sugar around::
+            hp.pixelfunc.pix2ang(nside, pix, nest=True)
+    
+    '''
+    import healpy as hp
+
+    theta, phi = hp.pixelfunc.pix2ang(nside, pix, nest=True)
+    ra, dec = np.degrees(phi), 90-np.degrees(theta)
+    
+    return ra, dec
+
+def get_decals_subdir(nside, id_s16a, ra, dec, datadir):
+    """Get the directory of DECaLS profiles/coadds from John Moustakas.
+    
+    Parameters:
+        nsize (int): 'nside' used in healpix
+        id_s16a (str): 'id_s16a' from Song's intermediate-z catalog
+        datadir (str): directory of mother folder
+    
+    Returns:
+        decals_dir (str): DECaLS directory
+    
+    """
+    pixnum = radec2pix(nside, ra, dec)
+    subdir = os.path.join(str(pixnum), str(id_s16a))
+    decals_dir = os.path.abspath(os.path.join(datadir, str(nside), subdir))
+    return decals_dir
