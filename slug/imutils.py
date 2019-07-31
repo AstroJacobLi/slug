@@ -9,7 +9,7 @@ from astropy.io import fits
 from astropy import wcs
 from astropy.convolution import Gaussian2DKernel
 from astropy.convolution import convolve
-from astropy.table import Table
+from astropy.table import Table, Column, hstack, vstack
 
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -21,6 +21,7 @@ import sep
 
 from kungpao import imtools
 from kungpao import io
+#from .display import display_single, SEG_CMAP
 
 from .__init__ import SkyObj_aperture_dic
 
@@ -392,9 +393,10 @@ def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01,
         return binary_mask
 
 # evaluate_sky objects for a given image
-def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minarea=5, 
-    deblend_nthresh=32, deblend_cont=0.005, clean_param=1.0):
-    '''Extract objects for a given image, using `sep`.
+def extract_obj(img, b=30, f=5, sigma=5, pixel_scale=0.168, minarea=5, 
+    deblend_nthresh=32, deblend_cont=0.005, clean_param=1.0, 
+    sky_subtract=False, show_fig=True, verbose=True, flux_auto=True, flux_aper=None):
+    '''Extract objects for a given image, using `sep`. This is from `slug`.
 
     Parameters:
     ----------
@@ -406,7 +408,8 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
 
     Returns:
     -------
-    objects: numpy array, containing the positions and shapes of extracted objects.
+    objects: astropy Table, containing the positions,
+        shapes and other properties of extracted objects.
     segmap: 2-D numpy array, segmentation map
     '''
 
@@ -415,9 +418,13 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
     f = 5   # Filter width
     bkg = sep.Background(img, bw=b, bh=b, fw=f, fh=f)
     data_sub = img - bkg.back()
-
+    
     sigma = sigma
-    objects, segmap = sep.extract(data_sub,
+    if sky_subtract:
+        input_data = data_sub
+    else:
+        input_data = img
+    objects, segmap = sep.extract(input_data,
                                   sigma,
                                   err=bkg.globalrms,
                                   segmentation_map=True,
@@ -427,15 +434,60 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
                                   clean=True,
                                   clean_param=clean_param,
                                   minarea=minarea)
-                                  
-    print("# Detect %d objects" % len(objects))
+    if verbose:                              
+        print("# Detect %d objects" % len(objects))
+    objects = Table(objects)
+    objects.add_column(Column(data=np.arange(len(objects)) + 1, name='index'))
+    # Maximum flux, defined as flux within six 'a' in radius.
+    objects.add_column(Column(data=sep.sum_circle(input_data, objects['x'], objects['y'], 
+                                    6. * objects['a'])[0], name='flux_max'))
+    # Add FWHM estimated from 'a' and 'b'. 
+    # This is suggested here: https://github.com/kbarbary/sep/issues/34
+    objects.add_column(Column(data=2* np.sqrt(np.log(2) * (objects['a']**2 + objects['b']**2)), 
+                              name='fwhm_custom'))
+    
+    # Use Kron radius to calculate FLUX_AUTO in SourceExtractor.
+    # Here PHOT_PARAMETER = 2.5, 3.5
+    if flux_auto:
+        kronrad, krflag = sep.kron_radius(input_data, objects['x'], objects['y'], 
+                                          objects['a'], objects['b'], 
+                                          objects['theta'], 6.0)
+        flux, fluxerr, flag = sep.sum_circle(input_data, objects['x'], objects['y'], 
+                                            2.5 * (kronrad), subpix=1)
+        flag |= krflag  # combine flags into 'flag'
+
+        r_min = 1.75  # minimum diameter = 3.5
+        use_circle = kronrad * np.sqrt(objects['a'] * objects['b']) < r_min
+        cflux, cfluxerr, cflag = sep.sum_circle(input_data, objects['x'][use_circle], objects['y'][use_circle],
+                                                r_min, subpix=1)
+        flux[use_circle] = cflux
+        fluxerr[use_circle] = cfluxerr
+        flag[use_circle] = cflag
+        objects.add_column(Column(data=flux, name='flux_auto'))
+        objects.add_column(Column(data=kronrad, name='kron_rad'))
+        
+    if flux_aper is not None:
+        objects.add_column(Column(data=sep.sum_circle(input_data, objects['x'], objects['y'], flux_aper[0])[0], 
+                                  name='flux_aper_1'))
+        objects.add_column(Column(data=sep.sum_circle(input_data, objects['x'], objects['y'], flux_aper[1])[0], 
+                                  name='flux_aper_2')) 
+        objects.add_column(Column(data=sep.sum_circann(input_data, objects['x'], objects['y'], 
+                                       flux_aper[0], flux_aper[1])[0], name='flux_ann'))
+        '''
+        objects.add_column(Column(data=sep.sum_circle(input_data, objects['x'], objects['y'], flux_aper[0] * objects['a'])[0], 
+                                  name='flux_aper_1'))
+        objects.add_column(Column(data=sep.sum_circle(input_data, objects['x'], objects['y'], flux_aper[1] * objects['a'])[0], 
+                                  name='flux_aper_2')) 
+        objects.add_column(Column(data=sep.sum_circann(input_data, objects['x'], objects['y'], 
+                                       flux_aper[0] * objects['a'], flux_aper[1] * objects['a'])[0], name='flux_ann'))
+        '''
 
     # plot background-subtracted image
     if show_fig:
         from .display import display_single, IMG_CMAP, SEG_CMAP
         fig, ax = plt.subplots(1,2, figsize=(12,6))
-        ax[0] = display_single(data_sub, ax=ax[0], scale_bar_length=60, pixel_scale=pixel_scale)
-
+        ax[0] = display_single(data_sub, ax=ax[0], scale_bar=False, pixel_scale=pixel_scale)
+        from matplotlib.patches import Ellipse
         # plot an ellipse for each object
         for obj in objects:
             e = Ellipse(xy=(obj['x'], obj['y']),
@@ -447,6 +499,7 @@ def extract_obj(img, b=30, f=5, sigma=5, show_fig=True, pixel_scale=0.168, minar
             ax[0].add_artist(e)
         ax[1] = display_single(segmap, scale='linear', cmap=SEG_CMAP , ax=ax[1])
     return objects, segmap
+
 
 #########################################################################
 ########################## URL related #################################

@@ -924,7 +924,7 @@ def SBP_single_try(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.
 
 # You can plot 1-D SBP using this, without plotting the PA and eccentricity.
 def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0, skystd=0.0, 
-    ax=None, x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
+    ax=None, x_min=1.0, x_max=4.0, ylim=None, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
     show_banner=True, vertical_line=None, linecolor='firebrick', linestyle='-', 
     linewidth=3, labelsize=25, ticksize=30, label='SBP', labelloc='lower left'):
 
@@ -998,7 +998,6 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
         xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
     
-    
     # If `nan` at somewhere, interpolate `nan`.
     nanidx = np.where(np.isnan(y))[0]
     if len(nanidx) > 1:
@@ -1018,11 +1017,13 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
             y_upper[nanidx[0]:] = np.nan
             y_lower[nanidx[0]:] = np.nan
     elif len(nanidx) == 1:
-        if abs(y[nanidx - 1] - y[nanidx + 1]) < 0.5:
+        if nanidx + 1 > len(nanidx) or nanidx - 1 < 0:
+            print('Sorry, cannot replace NaN')
+        elif abs(y[nanidx - 1] - y[nanidx + 1]) < 0.5:
             print('interpolate NaN')
             from scipy.interpolate import interp1d
             mask = (~np.isnan(y))
-            func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value='extrapolate')
+            func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value=np.nan)
             y[nanidx] = func(x[nanidx]**0.25)
         else:
             y[nanidx[0]:] = np.nan
@@ -1046,7 +1047,9 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
     else:
         ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle, alpha=alpha)
     ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha, label=None)
-    ylim = ax1.get_ylim()
+    if ylim is None:
+        ylim = ax1.get_ylim()
+
     for i in range(len(y_sky_lower)):
         if np.isnan(y_sky_lower[i]):
             y_sky_lower[i] = max(ylim)
@@ -2293,7 +2296,7 @@ def mu_diff_stack(obj_cat, band, ax=None,
         mask = np.isnan(mu_HSC)
         func = interpolate.interp1d(x[~mask]**0.25, mu_HSC[~mask], 
                                     kind='cubic', fill_value=np.nan, bounds_error=False)
-        x_input = np.linspace(x_min, x_max, 100)
+        x_input = np.linspace(x_min, x_max, 60)
         y_HSC = func(x_input)
         y_HSC[x_input > max(x)] = np.nan
 
@@ -2305,7 +2308,7 @@ def mu_diff_stack(obj_cat, band, ax=None,
         #                            kind='cubic', fill_value=np.nan, bounds_error=False)
         func = interpolate.interp1d(x[~mask]**0.25, mu_DECaLS[~mask], 
                                     kind='cubic', fill_value=np.nan, bounds_error=False)                    
-        x_input = np.linspace(x_min, x_max, 100)
+        x_input = np.linspace(x_min, x_max, 60)
         y_DECaLS = func(x_input)
         y_DECaLS[x_input > max(x)] = np.nan
 
@@ -2491,7 +2494,7 @@ def mu_diff_SB(obj_cat, band, ax=None,
         mask = np.isnan(mu_HSC)
         func = interpolate.interp1d(x[~mask]**0.25, mu_HSC[~mask], 
                                     kind='cubic', fill_value=np.nan, bounds_error=False)
-        x_input = np.linspace(1.0, 4.5, 100)
+        x_input = np.linspace(1.0, 4.5, 50)
         y_HSC = func(x_input)
         y_HSC[x_input > max(x)] = np.nan
 
@@ -2501,7 +2504,7 @@ def mu_diff_SB(obj_cat, band, ax=None,
         mask = np.isnan(mu_DECaLS)
         func = interpolate.interp1d(x[~mask]**0.25, mu_DECaLS[~mask], 
                                     kind='cubic', fill_value=np.nan, bounds_error=False)
-        x_input = np.linspace(1.0, 4.5, 100)
+        x_input = np.linspace(1.0, 4.5, 50)
         y_DECaLS = func(x_input)
         y_DECaLS[x_input > max(x)] = np.nan
         # Difference
@@ -3358,3 +3361,145 @@ def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint, ax=None, phy
         return fig, y_stack, x_input
     return ax1, y_stack, x_input
 '''
+
+# Plot linera SBP together, and also plot median profile
+def LSBP_stack_new_hsc(obj_cat, band, pixel_scale, zeropoint, ax=None, physical_unit=False, 
+    sky_cat=None, matching_radius=3, aperture='84', x_min=1.0, x_max=4.0, ninterp=60, show_single=True, 
+    vertical_line=None, ismedian=True, linecolor='brown', fillcolor='orange', linewidth=5,
+    single_alpha=0.3, single_color='firebrick', single_style='-', single_width=1, label=None, 
+    single_label="S18A\ sky\ objects"):
+    """
+    Plot SBP together, along with median profile
+    
+    Parameters:
+    -----------
+    obj_cat: object catalog.
+    band: string, such as 'r-band'.
+    filenames: list containing corresponding filenames in the obj_cat.
+    pixel_scale: float, pixel scale in arcsec/pixel.
+    zeropoint: float, zeropoint of the photometry system.
+    ax: matplotlib axes class.
+    physical_unit: boolean. If true, the figure will be shown in physical scale.
+    sky_cat: SkyObject catalog.
+    matching_radius: float, in arcmin. We match sky objects around the given object within this radius.
+    aperture: string, must be in the `SkyObj_aperture_dic`.
+    x_min, x_max: float, in ^{1/4} scale.
+    show_single: boolean. If yes, it will show every single profile.
+    vertical_line: list of positions. Maximum length is three.
+    linecolor, fillcolor, linewidth: arguments for the median profile.
+    sing_alpha, single_color, single_style, single_width: arguments for single profiles.
+    label: string.
+
+    Returns:
+    --------
+    ax: matplotlib axes class.
+    y_stack: stacked profile ndarray.
+    x_input: corresponding x array.
+    """
+    import h5py
+    from .imutils import skyobj_value
+    from scipy import interpolate
+    from astropy.stats import bootstrap
+    from astropy.utils import NumpyRNGContext
+
+    if ax is None:
+        fig = plt.figure(figsize=(7, 6))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+
+
+    for k, obj in enumerate(obj_cat):
+        # Load files
+        filename = os.path.abspath(os.path.join(
+            '/Users/jiaxuanli/Research/HSC_Dragonfly_DECaLS/IntermediateZ/', 
+            obj['new_dir']))
+        f = h5py.File(filename, 'r')
+        info = slug.h5file.str2dic(f['header'].value)
+        redshift = info['redshift']
+        ra, dec = info['ra'], info['dec']
+        ell_fix = Table(f[band]['ell_fix'].value)
+        f.close()
+        # skyobj
+        if sky_cat is None:
+            off_set = 0.0
+        else:
+            off_set = skyobj_value(sky_cat,
+                                    ra,
+                                    dec,
+                                    matching_radius=matching_radius,
+                                    aperture=aperture,
+                                    maxiters=5,
+                                    showmedian=False)
+        if k == 0:
+            single_label = single_label
+        else:
+            single_label = None
+        if show_single:
+            SBP_single(
+                ell_fix,
+                redshift,
+                pixel_scale,
+                zeropoint,
+                ax=ax1,
+                offset=-off_set,
+                physical_unit=physical_unit,
+                x_min=x_min,
+                x_max=x_max,
+                show_banner=(k==0),
+                vertical_line=vertical_line,
+                linecolor=single_color,
+                linestyle=single_style,
+                linewidth=single_width,
+                alpha=single_alpha,
+                label=single_label)
+
+        x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
+        func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
+        x_input = np.linspace(x_min, x_max, ninterp)
+        if k == 0:
+            y_stack = func(x_input)
+            y_stack[x_input > max(x)**0.25] = np.nan
+        else:
+            temp = func(x_input)
+            temp[x_input > max(x)**0.25] = np.nan
+            y_stack = np.vstack((y_stack, temp))
+        f.close()
+
+    with NumpyRNGContext(2333):
+        if ismedian:
+            btfunc = np.nanmedian
+        else:
+            btfunc = np.nanmean
+        yerr_set = np.array([np.std(bootstrap(bootarr, 100, bootfunc=btfunc)) for bootarr in y_stack.T])
+
+    y = 3.631 * (ell_fix['intens'].data + offset) / (pixel_scale)**2 / 10**((zeropoint - 22.5) / 2.5)  #\muJy/arcsec^2
+
+    y = -2.5 * np.log10(np.nanmedian(y_stack, axis=0)/(pixel_scale)**2) + zeropoint
+    y_upper = -2.5 * np.log10((np.nanmedian(y_stack, axis=0) + yerr_set)/(pixel_scale)**2) + zeropoint
+    y_lower = -2.5 * np.log10((np.nanmedian(y_stack, axis=0) - yerr_set)/(pixel_scale)**2) + zeropoint
+    upper_yerr = y_lower - y
+    lower_yerr = y - y_upper
+    asymmetric_error = [lower_yerr, upper_yerr]
+    
+    if label is not None:
+        ax1.plot(x_input, y, color=linecolor, linewidth=linewidth, linestyle='-',
+             label=r'$\mathrm{' + label + '}$', alpha=1)
+        leg = ax1.legend(fontsize=25, frameon=False, loc='lower left')
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x_input, y, color=linecolor, linewidth=linewidth, linestyle='-', alpha=1)
+    ax1.fill_between(x_input, y_upper, y_lower, color=fillcolor, alpha=0.4)
+
+    # Return
+    if ax is None:
+        return fig, y_stack, x_input
+    return ax1, y_stack, x_input
+
