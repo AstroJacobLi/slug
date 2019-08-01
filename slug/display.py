@@ -2275,7 +2275,7 @@ def mu_diff_stack(obj_cat, band, ax=None,
         ell_fix_HSC['intens'] -= off_set
         
         # Load DECaLS files
-        with open(obj['decals_dir'], 'rb') as f:
+        with open(obj['decals_dir'].rstrip(' '), 'rb') as f:
             ellipsefit = pickle.load(f)
         # Change the unit of 'intens' to count/pixel
         for filt in ellipsefit['bands']:
@@ -2473,7 +2473,7 @@ def mu_diff_SB(obj_cat, band, ax=None,
         ell_fix_HSC['intens'] -= off_set
         
         # Load DECaLS files
-        with open(obj['decals_dir'], 'rb') as f:
+        with open(obj['decals_dir'].rstrip(' '), 'rb') as f:
             ellipsefit = pickle.load(f)
         # Change the unit of 'intens' to count/pixel
         for filt in ellipsefit['bands']:
@@ -2769,7 +2769,7 @@ def SBP_stack_new_decals(obj_cat, band, pixel_scale, zeropoint, ax=None, physica
 
     for k, obj in enumerate(obj_cat):
         # Load files
-        with open(obj['decals_dir'], 'rb') as f:
+        with open(obj['decals_dir'].rstrip(' '), 'rb') as f:
             ellipsefit = pickle.load(f)
         # Change the unit of 'intens' to count/pixel
         for filt in ellipsefit['bands']:
@@ -3105,6 +3105,7 @@ def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint,
     y_stack: stacked profile ndarray.
     x_input: corresponding x array.
     """
+
     import h5py
     import pickle
     from .imutils import skyobj_value
@@ -3118,8 +3119,9 @@ def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint,
 
     for k, obj in enumerate(obj_cat):
         # Load files
-        with open(obj['decals_dir'], 'rb') as f:
+        with open(obj['decals_dir'].rstrip(' '), 'rb') as f:
             ellipsefit = pickle.load(f)
+        print(obj['decals_dir'].rstrip(' '))
         # Change the unit of 'intens' to count/pixel
         for filt in ellipsefit['bands']:
             ellipsefit[filt]['intens'] *= (slug.DECaLS_pixel_scale)**2
@@ -3157,6 +3159,9 @@ def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint,
 
     # Return
     return y_stack, x_input, SBP_single_set, SBP_single_err_set, sma_single_set
+
+
+
 
 '''
 # NO PLOT HERE
@@ -3199,7 +3204,7 @@ def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint,
 
     for k, obj in enumerate(obj_cat):
         # Load files
-        with open(obj['decals_dir'], 'rb') as f:
+        with open(obj['decals_dir'].rstrip(' '), 'rb') as f:
             ellipsefit = pickle.load(f)
         # Change the unit of 'intens' to count/pixel
         for filt in ellipsefit['bands']:
@@ -3287,7 +3292,7 @@ def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint, ax=None, phy
 
     for k, obj in enumerate(obj_cat):
         # Load files
-        with open(obj['decals_dir'], 'rb') as f:
+        with open(obj['decals_dir'].rstrip(' '), 'rb') as f:
             ellipsefit = pickle.load(f)
         # Change the unit of 'intens' to count/pixel
         for filt in ellipsefit['bands']:

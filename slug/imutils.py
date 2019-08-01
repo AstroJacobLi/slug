@@ -318,8 +318,6 @@ def make_HSC_bright_obj_mask(bin_msk, objects, segmap, r=10.0, radius=1.5, thres
     HSC_detect_mask = cvl >= threshold
     return HSC_detect_mask
 
-
-
 # Print HSC mask for each flag to 'png' files
 def print_HSC_binary_mask(TDmsk, path):
     '''Print HSC mask for each flag.
