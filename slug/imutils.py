@@ -334,7 +334,7 @@ def print_HSC_binary_mask(TDmsk, path):
 
 # Make binary mask
 def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01, 
-    gaia=True, factor_b=1.2, sep_objcat=None, sep_mag=18.0, sep_zp=27.5, sep_blowup=15, 
+    gaia=True, factor_b=1.2, sep_objcat=None, sep_mag=18.0, sep_zp=27.0, sep_blowup=15, 
     show_fig=True):
     '''Make binary mask for a given segmentation map. 
     We convolve the segmentation map using a Gaussian kernal to expand the size of mask.
@@ -489,8 +489,8 @@ def extract_obj(img, b=30, f=5, sigma=5, pixel_scale=0.168, minarea=5,
         # plot an ellipse for each object
         for obj in objects:
             e = Ellipse(xy=(obj['x'], obj['y']),
-                        width=8*obj['a'],
-                        height=8*obj['b'],
+                        width=7*obj['a'],
+                        height=7*obj['b'],
                         angle=obj['theta'] * 180. / np.pi)
             e.set_facecolor('none')
             e.set_edgecolor('red')

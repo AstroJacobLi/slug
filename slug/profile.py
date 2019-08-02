@@ -189,7 +189,8 @@ def evaluate_sky(img, sigma=1.5, radius=15, threshold=0.005, deblend_cont=0.001,
     return bkg_global
 """
 
-# Evaluate the median sky value: new edition
+"""
+# Evaluate the median sky value: new edition, still using convolution
 def evaluate_sky(img, sigma=1.5, radius=10, pixel_scale=0.168, central_mask_radius=7.0, 
                  threshold=0.005, deblend_cont=0.001, deblend_nthresh=20, 
                  clean_param=1.0, show_fig=True, show_hist=True):
@@ -310,6 +311,136 @@ def evaluate_sky(img, sigma=1.5, radius=10, pixel_scale=0.168, central_mask_radi
         plt.vlines(np.median(sample), 0, ylim[1], linestyle='--')
 
     return median, std
+"""
+
+# Evaluate the median sky value: new edition, not using convolution
+def evaluate_sky(img, sigma=1.5, radius=10, pixel_scale=0.168, central_mask_radius=7.0, 
+                 threshold=0.005, deblend_cont=0.001, deblend_nthresh=20, 
+                 clean_param=1.0, show_fig=True, show_hist=True, f_factor=None):
+    '''Evaluate the mean sky value.
+    Parameters:
+    ----------
+    img: 2-D numpy array, the input image
+    show_fig: bool. If True, it will show you the masked sky image.
+    show_hist: bool. If True, it will show you the histogram of the sky value.
+    
+    Returns:
+    -------
+    median: median of background pixels, in original unit
+    std: standard deviation, in original unit
+    '''
+    import sep
+    import copy 
+    from slug.imutils import extract_obj, make_binary_mask
+    from astropy.convolution import convolve, Gaussian2DKernel
+    b = 50  # Box size
+    f = 5   # Filter width
+
+    bkg = sep.Background(img, maskthresh=0, bw=b, bh=b, fw=f, fh=f)
+    # first time
+    objects, segmap = extract_obj(img - bkg.globalback, b=30, f=5, sigma=sigma,
+                                    minarea=20, pixel_scale=pixel_scale,
+                                    deblend_nthresh=deblend_nthresh, deblend_cont=deblend_cont,
+                                    clean_param=clean_param, show_fig=False)
+    
+    seg_sky = copy.deepcopy(segmap)
+    seg_sky[segmap > 0] = 1
+    seg_sky = seg_sky.astype(bool)
+    # Blow up the mask
+    for obj in objects:
+        sep.mask_ellipse(seg_sky, obj['x'], obj['y'], obj['a'], obj['b'], obj['theta'], r=radius)
+    bkg_mask_1 = seg_sky
+    
+    data = copy.deepcopy(img - bkg.globalback)
+    data[bkg_mask_1 == 1] = 0
+
+    # Second time
+    obj_lthre, seg_lthre = extract_obj(data, b=30, f=5, sigma=sigma + 1,
+                                       minarea=5, pixel_scale=pixel_scale,
+                                       deblend_nthresh=deblend_nthresh, deblend_cont=deblend_cont,
+                                       clean_param=clean_param, show_fig=False)
+    seg_sky = copy.deepcopy(seg_lthre)
+    seg_sky[seg_lthre > 0] = 1
+    seg_sky = seg_sky.astype(bool)
+    # Blow up the mask
+    for obj in obj_lthre:
+        sep.mask_ellipse(seg_sky, obj['x'], obj['y'], obj['a'], obj['b'], obj['theta'], r=radius/2)
+    bkg_mask_2 = seg_sky
+    
+    bkg_mask = (bkg_mask_1 + bkg_mask_2).astype(bool)
+    
+    cen_obj = objects[segmap[int(bkg_mask.shape[0] / 2.), int(bkg_mask.shape[1] / 2.)] - 1]
+    fraction_radius = sep.flux_radius(img, cen_obj['x'], cen_obj['y'], 10*cen_obj['a'], 0.5)[0]
+    
+    ba = np.divide(cen_obj['b'], cen_obj['a'])
+    
+    if fraction_radius < int(bkg_mask.shape[0] / 8.):
+        sep.mask_ellipse(bkg_mask, cen_obj['x'], cen_obj['y'], fraction_radius, fraction_radius * ba,
+                        cen_obj['theta'], r=central_mask_radius)
+    elif fraction_radius < int(bkg_mask.shape[0] / 4.):
+        sep.mask_ellipse(bkg_mask, cen_obj['x'], cen_obj['y'], fraction_radius, fraction_radius * ba,
+                        cen_obj['theta'], r=1.2)
+    
+    # Estimate sky from histogram of binned image
+    import copy
+    from scipy import stats
+    from astropy.stats import sigma_clip
+    from astropy.nddata import block_reduce
+    data = copy.deepcopy(img)
+    data[bkg_mask] = np.nan
+    if f_factor is None:
+        f_factor = round(6 / pixel_scale)
+    rebin = block_reduce(data, f_factor)
+    sample = rebin.flatten()
+    if show_fig:
+        display_single(rebin)
+        plt.savefig('./{}-bkg.png'.format(np.random.randint(1000)), dpi=100, bbox_inches='tight')
+    
+    temp = sigma_clip(sample)
+    sample = temp.data[~temp.mask]
+
+    kde = stats.gaussian_kde(sample)
+    
+    mean = np.mean(sample) / f_factor**2
+    median = np.median(sample) / f_factor**2
+    std = np.std(sample, ddof=1) / f_factor
+
+    xlim = np.std(sample, ddof=1) * 7
+    x = np.linspace(-xlim + np.median(sample), xlim + np.median(sample), 100)
+    offset = x[np.argmax(kde.evaluate(x))] / f_factor**2
+
+    print('mean', mean)
+    print('median', median)
+    print('std', std)
+
+    bkg_global = sep.Background(img, 
+                                mask=bkg_mask, maskthresh=0,
+                                bw=f_factor, bh=f_factor, 
+                                fw=f_factor/2, fh=f_factor/2)
+    print("#SEP sky: Mean Sky / RMS Sky = %10.5f / %10.5f" % (bkg_global.globalback, bkg_global.globalrms))
+
+    if show_hist:
+        fig, ax = plt.subplots(figsize=(8,6))
+
+        ax.plot(x, kde.evaluate(x), linestyle='dashed', c='black', lw=2,
+                label='KDE')
+        ax.hist(sample, bins=x, normed=1);
+        ax.legend(loc='best', frameon=False, fontsize=20)
+
+        ax.set_xlabel('Pixel Value', fontsize=20)
+        ax.set_ylabel('Normed Number', fontsize=20)
+        ax.tick_params(labelsize=20)
+        ylim = ax.get_ylim()
+        ax.text(-0.1 * f_factor + np.median(sample), 0.9 * (ylim[1] - ylim[0]) + ylim[0], 
+                r'$\mathrm{offset}='+str(round(offset, 6))+'$', fontsize=20)
+        ax.text(-0.1 * f_factor + np.median(sample), 0.8 * (ylim[1] - ylim[0]) + ylim[0],
+                r'$\mathrm{median}='+str(round(median, 6))+'$', fontsize=20)
+        ax.text(-0.1 * f_factor + np.median(sample), 0.7 * (ylim[1] - ylim[0]) + ylim[0],
+                r'$\mathrm{std}='+str(round(std, 6))+'$', fontsize=20)
+        plt.vlines(np.median(sample), 0, ylim[1], linestyle='--')
+
+    return median, std
+
 
 # Evaluate the mean sky value for Dragonfly
 def evaluate_sky_dragonfly(img, b=15, f=3, sigma=1.5, radius=1.0, threshold=0.05, show_fig=True, show_hist=True):

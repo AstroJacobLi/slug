@@ -3,7 +3,7 @@ scipy
 matplotlib
 astropy
 yaml
-sep
+sep==1.0.3
 kungpao
 urllib
 urllib2

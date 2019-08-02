@@ -1046,14 +1046,14 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
             l.set_alpha(1)
     else:
         ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle, alpha=alpha)
-    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.3*alpha, label=None)
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.4*alpha, label=None)
     if ylim is None:
         ylim = ax1.get_ylim()
 
     for i in range(len(y_sky_lower)):
         if np.isnan(y_sky_lower[i]):
             y_sky_lower[i] = max(ylim)
-    ax1.fill_between(x**0.25, y_sky_upper, y_sky_lower, color=linecolor, alpha=0.1*alpha, label=None)
+    ax1.fill_between(x**0.25, y_sky_upper, y_sky_lower, color=linecolor, alpha=0.13*alpha, label=None)
 
     for tick in ax1.xaxis.get_major_ticks():
         tick.label.set_fontsize(ticksize)
