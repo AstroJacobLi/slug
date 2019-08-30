@@ -403,7 +403,7 @@ def evaluate_sky(img, sigma=1.5, radius=10, pixel_scale=0.168, central_mask_radi
     
     mean = np.mean(sample) / f_factor**2
     median = np.median(sample) / f_factor**2
-    std = np.std(sample, ddof=1) / f_factor
+    std = np.std(sample, ddof=1) / f_factor / np.sqrt(len(sample))
 
     xlim = np.std(sample, ddof=1) * 7
     x = np.linspace(-xlim + np.median(sample), xlim + np.median(sample), 100)
