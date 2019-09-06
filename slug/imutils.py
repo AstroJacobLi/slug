@@ -117,7 +117,7 @@ def img_cutout(img, wcs, coord_1, coord_2, size=60.0, pix=0.168,
     return cutout
 
 # Calculate mean/median value of nearby sky objects
-def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius=[1, 3], aperture='84', 
+def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius=[1, 3], aperture='84', redshift=None,
     print_number=False, sigma_upper=3., sigma_lower=3., maxiters=5, showmedian=False, verbose=False):
     '''Calculate the mean/median value of nearby SKY OBJECTS around a given RA and DEC.
     Importing sky objects catalog can be really slow.
@@ -141,10 +141,15 @@ def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius=[1, 3], aperture='84'
     from astropy import units as u
     from astropy.coordinates import SkyCoord
     from astropy.stats import sigma_clip
-
+    
     ra, dec = cen_ra, cen_dec
     bkg_pos = SkyCoord(ra=ra * u.degree, dec=dec * u.degree, frame='icrs')
     catalog = SkyCoord(ra=sky_cat['i_ra'] * u.degree, dec=sky_cat['i_dec'] * u.degree)
+    if redshift is not None:
+        matching_radius = np.asarray(matching_radius)
+        matching_radius = matching_radius / phys_size(redshift, is_print=False)
+        matching_radius = matching_radius / 60
+        matching_radius = list(matching_radius)
     if type(matching_radius) == list:
         if len(matching_radius) != 2:
             raise SyntaxError('The length of matching_radius list must be 2!')
@@ -156,7 +161,6 @@ def skyobj_value(sky_cat, cen_ra, cen_dec, matching_radius=[1, 3], aperture='84'
         obj_inx = np.where(catalog.separation(bkg_pos) < matching_radius * u.arcmin)[0]
     if print_number:
         print('Sky objects number around' + str(matching_radius) + 'arcmin: ', len(obj_inx))
-
 
     x = sky_cat[obj_inx]['r_apertureflux_' + aperture +'_flux'] * 1.7378e30 / (np.pi * SkyObj_aperture_dic[aperture]**2)
     x = sigma_clip(x, sigma_lower=sigma_lower, sigma_upper=sigma_upper, maxiters=maxiters)
@@ -369,7 +373,7 @@ def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01,
         t.remove_row(cen_inx)
         t.sort('flux')
         t.reverse()
-        bright_objs = t[sep_zp - 2.5*np.log10(t['flux']) < sep_mag]
+        bright_objs = t[sep_zp - 2.5 * np.log10(t['flux']) < sep_mag]
         print('The number of bright objects: ', len(bright_objs))
         for skyobj in bright_objs:
             sep.mask_ellipse(seg_mask, skyobj['x'], skyobj['y'], 

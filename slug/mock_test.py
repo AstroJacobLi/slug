@@ -82,6 +82,74 @@ def h5_gen_mock_image(h5_path, pixel_scale, band, i_gal_flux, i_gal_rh,
     plt.subplots_adjust(wspace=0.)
     f.close()
 
+# Generate mock images
+def h5_gen_mock_image_double(h5_path, pixel_scale, band, 
+    i_gal_flux, i_gal_rh, i_gal_q, i_sersic_index, i_gal_beta, 
+    i_psf_rh, groupname=None):
+    '''
+    Generate mock images.
+
+    Parameters:
+    -----------
+    h5_path: string, the path of your h5 file.
+    pixel_scale: float, in the unit of arcsec/pixel.
+    band: string, such as 'r-band'.
+    i_gal-flux: float, input galsim flux of the fake galaxy.
+    i_gal_rh: float, input half-light-radius of the fake galaxy.
+    i_gal_q: float, input b/a.
+    i_sersic_index: float, input sersic index.
+    i_gal_beta: float, input position angle (in degrees).
+    i_psf_rh: float, the half-light-radius of PSF.
+    groupname: string, such as 'model-0'.
+
+    '''
+    import h5py
+    import galsim
+    f = h5py.File(h5_path, 'r+')
+    field = f['Background'][band]['image'][:]
+    w = wcs.WCS(f['Background'][band]['image_header'].value)
+    print ('Size (in pixel):', [field.shape[1], field.shape[0]])
+    print ('Angular size (in arcsec):', [
+        field.shape[1] * pixel_scale, field.shape[0] * pixel_scale
+    ])
+    print ('The center of this image:', [field.shape[1] / 2, field.shape[0] / 2])
+   
+    # Define sersic galaxy
+    gal1 = galsim.Sersic(i_sersic_index[0], half_light_radius=i_gal_rh[0], flux=i_gal_flux[0])
+    gal2 = galsim.Sersic(i_sersic_index[1], half_light_radius=i_gal_rh[1], flux=i_gal_flux[1])
+    gal = gal1 + gal2
+    # Shear the galaxy by some value.
+    # q, beta      Axis ratio and position angle: q = b/a, 0 < q < 1
+    gal_shape = galsim.Shear(q=i_gal_q, beta=i_gal_beta * galsim.degrees)
+    gal = gal.shear(gal_shape)
+    # Define the PSF profile
+    #psf = galsim.Moffat(beta=psf_beta, flux=1., half_light_radius=psf_rh)
+    psf = galsim.Gaussian(sigma=i_psf_rh, flux=1.)
+    # Convolve galaxy with PSF
+    final = galsim.Convolve([gal, psf])
+    # Draw the image with a particular pixel scale.
+    image = final.drawImage(scale=pixel_scale, nx=field.shape[1], ny=field.shape[0])
+    
+    if groupname is None:
+        groupname = 'n' + str(i_sersic_index)
+    
+    g1 = f['ModelImage'][band].create_group(groupname)
+    g1.create_dataset('modelimage', data=image.array)
+
+    # Generate mock image
+    mock_img = image.array + field
+
+    g2 = f['MockImage'][band].create_group(groupname)
+    g2.create_dataset('mockimage', data=mock_img)
+
+    # Plot fake galaxy and the composite mock image
+    fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(12, 6))
+    display_single(image.array, ax=ax1, scale_bar_length=10)
+    display_single(mock_img, scale_bar_length=10, ax=ax2)
+    plt.show(block=False)
+    plt.subplots_adjust(wspace=0.)
+    f.close()
+
 
 # Rebin a image / mask
 def rebin_img(array, dimensions=None, scale=None):

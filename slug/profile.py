@@ -408,7 +408,7 @@ def evaluate_sky(img, sigma=1.5, radius=10, pixel_scale=0.168, central_mask_radi
     xlim = np.std(sample, ddof=1) * 7
     x = np.linspace(-xlim + np.median(sample), xlim + np.median(sample), 100)
     offset = x[np.argmax(kde.evaluate(x))] / f_factor**2
-
+    
     print('mean', mean)
     print('median', median)
     print('std', std)

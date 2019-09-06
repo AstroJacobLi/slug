@@ -2418,7 +2418,7 @@ def mu_diff_stack(obj_cat, band, ax=None,
     if ax is None:
         return fig, mu_stack
     return ax1, mu_stack
-        
+
 # Plot SBP together, and also plot median profile
 def mu_diff_SB(obj_cat, band, ax=None, 
               sky_cat=None, matching_radius=3, aperture='84', x_min=20.0, x_max=32.0, 
