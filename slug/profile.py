@@ -333,12 +333,12 @@ def evaluate_sky(img, sigma=1.5, radius=10, pixel_scale=0.168, central_mask_radi
     import copy 
     from slug.imutils import extract_obj, make_binary_mask
     from astropy.convolution import convolve, Gaussian2DKernel
-    b = 50  # Box size
+    b = 35  # Box size
     f = 5   # Filter width
 
     bkg = sep.Background(img, maskthresh=0, bw=b, bh=b, fw=f, fh=f)
     # first time
-    objects, segmap = extract_obj(img - bkg.globalback, b=30, f=5, sigma=sigma,
+    objects, segmap = extract_obj(img - bkg.globalback, b=35, f=5, sigma=sigma,
                                     minarea=20, pixel_scale=pixel_scale,
                                     deblend_nthresh=deblend_nthresh, deblend_cont=deblend_cont,
                                     clean_param=clean_param, show_fig=False)
@@ -355,7 +355,7 @@ def evaluate_sky(img, sigma=1.5, radius=10, pixel_scale=0.168, central_mask_radi
     data[bkg_mask_1 == 1] = 0
 
     # Second time
-    obj_lthre, seg_lthre = extract_obj(data, b=30, f=5, sigma=sigma + 1,
+    obj_lthre, seg_lthre = extract_obj(data, b=35, f=5, sigma=sigma + 1,
                                        minarea=5, pixel_scale=pixel_scale,
                                        deblend_nthresh=deblend_nthresh, deblend_cont=deblend_cont,
                                        clean_param=clean_param, show_fig=False)

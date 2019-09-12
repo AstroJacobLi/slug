@@ -39,6 +39,7 @@ def h5_gen_mock_image(h5_path, pixel_scale, band, i_gal_flux, i_gal_rh,
     '''
     import h5py
     import galsim
+    from .h5file import h5_rewrite_dataset
     f = h5py.File(h5_path, 'r+')
     field = f['Background'][band]['image'][:]
     w = wcs.WCS(f['Background'][band]['image_header'].value)
@@ -65,14 +66,14 @@ def h5_gen_mock_image(h5_path, pixel_scale, band, i_gal_flux, i_gal_rh,
     if groupname is None:
         groupname = 'n' + str(i_sersic_index)
     
-    g1 = f['ModelImage'][band].create_group(groupname)
-    g1.create_dataset('modelimage', data=image.array)
+    #g1 = f['ModelImage'][band].create_group(groupname)
+    h5_rewrite_dataset(g1, 'modelimage', image.array)
 
     # Generate mock image
     mock_img = image.array + field
 
-    g2 = f['MockImage'][band].create_group(groupname)
-    g2.create_dataset('mockimage', data=mock_img)
+    #g2 = f['MockImage'][band].create_group(groupname)
+    h5_rewrite_dataset(g2, 'mockimage', mock_img)
 
     # Plot fake galaxy and the composite mock image
     fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(12, 6))
@@ -105,6 +106,7 @@ def h5_gen_mock_image_double(h5_path, pixel_scale, band,
     '''
     import h5py
     import galsim
+    from .h5file import h5_rewrite_dataset
     f = h5py.File(h5_path, 'r+')
     field = f['Background'][band]['image'][:]
     w = wcs.WCS(f['Background'][band]['image_header'].value)
@@ -133,14 +135,26 @@ def h5_gen_mock_image_double(h5_path, pixel_scale, band,
     if groupname is None:
         groupname = 'n' + str(i_sersic_index)
     
-    g1 = f['ModelImage'][band].create_group(groupname)
-    g1.create_dataset('modelimage', data=image.array)
+    #g1 = f['ModelImage'][band].create_group(groupname)
+    #g1.create_dataset('modelimage', data=image.array)
+    g = f['ModelImage'][band]
+    if not any([keys == groupname for keys in g.keys()]):
+        g1 = g.create_group(groupname)
+    else:
+        g1 = g[groupname]
+    h5_rewrite_dataset(g1, 'modelimage', image.array)
 
     # Generate mock image
     mock_img = image.array + field
 
-    g2 = f['MockImage'][band].create_group(groupname)
-    g2.create_dataset('mockimage', data=mock_img)
+    #g2 = f['MockImage'][band].create_group(groupname)
+    #g2.create_dataset('mockimage', data=mock_img)
+    g = f['MockImage'][band]
+    if not any([keys == groupname for keys in g.keys()]):
+        g2 = g.create_group(groupname)
+    else:
+        g2 = g[groupname]
+    h5_rewrite_dataset(g2, 'mockimage', mock_img)
 
     # Plot fake galaxy and the composite mock image
     fig, [ax1, ax2] = plt.subplots(1, 2, figsize=(12, 6))

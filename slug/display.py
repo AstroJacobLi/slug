@@ -923,7 +923,7 @@ def SBP_single_try(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.
     return ax1
 
 # You can plot 1-D SBP using this, without plotting the PA and eccentricity.
-def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0, skystd=0.0, 
+def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0, skystd=0.0, filter_corr=0,
     ax=None, x_min=1.0, x_max=4.0, ylim=None, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
     show_banner=True, vertical_line=None, linecolor='firebrick', linestyle='-', 
     linewidth=3, labelsize=25, ticksize=30, label='SBP', labelloc='lower left'):
@@ -975,11 +975,11 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
 
     if physical_unit is True:
         x = ell_fix['sma'] * pixel_scale * phys_size
-        y = -2.5 * np.log10((ell_fix['intens'].data - skyval) / (pixel_scale)**2) + zeropoint
-        y_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint
-        y_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint
-        y_sky_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2) + zeropoint
-        y_sky_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2) + zeropoint
+        y = -2.5 * np.log10((ell_fix['intens'].data - skyval) / (pixel_scale)**2) + zeropoint + filter_corr
+        y_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint + filter_corr
+        y_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name]) / (pixel_scale)**2) + zeropoint + filter_corr
+        y_sky_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2) + zeropoint + filter_corr
+        y_sky_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2) + zeropoint + filter_corr
         upper_yerr = y_lower - y
         lower_yerr = y - y_upper
         asymmetric_error = [lower_yerr, upper_yerr]
@@ -987,11 +987,11 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
     else:
         x = ell_fix['sma'] * pixel_scale
-        y = -2.5 * np.log10((ell_fix['intens'].data - skyval) / (pixel_scale)**2) + zeropoint
-        y_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint
-        y_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint
-        y_sky_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2) + zeropoint
-        y_sky_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2) + zeropoint
+        y = -2.5 * np.log10((ell_fix['intens'].data - skyval) / (pixel_scale)**2) + zeropoint + filter_corr
+        y_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint + filter_corr
+        y_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name]) / (pixel_scale) ** 2) + zeropoint + filter_corr
+        y_sky_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2) + zeropoint + filter_corr
+        y_sky_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2) + zeropoint + filter_corr
         upper_yerr = y_lower - y
         lower_yerr = y - y_upper
         asymmetric_error = [lower_yerr, upper_yerr]
@@ -1016,6 +1016,9 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
             y[nanidx[0]:] = np.nan
             y_upper[nanidx[0]:] = np.nan
             y_lower[nanidx[0]:] = np.nan
+            y_sky_upper[nanidx[0]:] = np.nan
+            y_sky_lower[nanidx[0]:] = np.nan
+
     elif len(nanidx) == 1:
         if nanidx + 1 > len(nanidx) or nanidx - 1 < 0:
             print('Sorry, cannot replace NaN')
@@ -1029,6 +1032,8 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
             y[nanidx[0]:] = np.nan
             y_upper[nanidx[0]:] = np.nan
             y_lower[nanidx[0]:] = np.nan
+            y_sky_upper[nanidx[0]:] = np.nan
+            y_sky_lower[nanidx[0]:] = np.nan
     
     if show_grid:
         ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
@@ -2714,7 +2719,7 @@ def SBP_stack_new_hsc(obj_cat, band, pixel_scale, zeropoint, ax=None, physical_u
     return ax1, y_stack, x_input
 
 # Plot SBP together, and also plot median profile
-def SBP_stack_new_decals(obj_cat, band, pixel_scale, zeropoint, ax=None, physical_unit=False, 
+def SBP_stack_new_decals(obj_cat, band, pixel_scale, zeropoint, filt_corr=None, ax=None, physical_unit=False, 
     sky_cat=None, matching_radius=3, aperture='84', x_min=1.0, x_max=4.0, ninterp=60, show_single=True, 
     vertical_line=None, ismedian=True, linecolor='brown', fillcolor='orange', linewidth=5,
     single_alpha=0.3, single_color='firebrick', single_style='-', single_width=1, label=None, 
@@ -2806,11 +2811,19 @@ def SBP_stack_new_decals(obj_cat, band, pixel_scale, zeropoint, ax=None, physica
         x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
         func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
         x_input = np.linspace(x_min, x_max, ninterp)
+
+        if filt_corr is not None:
+            color_correction = filt_corr[k]
+        else:
+            color_correction = 0.0 
+        
         if k == 0:
             y_stack = func(x_input)
+            y_stack *= 10**(-color_correction / 2.5)
             y_stack[x_input > max(x)**0.25] = np.nan
         else:
             temp = func(x_input)
+            temp *= 10**(-color_correction / 2.5)
             temp[x_input > max(x)**0.25] = np.nan
             y_stack = np.vstack((y_stack, temp))
         f.close()
@@ -3075,7 +3088,7 @@ def SBP_outskirt_stat_hsc(obj_cat, band, pixel_scale, zeropoint,
     return y_stack, x_input, SBP_single_set, SBP_single_err_set, sma_single_set
 
 # Plot SBP together, and also plot median profile
-def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint,
+def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint, filt_corr=None,
     sky_cat=None, matching_radius=3, aperture='84', x_min=1.0, x_max=4.5, ninterp=60):
     """
     Plot SBP together, along with median profile, but on magnitude level
@@ -3121,7 +3134,6 @@ def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint,
         # Load files
         with open(obj['decals_dir'].rstrip(' '), 'rb') as f:
             ellipsefit = pickle.load(f)
-        print(obj['decals_dir'].rstrip(' '))
         # Change the unit of 'intens' to count/pixel
         for filt in ellipsefit['bands']:
             ellipsefit[filt]['intens'] *= (slug.DECaLS_pixel_scale)**2
@@ -3140,11 +3152,19 @@ def SBP_outskirt_stat_decals(obj_cat, band, pixel_scale, zeropoint,
         x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
         func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
         x_input = np.linspace(x_min, x_max, ninterp)
+
+        if filt_corr is not None:
+            color_correction = filt_corr[k]
+        else:
+            color_correction = 0.0 
+
         if k == 0:
             y_stack = func(x_input)
+            y_stack *= 10**(-color_correction / 2.5)
             y_stack[x_input > max(x)**0.25] = np.nan
         else:
             temp = func(x_input)
+            temp *= 10**(-color_correction / 2.5)
             temp[x_input > max(x)**0.25] = np.nan
             y_stack = np.vstack((y_stack, temp))
         
