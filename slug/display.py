@@ -454,7 +454,7 @@ def display_isophote(img, ell, pixel_scale, scale_bar=True, scale_bar_length=50,
     
     for k, iso in enumerate(ell):
         if k % 2 == 0:
-            e = Ellipse(xy=(iso['y0'], iso['x0']),
+            e = Ellipse(xy=(iso['x0'], iso['y0']),
                         height=iso['sma'] * 2.0,
                         width=iso['sma'] * 2.0 * (1.0 - iso['ell']),
                         angle=iso['pa_norm'])
