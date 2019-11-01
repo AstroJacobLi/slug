@@ -2679,13 +2679,14 @@ def SBP_stack_new_hsc(obj_cat, band, pixel_scale, zeropoint, ax=None, physical_u
 
         x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
         func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
-        x_input = np.linspace(x_min, x_max, ninterp)
+        x_input = np.arange(x_min, x_max, 0.05)
+
         if k == 0:
             y_stack = func(x_input)
-            y_stack[x_input > max(x)**0.25] = np.nan
+            y_stack[x_input > max(x)**0.25 - 0.05] = np.nan
         else:
             temp = func(x_input)
-            temp[x_input > max(x)**0.25] = np.nan
+            temp[x_input > max(x)**0.25 - 0.05] = np.nan
             y_stack = np.vstack((y_stack, temp))
         f.close()
 
@@ -2810,7 +2811,7 @@ def SBP_stack_new_decals(obj_cat, band, pixel_scale, zeropoint, filt_corr=None, 
 
         x = ell_fix['sma'] * pixel_scale * phys_size(redshift, is_print=False)
         func = interpolate.interp1d(x**0.25, ell_fix['intens'] - off_set, kind='cubic', fill_value='extrapolate')
-        x_input = np.linspace(x_min, x_max, ninterp)
+        x_input = np.arange(x_min, x_max, 0.05)
 
         if filt_corr is not None:
             color_correction = filt_corr[k]
@@ -2820,11 +2821,11 @@ def SBP_stack_new_decals(obj_cat, band, pixel_scale, zeropoint, filt_corr=None, 
         if k == 0:
             y_stack = func(x_input)
             y_stack *= 10**(-color_correction / 2.5)
-            y_stack[x_input > max(x)**0.25] = np.nan
+            y_stack[x_input > max(x)**0.25 - 0.05] = np.nan
         else:
             temp = func(x_input)
             temp *= 10**(-color_correction / 2.5)
-            temp[x_input > max(x)**0.25] = np.nan
+            temp[x_input > max(x)**0.25 - 0.05] = np.nan
             y_stack = np.vstack((y_stack, temp))
         f.close()
 

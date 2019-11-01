@@ -747,9 +747,9 @@ def gen_url_hsc_s18a(ra, dec, w, h, band, pixel_unit=False, only_image=False):
             + '&dec='
             + str(dec)
             + '&sw='
-            + str(w*HSC_pixel_scale)
+            + str(w*slug.HSC_pixel_scale)
             + 'asec&sh='
-            + str(h*HSC_pixel_scale)
+            + str(h*slug.HSC_pixel_scale)
             + 'asec&type=coadd&image=on&mask=' 
             + if_variance_mask + '&variance=' 
             + if_variance_mask + '&filter=HSC-'
