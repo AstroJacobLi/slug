@@ -1306,7 +1306,6 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, offs
     --------
     ax: matplotlib axes class.
     """
-
     if ax is None:
         fig = plt.figure(figsize=(10, 10))
         fig.subplots_adjust(left=0.0, right=1.0, 
@@ -1337,7 +1336,7 @@ def SBP_shape(ell_free, ell_fix, redshift, pixel_scale, zeropoint, ax=None, offs
             ax3.tick_params(direction='in')
 
     # Calculate physical size
-    phys_size = phys_size(redshift, is_print=False)
+    phys_size = imutils.phys_size(redshift, is_print=False)
     # Calculate mean ellipticity and pa, which are used for fixed fitting
     interval = np.intersect1d(np.where(ell_free['sma']*pixel_scale*phys_size > r_interval[0]),
                np.where(ell_free['sma']*pixel_scale*phys_size < r_interval[1]))
