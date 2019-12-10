@@ -23,7 +23,7 @@ from .imutils import extract_obj, make_binary_mask
 from kungpao import imtools
 from kungpao import io
 from kungpao.display import display_single, IMG_CMAP, SEG_CMAP
-from kungpao.galsbp import galSBP
+from kungpao.isophote import galSBP
 
 
 # Define pixel scale of different surveys, unit = arcsec / pixel
@@ -497,7 +497,6 @@ def evaluate_sky_dragonfly(img, b=15, f=3, sigma=1.5, radius=1.0, threshold=0.05
     print("# Mean Sky / RMS Sky = %10.5f / %10.5f" % (bkg_global.globalback, bkg_global.globalrms))
     return bkg_global
 
-
 # Run surface brightness profile for the given image and mask
 def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10, 
     sma_ini=10.0, sma_max=900.0, n_clip=3, maxTry=5, low_clip=3.0, upp_clip=2.5, force_e=None, r_interval=(20, 50), outPre=None):
@@ -570,7 +569,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
                                  saveOut=True, plMask=True,
                                  verbose=True, savePng=False, 
                                  updateIntens=False, saveCsv=True,
-                                 suffix='', location='./Data/', outPre=outPre+'-ellip-2')
+                                 suffix='', location='./Data/')
 
     # Calculate the mean ellipticity and position angle in 20 kpc ~ 50 kpc
     interval = np.intersect1d(np.where(ell_2['sma'].data*pixel_scale*phys_size > r_interval[0]),
@@ -621,4 +620,120 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
                                  verbose=True, savePng=False, 
                                  updateIntens=False, saveCsv=True,
                                  suffix='', location='./Data/', outPre=outPre+'-ellip-3')
+    return ell_2, ell_3
+
+# Run surface brightness profile for the given image and mask
+def run_SBP_new(img_path, msk_path, pixel_scale, phys_size, step=0.10, 
+    sma_ini=10.0, sma_max=900.0, n_clip=3, maxTry=5, low_clip=3.0, upp_clip=2.5, force_e=None, r_interval=(20, 50), outPre=None):
+    # Centeral coordinate 
+    img_data = fits.open(img_path)[0].data
+    x_cen, y_cen = int(img_data.shape[0]/2), int(img_data.shape[1]/2)
+
+    # Initial guess of axis ratio and position angle 
+    ba_ini, pa_ini = 0.5, 90.0
+
+    # Initial radius of Ellipse fitting
+    sma_ini = sma_ini
+
+    # Minimum and maximum radiuse of Ellipse fitting
+    sma_min, sma_max = 0.0, sma_max
+
+    # Stepsize of Ellipse fitting. By default we are not using linear step size
+    step = step
+
+    # Behaviour of Ellipse fitting
+    stage = 2   # Fix the central coordinate of every isophote at the x_cen / y_cen position
+
+    # Pixel scale of the image.
+    pix_scale = pixel_scale
+
+    # Photometric zeropoint 
+    zeropoint = 27.0
+
+    # Exposure time
+    exptime = 1.0
+
+    # Along each isophote, Elipse will perform sigmal clipping to remove problematic pixels
+    # The behaviour is decided by these three parameters: Number of sigma cliping, lower, and upper clipping threshold 
+    n_clip, low_clip, upp_clip = n_clip, low_clip, upp_clip
+
+    # After the clipping, Ellipse can use the mean, median, or bi-linear interpolation of the remain pixel values
+    # as the "average intensity" of that isophote 
+    integrade_mode = 'median'   # or 'mean', or 'bi-linear'
+
+    # Make 'Data' to save your output data
+    if not os.path.isdir('Data'):
+        os.mkdir('Data')
+
+    # Start running Ellipse
+    
+    ell_2, bin_2 = galSBP.galSBP(img_path, 
+                                 mask=msk_path,
+                                 galX=x_cen, galY=y_cen,
+                                 galQ=ba_ini, galPA=pa_ini,
+                                 iniSma=sma_ini, 
+                                 minSma=sma_min, maxSma=sma_max,
+                                 pix=1/pix_scale, zpPhoto=zeropoint,
+                                 expTime=exptime, 
+                                 stage=stage,
+                                 ellipStep=step,
+                                 uppClip=upp_clip, lowClip=low_clip, 
+                                 nClip=n_clip, 
+                                 maxTry=maxTry,
+                                 fracBad=0.8,
+                                 maxIt=300,
+                                 harmonics="none",
+                                 intMode=integrade_mode, 
+                                 saveOut=True, 
+                                 verbose=True, savePng=False, 
+                                 updateIntens=False,
+                                 suffix='')
+    
+    # Calculate the mean ellipticity and position angle in 20 kpc ~ 50 kpc
+    interval = np.intersect1d(np.where(ell_2['sma'].data*pixel_scale*phys_size > r_interval[0]),
+               np.where(ell_2['sma'].data*pixel_scale*phys_size < r_interval[1]))
+    mean_e = ell_2['ell'][interval].mean()
+    stdev_e = ell_2['ell'][interval].std()
+    mean_pa = ell_2['pa_norm'][interval].mean()
+    stdev_pa = ell_2['pa_norm'][interval].std()
+
+    print ('\n')
+    print ('mean ellipticity:', mean_e)
+    print ('std ellipticity:', stdev_e)
+    print ('mean pa:', mean_pa)
+    print ('std pa:', stdev_pa)
+    print ('\n')
+    # RUN Ellipse for the second time, fixing shape and center
+    stage = 3
+
+    # Initial value of axis ratio and position angle, based on previous fitting
+    if force_e is not None:
+        ba_ini = 1 - force_e
+    else:
+        ba_ini = 1 - mean_e
+    pa_ini = mean_pa
+
+    step = 0.1
+
+    ell_3, bin_3 = galSBP.galSBP(img_path, 
+                                 mask=msk_path,
+                                 galX=x_cen, galY=y_cen,
+                                 galQ=ba_ini, galPA=pa_ini,
+                                 iniSma=sma_ini, 
+                                 minSma=sma_min, maxSma=sma_max,
+                                 pix=1/pix_scale, zpPhoto=zeropoint,
+                                 expTime=exptime, 
+                                 stage=stage,
+                                 ellipStep=step,
+                                 uppClip=upp_clip, lowClip=low_clip, 
+                                 nClip=n_clip, 
+                                 maxTry=maxTry,
+                                 fracBad=0.8,
+                                 maxIt=300,
+                                 harmonics="none",
+                                 intMode=integrade_mode, 
+                                 saveOut=True, 
+                                 verbose=True, savePng=False, 
+                                 updateIntens=False,
+                                 suffix='')
     return ell_2, ell_3
