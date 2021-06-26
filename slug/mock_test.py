@@ -283,40 +283,37 @@ def add_tractor_sources(obj_cat, sources, w, shape_method='manual'):
         # Using manually measured shapes
         if sources is None:
             sources = []
-        for obj in comp_galaxy:
+        for obj in obj_cat:
             pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
-            sources.append(
-                CompositeGalaxy(
-                    PixPos(pos_x, pos_y), Flux(0.4 * obj['flux']),
-                    GalaxyShape(obj['a_arcsec'] * 0.8, 0.9,
-                                90.0 + obj['theta'] * 180.0 / np.pi),
-                    Flux(0.6 * obj['flux']),
-                    GalaxyShape(obj['a_arcsec'], obj['b_arcsec'] / obj['a_arcsec'],
-                                90.0 + obj['theta'] * 180.0 / np.pi)))
-        for obj in dev_galaxy:
-            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
-            sources.append(
-                DevGalaxy(
-                    PixPos(pos_x, pos_y), Flux(obj['flux']),
-                    GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
-                                (90.0 + obj['theta'] * 180.0 / np.pi))))
-        for obj in exp_galaxy:
-            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
-            sources.append(
-                ExpGalaxy(
-                    PixPos(pos_x, pos_y), Flux(obj['flux']),
-                    GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
-                                (90.0 + obj['theta'] * 180.0 / np.pi))))
-        for obj in rex_galaxy:
-            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
-            sources.append(
-                ExpGalaxy(
-                    PixPos(pos_x, pos_y), Flux(obj['flux']),
-                    GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
-                                (90.0 + obj['theta'] * 180.0 / np.pi))))
-        for obj in psf_galaxy:
-            pos_x, pos_y = w.wcs_world2pix([[obj['ra'], obj['dec']]], 1)[0]
-            sources.append(PointSource(PixPos(pos_x, pos_y), Flux(obj['flux'])))
+            if obj['type'].rstrip(' ') == 'COMP':
+                sources.append(
+                    CompositeGalaxy(
+                        PixPos(pos_x, pos_y), Flux(0.4 * obj['flux']),
+                        GalaxyShape(obj['a_arcsec'] * 0.8, 0.9,
+                                    90.0 + obj['theta'] * 180.0 / np.pi),
+                        Flux(0.6 * obj['flux']),
+                        GalaxyShape(obj['a_arcsec'], obj['b_arcsec'] / obj['a_arcsec'],
+                                    90.0 + obj['theta'] * 180.0 / np.pi)))
+            elif obj['type'].rstrip(' ') == 'DEV':
+                sources.append(
+                    DevGalaxy(
+                        PixPos(pos_x, pos_y), Flux(obj['flux']),
+                        GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
+                                    (90.0 + obj['theta'] * 180.0 / np.pi))))
+            elif obj['type'].rstrip(' ') == 'EXP':
+                sources.append(
+                    ExpGalaxy(
+                        PixPos(pos_x, pos_y), Flux(obj['flux']),
+                        GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
+                                    (90.0 + obj['theta'] * 180.0 / np.pi))))
+            elif obj['type'].rstrip(' ') == 'REX':
+                sources.append(
+                    ExpGalaxy(
+                        PixPos(pos_x, pos_y), Flux(obj['flux']),
+                        GalaxyShape(obj['a_arcsec'], (obj['b_arcsec'] / obj['a_arcsec']),
+                                    (90.0 + obj['theta'] * 180.0 / np.pi))))
+            elif obj['type'].rstrip(' ') == 'PSF' or obj['type'].rstrip(' ') == '   ':
+                sources.append(PointSource(PixPos(pos_x, pos_y), Flux(obj['flux'])))
 
         print("Now you have %d sources" % len(sources))
 
@@ -396,14 +393,14 @@ def tractor_iteration(obj_cat, w, img_data, invvar, psf_obj, pixel_scale, shape_
     from tractor.psf import Flux, PixPos, PointSource, PixelizedPSF, Image, Tractor
     from tractor.ellipses import EllipseE
 
-    step = int((len(obj_cat) - first_num)/(kfold-1))
+    step = int((len(obj_cat) - first_num) / (kfold - 1))
     for i in range(kfold):
         if i == 0:
             obj_small_cat = obj_cat[:first_num]
-            sources = add_tractor_sources(obj_small_cat, None, w, shape_method='manual')
+            sources = add_tractor_sources(obj_small_cat, None, w, shape_method=shape_method)
         else:
-            obj_small_cat = obj_cat[first_num + step*(i-1) : first_num + step*(i)]
-            sources = add_tractor_sources(obj_small_cat, sources, w, shape_method='manual')
+            obj_small_cat = obj_cat[first_num + step * (i - 1) : first_num + step * (i)]
+            sources = add_tractor_sources(obj_small_cat, sources, w, shape_method=shape_method)
 
         tim = Image(data=img_data,
                     invvar=invvar,

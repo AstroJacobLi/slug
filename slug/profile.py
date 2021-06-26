@@ -23,7 +23,8 @@ from .imutils import extract_obj, make_binary_mask
 from kungpao import imtools
 from kungpao import io
 from kungpao.display import display_single, IMG_CMAP, SEG_CMAP
-from kungpao.isophote import galSBP
+#from kungpao.isophote import galSBP
+#from kungpao import galSBP
 
 
 # Define pixel scale of different surveys, unit = arcsec / pixel
@@ -547,6 +548,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
         os.mkdir('Data')
 
     # Start running Ellipse
+    from kungpao.galsbp import galSBP
     ell_2, bin_2 = galSBP.galSBP(img_path, 
                                  mask=msk_path,
                                  galX=x_cen, galY=y_cen,
@@ -569,7 +571,7 @@ def run_SBP(img_path, msk_path, pixel_scale, phys_size, iraf_path, step=0.10,
                                  saveOut=True, plMask=True,
                                  verbose=True, savePng=False, 
                                  updateIntens=False, saveCsv=True,
-                                 suffix='', location='./Data/')
+                                 suffix='', location='./')
 
     # Calculate the mean ellipticity and position angle in 20 kpc ~ 50 kpc
     interval = np.intersect1d(np.where(ell_2['sma'].data*pixel_scale*phys_size > r_interval[0]),

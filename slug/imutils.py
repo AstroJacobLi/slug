@@ -280,7 +280,7 @@ def make_HSC_detect_mask(bin_msk, img, objects, segmap, r=10.0, radius=1.5, thre
     fraction_radius = sep.flux_radius(img, cen_obj['x'], cen_obj['y'], 10*cen_obj['a'], 0.5)[0]
     ba = np.divide(cen_obj['b'], cen_obj['a'])
     sep.mask_ellipse(cen_mask, cen_obj['x'], cen_obj['y'], fraction_radius, fraction_radius * ba,
-                    cen_obj['theta'], r=r)
+                     cen_obj['theta'], r=r)
     from astropy.convolution import convolve, Gaussian2DKernel
     HSC_mask = (TDmask[:, :, 5]).astype(bool)*(~cen_mask) + TDmask[:, :, 9].astype(bool)
     # Convolve the image with a Gaussian kernel with the width of 1.5 pixel
@@ -386,7 +386,14 @@ def make_binary_mask(img, w, segmap, radius=10.0, threshold=0.01,
         return seg_mask
     else:
         # Combine this mask with Gaia star mask
-        gaia_mask = imtools.gaia_star_mask(img, w, gaia_bright=16, factor_f=10000, factor_b=factor_b)[1].astype('bool')
+        gaia_mask = imtools.gaia_star_mask(img, w, gaia_bright=18, factor_f=10000, factor_b=factor_b)[1].astype('bool')
+        # If gaia mask overlaps with the center of target galaxy:
+        #if gaia_mask[int(img.shape[0] / 2.), int(img.shape[1] / 2.)] is True:
+        from scipy.ndimage import measurements
+        lw, num = measurements.label(gaia_mask)
+        indx = lw[int(img.shape[0] / 2.), int(img.shape[1] / 2.)]
+        gaia_mask[lw == indx] = False
+
         if show_fig:
             from .display import display_single, IMG_CMAP, SEG_CMAP
             display_single((seg_mask + gaia_mask).astype(int), cmap=SEG_CMAP)
@@ -437,7 +444,7 @@ def extract_obj(img, b=30, f=5, sigma=5, pixel_scale=0.168, minarea=5,
                                   clean_param=clean_param,
                                   minarea=minarea)
     if verbose:                              
-        print("# Detect %d objects" % len(objects))
+        print("# Detected %d objects" % len(objects))
     objects = Table(objects)
     objects.add_column(Column(data=np.arange(len(objects)) + 1, name='index'))
     # Maximum flux, defined as flux within six 'a' in radius.

@@ -536,7 +536,7 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
         ax1.tick_params(direction='in')
 
     # Calculate physical size at this redshift
-    phys_size = imutils.phys_size(redshift,is_print=False)
+    phys_size = imutils.phys_size(redshift, is_print=False)
 
     # 1-D profile
     if 'intens_err' in ell_fix.colnames:
@@ -566,7 +566,6 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
         ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
     
     # If `nan` at somewhere, interpolate `nan`.
-
     if show_grid:
         ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
     if show_dots:
@@ -610,6 +609,8 @@ def SBP_single(ell_fix, redshift, pixel_scale, zeropoint, ax=None, offset=0.0,
         for tick in ax4.xaxis.get_major_ticks():
             tick.label.set_fontsize(ticksize)
 
+    plt.sca(ax1)
+    
     # Vertical line
     if vertical_line is not None:
         if len(vertical_line) > 3:
@@ -1120,6 +1121,187 @@ def SBP_single_upper_limit(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0
 
 
 # You can plot 1-D SBP using this, without plotting the PA and eccentricity.
+def SBP_single_upper_limit_1error(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0, skystd=0.0, filter_corr=0,
+    ax=None, x_min=1.0, x_max=4.0, ylim=None, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
+    show_banner=True, vertical_line=None, linecolor='firebrick', linestyle='-', 
+    linewidth=3, labelsize=25, ticksize=30, label='SBP', labelloc='lower left'):
+
+    """Display the 1-D profiles, without showing PA and ellipticity.
+    
+    Parameters:
+    -----------
+    ell_fix: astropy Table or numpy table, should be the output of ELLIPSE.
+    redshift: float, redshift of the object.
+    pixel_scale: float, pixel scale in arcsec/pixel.
+    zeropoint: float, zeropoint of the photometry system.
+    ax: matplotlib axes class.
+    offset: float.
+    x_min, x_max: float, in ^{1/4} scale.
+    alpha: float, transparency.
+    physical_unit: boolean. If true, the figure will be shown in physical scale.
+    show_dots: boolean. If true, it will show all the data points.
+    show_grid: boolean. If true, it will show a grid.
+    vertical_line: list of floats, positions of vertical lines. Maximum length is three.
+    linecolor, linestyle: string. Color and style of SBP.
+    label: string.
+
+    Returns:
+    --------
+    ax: matplotlib axes class.
+
+    """
+    if ax is None:
+        fig = plt.figure(figsize=(10, 10))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+
+    # Calculate physical size at this redshift
+    phys_size = imutils.phys_size(redshift,is_print=False)
+
+    # 1-D profile
+    if 'intens_err' in ell_fix.colnames:
+        intens_err_name = 'intens_err'
+    else:
+        intens_err_name = 'int_err'
+
+    if physical_unit is True:
+        x = ell_fix['sma'] * pixel_scale * phys_size
+        y = -2.5 * np.log10((ell_fix['intens'].data - skyval) / (pixel_scale)**2) + zeropoint + filter_corr
+        xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+    else:
+        x = ell_fix['sma'] * pixel_scale
+        y = -2.5 * np.log10((ell_fix['intens'].data - skyval) / (pixel_scale)**2) + zeropoint + filter_corr
+        xlabel = r'$(R/\mathrm{arcsec})^{1/4}$'
+        ylabel = r'$\mu\,[\mathrm{mag/arcsec^2}]$'
+
+    ellipse_err = ell_fix[intens_err_name].data
+    ellipse_err[np.isnan(ellipse_err)] = 0.0
+    err = np.sqrt(ellipse_err**2 + skystd**2)
+    y_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + err) / (pixel_scale)**2) + zeropoint + filter_corr
+    y_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - err) / (pixel_scale)**2) + zeropoint + filter_corr
+    y_lower[np.isnan(y_lower)] = 35.0 # in case y_lower is nan
+    #y_sky_upper = -2.5 * np.log10((ell_fix['intens'] - skyval + ell_fix[intens_err_name] + skystd) / (pixel_scale)**2) + zeropoint + filter_corr
+    #y_sky_lower = -2.5 * np.log10((ell_fix['intens'] - skyval - ell_fix[intens_err_name] - skystd) / (pixel_scale)**2) + zeropoint + filter_corr
+    upper_yerr = y_lower - y
+    lower_yerr = y - y_upper
+    asymmetric_error = [lower_yerr, upper_yerr]
+    #print(asymmetric_error)
+    
+    # If `nan` at somewhere, interpolate `nan`.
+    nanidx = np.where(np.isnan(y))[0]
+    if len(nanidx) > 1:
+        from sklearn.cluster import KMeans
+        X = np.array(list(zip(nanidx, np.zeros_like(nanidx))))
+        kmeans = KMeans(n_clusters=2).fit(X)
+        labels = kmeans.predict(X)
+        centroids = kmeans.cluster_centers_
+        if (max(centroids[:, 0]) - min(centroids[:, 0]) < 3) and np.ptp(nanidx[labels==0]) > 2:
+            print('interpolate NaN')
+            from scipy.interpolate import interp1d
+            mask = (~np.isnan(y))
+            func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value='extrapolate')
+            y[nanidx[labels == 0]] = func(x[nanidx[labels == 0]]**0.25)
+        else:
+            y[nanidx[0]:] = np.nan
+            y_upper[nanidx[0]:] = np.nan
+            y_lower[nanidx[0]:] = np.nan
+            #y_sky_upper[nanidx[0]:] = np.nan
+            #y_sky_lower[nanidx[0]:] = np.nan
+
+    elif len(nanidx) == 1:
+        if nanidx + 1 > len(nanidx) or nanidx - 1 < 0:
+            print('Sorry, cannot replace NaN')
+        elif abs(y[nanidx - 1] - y[nanidx + 1]) < 0.5:
+            print('interpolate NaN')
+            from scipy.interpolate import interp1d
+            mask = (~np.isnan(y))
+            func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value=np.nan)
+            y[nanidx] = func(x[nanidx]**0.25)
+        else:
+            y[nanidx[0]:] = np.nan
+            y_upper[nanidx[0]:] = np.nan
+            y_lower[nanidx[0]:] = np.nan
+            #y_sky_upper[nanidx[0]:] = np.nan
+            #y_sky_lower[nanidx[0]:] = np.nan
+
+    if show_grid:
+        ax1.grid(linestyle='--', alpha=0.4, linewidth=2)
+    if show_dots:
+        ax1.errorbar((x ** 0.25), y,
+                 yerr=asymmetric_error,
+                 color='k', alpha=0.2, fmt='o', 
+                 capsize=4, capthick=1, elinewidth=1)
+
+    if label is not None:
+        ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle,
+             label=r'$\mathrm{' + label + '}$', alpha=alpha)
+        leg = ax1.legend(fontsize=labelsize, frameon=False, loc=labelloc)
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x**0.25, y, color=linecolor, linewidth=linewidth, linestyle=linestyle, alpha=alpha)
+    ax1.fill_between(x**0.25, y_upper, y_lower, color=linecolor, alpha=0.4*alpha, label=None)
+    if ylim is None:
+        ylim = ax1.get_ylim()
+
+    '''
+    for i in range(len(y_sky_lower)):
+        if np.isnan(y_sky_lower[i]):
+            y_sky_lower[i] = max(ylim)
+    ax1.fill_between(x**0.25, y_sky_upper, y_sky_lower, color=linecolor, alpha=0.13*alpha, label=None)
+    '''
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=ticksize)
+    ax1.set_ylabel(ylabel, fontsize=ticksize)
+    #ax1.invert_yaxis()
+    ax1.set_ylim(max(ylim), min(ylim))
+
+    # Twin axis with linear scale
+    if physical_unit and show_banner is True:
+        ax4 = ax1.twiny() 
+        ax4.tick_params(direction='in')
+        lin_label = [1, 2, 5, 10, 50, 100, 150, 300]
+        lin_pos = [i**0.25 for i in lin_label]
+        ax4.set_xticks(lin_pos)
+        ax4.set_xlim(ax1.get_xlim())
+        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=ticksize)
+        ax4.xaxis.set_label_coords(1, 1.025)
+
+        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
+        for tick in ax4.xaxis.get_major_ticks():
+            tick.label.set_fontsize(ticksize)
+
+    # Vertical line
+    if vertical_line is not None:
+        if len(vertical_line) > 3:
+            raise ValueError('Maximum length of vertical_line is 3.') 
+        ylim = ax1.get_ylim()
+        style_list = ['-', '--', '-.']
+        for k, pos in enumerate(vertical_line):
+            ax1.axvline(x=pos**0.25, ymin=0, ymax=1,
+                        color='gray', linestyle=style_list[k], linewidth=3, alpha=0.75)
+        plt.ylim(ylim)
+
+    # Return
+    if ax is None:
+        return fig
+    return ax1 #, ax_ins
+
+
+# You can plot 1-D SBP using this, without plotting the PA and eccentricity.
 def SBP_single_arcsinh(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0, skystd=0.0, 
     ax=None, offset=0.0, 
     x_min=1.0, x_max=4.0, alpha=1, physical_unit=False, show_dots=False, show_grid=False, 
@@ -1270,6 +1452,185 @@ def SBP_single_arcsinh(ell_fix, redshift, pixel_scale, zeropoint, skyval=0.0, sk
     if ax is None:
         return fig
     return ax1
+
+
+
+# Plot SBP together, and also plot median profile
+def mu_diff_figure_1error(ell_fix_other, ell_fix_fid, survey_other, survey_fid, redshift, plot_err=True,
+                    skyval=[0.0, 0.0], skystd=[0.0, 0.0], zp=None, filter_corr=[0, 0], 
+                   ax=None, x_min=1.0, x_max=4.0, alpha=1.0, vertical_line=None, show_banner=True, 
+                   linecolor='brown', linewidth=3, label=None, ticksize=20, 
+                   labelsize=20, labelloc='lower right'):
+    '''
+    filter_corr[0] + mag(ell_fix_other) = SDSS_mag
+    filter_corr[1] + mag(ell_fix_fid) = SDSS_mag
+
+    skyval = [skyval_other, skyval_fid]
+    skystd = [skystd_other, skystd_fid]
+    '''
+    def fill_defects(y, y_upper=None, y_lower=None):
+        nanidx = np.where(np.isnan(y))[0]
+        if len(nanidx) > 1:
+            from sklearn.cluster import KMeans
+            X = np.array(list(zip(nanidx, np.zeros_like(nanidx))))
+            kmeans = KMeans(n_clusters=2).fit(X)
+            labels = kmeans.predict(X)
+            centroids = kmeans.cluster_centers_
+            if (max(centroids[:, 0]) - min(centroids[:, 0]) < 3) and np.ptp(nanidx[labels==0]) > 2:
+                print('interpolate NaN')
+                from scipy.interpolate import interp1d
+                mask = (~np.isnan(y))
+                func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value='extrapolate')
+                y[nanidx[labels == 0]] = func(x[nanidx[labels == 0]]**0.25)
+            else:
+                y[nanidx[0]:] = np.nan
+                if y_upper is not None:
+                    y_upper[nanidx[0]:] = np.nan
+                    y_lower[nanidx[0]:] = np.nan
+        elif len(nanidx) == 1:
+            if nanidx + 1 > len(nanidx) or nanidx - 1 < 0:
+                print('Sorry, cannot replace NaN')
+            elif abs(y[nanidx - 1] - y[nanidx + 1]) < 0.5:
+                print('interpolate NaN')
+                from scipy.interpolate import interp1d
+                mask = (~np.isnan(y))
+                func = interp1d(x[mask]**0.25, y[mask], kind='cubic', fill_value=np.nan)
+                y[nanidx] = func(x[nanidx]**0.25)
+            else:
+                y[nanidx[0]:] = np.nan
+                if y_upper is not None:
+                    y_upper[nanidx[0]:] = np.nan
+                    y_lower[nanidx[0]:] = np.nan
+                
+        if y_upper is not None:
+            return [y, y_upper, y_lower]
+        else:
+            return y
+
+    import h5py
+    from scipy import interpolate
+
+    if ax is None:
+        fig = plt.figure(figsize=(7, 6))
+        fig.subplots_adjust(left=0.0, right=1.0, 
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+        
+    ## Interpolate 2 ell_fix to the same scale first ##
+    # "Other" side
+    if zp is None:
+        zp = survey_other['zeropoint']
+    
+    x = ell_fix_other['sma'] * survey_other['pixel_scale'] * imutils.phys_size(redshift, is_print=False)
+    mu_other = -2.5*np.log10((ell_fix_other['intens'] - skyval[0])/(survey_other['pixel_scale'])**2) + zp + filter_corr[0]
+    mu_other = fill_defects(mu_other)
+
+    # error: ellipse error + background error
+    if 'intens_err' in Table(ell_fix_other).colnames:
+        intens_err_name = 'intens_err'
+    else:
+        intens_err_name = 'int_err'
+    ellipse_err = ell_fix_other[intens_err_name]
+    ellipse_err[np.isnan(ellipse_err)] = 0.0
+    err_other = np.sqrt(ellipse_err**2 + skystd[0]**2) # Quadrature Error, at intensity level
+    err_other /= ell_fix_other['intens']
+    if sum(np.isnan(mu_other)) == 0:
+        mask = len(mu_other) - 1
+    else:
+        mask = np.argwhere(np.isnan(mu_other))[0, 0]
+    func1 = interpolate.interp1d(x[:mask]**0.25, mu_other[:mask], kind='cubic', fill_value='extrapolate')
+    func1_err = interpolate.interp1d(x[:mask]**0.25, err_other[:mask], kind='cubic', fill_value='extrapolate')
+    x_1 = x[:mask].max()**0.25
+    
+    # "Fiducial" side
+    x = ell_fix_fid['sma'] * survey_fid['pixel_scale'] * imutils.phys_size(redshift, is_print=False)
+    mu_fid = -2.5*np.log10((ell_fix_fid['intens'] - skyval[1])/(survey_fid['pixel_scale'])**2) + survey_fid['zeropoint'] + filter_corr[1]
+    mu_fid = fill_defects(mu_fid)
+
+    # error: ellipse error + background error
+    if 'intens_err' in Table(ell_fix_fid).colnames:
+        intens_err_name = 'intens_err'
+    else:
+        intens_err_name = 'int_err'
+    ellipse_err = ell_fix_fid[intens_err_name]
+    ellipse_err[np.isnan(ellipse_err)] = 0.0
+    err_fid = np.sqrt(ellipse_err**2 + skystd[1]**2) # Quadrature Error, at intensity level
+    err_fid /= ell_fix_fid['intens']
+    if sum(np.isnan(mu_fid)) == 0:
+        mask = len(mu_fid) - 1
+    else:
+        mask = np.argwhere(np.isnan(mu_fid))[0, 0]
+    func2 = interpolate.interp1d(x[:mask]**0.25, mu_fid[:mask], kind='cubic', fill_value='extrapolate')
+    func2_err = interpolate.interp1d(x[:mask]**0.25, err_fid[:mask], kind='cubic', fill_value='extrapolate')
+    x_2 = x[:mask].max()**0.25
+    
+    # Interpolate
+    x_input = np.arange(x_min, min(x_1, x_2), 0.05)
+    y_other = func1(x_input)
+    y_fid = func2(x_input)
+            
+    mu_diff = y_fid - y_other
+    mu_diff_err = -2.5 / np.log(10) * np.sqrt(func1_err(x_input)**2 + func2_err(x_input)**2)
+
+    if label is not None:
+        ax1.plot(x_input, mu_diff, color=linecolor, linewidth=linewidth, linestyle='-',
+             label=r'$\mathrm{' + label + '}$', alpha=1)
+        leg = ax1.legend(fontsize=labelsize, loc=labelloc)
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x_input, mu_diff, color=linecolor, linewidth=linewidth, linestyle='-', alpha=1)
+    if plot_err:
+        ax1.fill_between(x_input, mu_diff - mu_diff_err, mu_diff + mu_diff_err, color=linecolor, alpha=0.4*alpha, label=None)
+    
+    # Set ticks
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
+    ylabel = r'$\mu_{\mathrm{DF}} - \mu_i$' + '\n' + '$[\mathrm{mag/arcsec^2}]$'
+    ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=ticksize)
+    ax1.set_ylabel(ylabel, fontsize=ticksize)
+    
+    # Twin axis with linear scale
+    if show_banner is True:
+        ax4 = ax1.twiny() 
+        ax4.tick_params(direction='in')
+        lin_label = [1, 2, 5, 10, 50, 100, 150, 300]
+        lin_pos = [i**0.25 for i in lin_label]
+        ax4.set_xticks(lin_pos)
+        ax4.set_xlim(ax1.get_xlim())
+        ax4.set_xlabel(r'$\mathrm{kpc}$', fontsize=ticksize)
+        ax4.xaxis.set_label_coords(1, 1.035)
+
+        ax4.set_xticklabels([r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
+        for tick in ax4.xaxis.get_major_ticks():
+            tick.label.set_fontsize(ticksize)
+    
+    # Vertical line
+    if vertical_line is not None:
+        if len(vertical_line) > 3:
+            raise ValueError('Maximum length of vertical_line is 3.') 
+        ylim = ax1.get_ylim()
+        style_list = ['-', '--', '-.']
+        for k, pos in enumerate(vertical_line):
+            ax1.axvline(x=pos**0.25, ymin=0, ymax=1,
+                        color='gray', linestyle=style_list[k], linewidth=3, alpha=0.75)
+        #plt.ylim(ylim)
+    
+    # Return
+    if ax is None:
+        return fig, mu_diff
+    else:
+        return ax1, mu_diff
 
 
 # You can plot 1-D SBP using this, containing SBP, PA and eccentricity.
