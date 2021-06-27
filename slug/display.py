@@ -1053,6 +1053,10 @@ def load_SBP(obj, survey='HSC', band='r', sky_cat=None, matching_radius=[1, 4], 
 
 
 def gen_median_SBP(x_input, y_stack, zeropoint, pixel_scale):
+    """
+    Calculate the median profile (and error) of a given SBP stack.
+
+    """
     from astropy.stats import bootstrap
 
     nan_ratio = np.sum(np.isnan(y_stack), axis=0) / len(y_stack)
@@ -1079,9 +1083,38 @@ def gen_median_SBP(x_input, y_stack, zeropoint, pixel_scale):
     return x_input, y, [y_lower, y_upper, yerr_set]
 
 
-def plot_median_SBP(x_input, y_stack, zeropoint, pixel_scale, ax, ls='-'):
+def gen_median_of_diff(y_stacks, zeropoints, pixel_scales):
+    """
+    Calculate the median of SB difference between two SBP stacks. 
+    This is intrinsically different from `plot_median_diff`, in which 
+        we only care about the difference of two median profiles. 
+    But now we are going to calculate the median of difference. 
+
+    Difference = survey1 - survey2
+    """
     from astropy.stats import bootstrap
 
+    y_stack_1, y_stack_2 = y_stacks
+    zp1, zp2 = zeropoints
+    ps1, ps2 = pixel_scales
+
+    if y_stack_1.shape != y_stack_2.shape:
+        raise ValueError('The input stacks must have same shape!')
+
+    SB_1 = -2.5 * np.log10(y_stack_1 / (ps1)**2) + zp1  # mag / arcsec^2
+    SB_2 = -2.5 * np.log10(y_stack_2 / (ps2)**2) + zp2  # mag / arcsec^2
+
+    diff_stack = SB_1 - SB_2
+    nan_flag = np.isnan(diff_stack)
+
+    SB_1[nan_flag] = np.nan
+    SB_2[nan_flag] = np.nan
+    diff_stack[nan_flag] = np.nan
+
+    return diff_stack, [SB_1, SB_2]
+
+
+def plot_median_SBP(x_input, y_stack, zeropoint, pixel_scale, ax, ls='-'):
     x_input, y, [y_lower, y_upper, yerr_set] = gen_median_SBP(
         x_input, y_stack, zeropoint, pixel_scale)
     ax.plot(x_input, y, color='k', linewidth=4, linestyle=ls,
@@ -1091,11 +1124,17 @@ def plot_median_SBP(x_input, y_stack, zeropoint, pixel_scale, ax, ls='-'):
     return ax
 
 
-def plot_median_diff(HSC_SB_stack, DECaLS_SB_stack, ax=None,
-                     linecolor='brown', linewidth=5, linestyle='-',
-                     label=None, labelloc='upper right',
-                     labelsize=20, ticksize=30, show_banner=True):
+def plot_diff_of_median(HSC_SB_stack, DECaLS_SB_stack, ax=None,
+                        linecolor='brown', linewidth=5, linestyle='-',
+                        label=None, labelloc='upper right',
+                        labelsize=20, ticksize=30, show_banner=True):
+    """
+    Plot difference of MEDIAN PROFILE. 
+    So first generate median profiles of HSC and DECaLS, then plot the different between the two. 
 
+    See also:
+        `plot_median_of_diff`
+    """
     x_input = np.arange(1.0, 5.5, 0.05)
     x_input, y_HSC, [y_lower_HSC, y_upper_HSC, yerr_HSC] = gen_median_SBP(
         x_input, HSC_SB_stack, slug.HSC_zeropoint, slug.HSC_pixel_scale)
@@ -1106,7 +1145,7 @@ def plot_median_diff(HSC_SB_stack, DECaLS_SB_stack, ax=None,
     # Plot!
     y = y_HSC - y_DECaLS
     yerr = np.sqrt(yerr_HSC**2 + yerr_DECaLS**2)
-    yerr[yerr > 0.3] = np.nan
+    #yerr[yerr > 0.3] = np.nan
 
     ax1 = ax
     ax1.tick_params(direction='in')
@@ -1134,19 +1173,7 @@ def plot_median_diff(HSC_SB_stack, DECaLS_SB_stack, ax=None,
                      color='gray', alpha=0.9, zorder=10)
 
     y_lim = [-1.1, 1.1]
-    #x_lim = [3.0, 4.5]
     ax1.set_ylim(y_lim)
-    # ax1.set_xlim(x_lim)
-
-    # Add text
-    # ax1.text(3.75, y_lim[0] + (y_lim[1] - y_lim[0]) * 0.1,
-    #        r'$\mathrm{' + label + '}$',
-    #        horizontalalignment='center', verticalalignment='center', fontsize=20,
-    #        bbox=dict(facecolor='wheat', edgecolor='k', boxstyle='round, pad=0.4'))
-
-    # ax.yaxis.set_major_formatter(FormatStrFormatter(r'$%.2f$'))
-    #ax.vlines(100**0.25, min(y_lim), max(y_lim), color='gray', linestyle='--', linewidth=2)
-    #ax1.hlines(0, x_lim[0], x_lim[1], color='k', linestyle='--', linewidth=2, zorder=11)
 
     xlabel = r'$(R/\mathrm{kpc})^{1/4}$'
     ylabel = r'$\mu_{\mathrm{HSC}} - \mu_{\mathrm{DECaLS}}$' + \
@@ -1168,6 +1195,108 @@ def plot_median_diff(HSC_SB_stack, DECaLS_SB_stack, ax=None,
             [r'$\mathrm{'+str(i)+'}$' for i in lin_label], fontsize=ticksize)
         for tick in ax4.xaxis.get_major_ticks():
             tick.label.set_fontsize(ticksize)
+    # Return
+    if ax is None:
+        return fig
+    return ax1
+
+
+def plot_median_of_diff(HSC_SB_stack, DECaLS_SB_stack, ax=None, x_axis='HSC',
+                        vertical_line=None, linecolor='brown',
+                        fillcolor=['#fdcc8a', '#fc8d59', '#d7301f'], linewidth=5,
+                        label=None, ticksize=20):
+    """
+    Plot how the median of SBP differences varies with surface brightness. 
+
+    Parameters:
+        x_axis (str): if "HSC", the x-axis will be HSC surface brightness; 
+            if "DECaLS", the x-axis will be DECaLS surface brightness.
+
+    See also:
+        `plot_diff_of_median`
+    """
+    import slug
+    from scipy.stats import norm
+    from scirocco.fitting import med_and_percentile
+
+    if ax is None:
+        fig = plt.figure(figsize=(7, 6))
+        fig.subplots_adjust(left=0.0, right=1.0,
+                            bottom=0.0, top=1.0,
+                            wspace=0.00, hspace=0.00)
+
+        ax1 = fig.add_axes([0.08, 0.07, 0.85, 0.88])
+        ax1.tick_params(direction='in')
+    else:
+        ax1 = ax
+        ax1.tick_params(direction='in')
+
+    diff_stack, [SB_1, SB_2] = gen_median_of_diff([HSC_SB_stack, DECaLS_SB_stack],
+                                                  zeropoints=[
+                                                      slug.HSC_zeropoint, slug.DECaLS_zeropoint],
+                                                  pixel_scales=[slug.HSC_pixel_scale, slug.DECaLS_pixel_scale])
+    # Note that sky_bkg and filter correction have been applied in `SBP_stack_hsc` and `SBP_stack_decals`.
+
+    if x_axis == 'HSC':
+        SB = SB_1
+    else:
+        SB = SB_2
+
+    p_set = [(norm.cdf(i) - 0.5) for i in [0.5, 1, 2]]
+    alpha_set = [0.9, 0.5, 0.2, 0.1]
+    colorset = fillcolor
+    for i, p in enumerate(p_set):
+        bin_edges, bin_med, [bin_low, bin_high] = med_and_percentile(SB, diff_stack,
+                                                                     statistic='median', bins=30,
+                                                                     ranges=[
+                                                                         20, 30],
+                                                                     percentile=[50 - p * 100, 50 + p * 100])
+        ax1.fill_between((bin_edges[:-1] + bin_edges[1:]) * 0.5,
+                         bin_high, bin_low, color=colorset[i], alpha=alpha_set[i])
+
+    x = (bin_edges[:-1] + bin_edges[1:]) * 0.5
+    y = bin_med
+
+    if label is not None:
+        ax1.plot(x, y, color=linecolor, linewidth=linewidth, linestyle='-',
+                 label=r'$\mathrm{' + label + '}$', alpha=1)
+        leg = ax1.legend(fontsize=25, frameon=False, loc='lower left')
+        for l in leg.legendHandles:
+            l.set_alpha(1)
+    else:
+        ax1.plot(x, y, color=linecolor, linewidth=linewidth,
+                 linestyle='-', alpha=1)
+
+    # Set ticks
+    for tick in ax1.xaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+    for tick in ax1.yaxis.get_major_ticks():
+        tick.label.set_fontsize(ticksize)
+
+    if x_axis == 'HSC':
+        xlabel = r'$\mu_{\mathrm{HSC}}\,[\mathrm{mag/arcsec^2}]$'
+        ylabel = r'$\mu_{\mathrm{HSC}} - \mu_{\mathrm{DECaLS}}$' + \
+            '\n' + '$[\mathrm{mag/arcsec^2}]$'
+    else:
+        xlabel = r'$\mu_{\mathrm{DECaLS}}\,[\mathrm{mag/arcsec^2}]$'
+        ylabel = r'$\mu_{\mathrm{DECaLS}} - \mu_{\mathrm{HSC}}$' + \
+            '\n' + '$[\mathrm{mag/arcsec^2}]$'
+
+    #ax1.set_xlim(x_min, x_max)
+    ax1.set_xlabel(xlabel, fontsize=ticksize)
+    ax1.set_ylabel(ylabel, fontsize=ticksize)
+
+    # Vertical line
+    if vertical_line is not None:
+        if len(vertical_line) > 3:
+            raise ValueError('Maximum length of vertical_line is 3.')
+        ylim = ax1.get_ylim()
+        style_list = ['-', '--', '-.']
+        for k, pos in enumerate(vertical_line):
+            ax1.axvline(x=pos, ymin=0, ymax=1,
+                        color='gray', linestyle=style_list[k], linewidth=3, alpha=0.75)
+        plt.ylim(ylim)
+
     # Return
     if ax is None:
         return fig
